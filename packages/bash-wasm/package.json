@@ -1,5 +1,5 @@
 {
-  "name": "bash-wasm",
+  "name": "@capsule-run/bash-wasm",
   "version": "0.1.0",
   "description": "Sandboxed bash for agents",
   "main": "index.js",
@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "Apache-2.0",
-  "packageManager": "pnpm@10.21.0"
+  "packageManager": "pnpm@10.21.0",
+  "devDependencies": {
+    "tsup": "^8.0.0"
+  }
 }
