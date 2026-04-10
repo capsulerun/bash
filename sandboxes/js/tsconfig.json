@@ -14,6 +14,6 @@
       "@capsule-run/bash-types": ["packages/bash-types/src/index.ts"]
     }
   },
-  "include": ["js_sandbox.ts"]
+  "include": ["sandbox.ts"]
 }
 
