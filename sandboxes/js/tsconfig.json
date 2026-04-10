@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "types": ["node"],
+    "declaration": false,
+    "composite": false
+  },
+  "include": ["js_sandbox.ts"]
+}
