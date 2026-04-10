@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@capsule-run/cli':
-        specifier: latest
-        version: 0.8.0
+        specifier: ^0.8.1
+        version: 0.8.1
       '@capsule-run/sdk':
-        specifier: latest
-        version: 0.8.0(@types/node@24.12.2)
+        specifier: ^0.8.1
+        version: 0.8.1(@types/node@24.12.2)
     devDependencies:
       '@types/node':
         specifier: ^24.10.1
@@ -82,37 +82,37 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  '@capsule-run/cli-darwin-arm64@0.8.0':
-    resolution: {integrity: sha512-L/2Zh1JTCo506RIwsePXym8Jnt5Jh8HJja5lWkjGyZY5K+xbHkLa4O+NWGvn/Axx4/JIFU5BkVwHxAPZGc4TwQ==}
+  '@capsule-run/cli-darwin-arm64@0.8.1':
+    resolution: {integrity: sha512-/xuAENIsu1EVkU2IcdSW/Kgxsfoq5jA0PbczDn/4DQUDVnHdJ2cvYZyjOh8UsnKNWa7oco0hjwauEC5fbIyl4g==}
     cpu: [arm64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-darwin-x64@0.8.0':
-    resolution: {integrity: sha512-/muLG+txiinCYBMyq9JCmGBRgkW2ZdpTvKTM0D/JmjYigvke0InZA0yRgXTU++usUeJq82/S+3thc4I9V6FSTw==}
+  '@capsule-run/cli-darwin-x64@0.8.1':
+    resolution: {integrity: sha512-p5OCph1wDBKV0MQFpx93KFWcUx9knW1VkAVEp1FLD0ktckMlFee3kPHV69U5zmNFBBI8Polo3B+Xbfmt1OhTdw==}
     cpu: [x64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-linux-x64@0.8.0':
-    resolution: {integrity: sha512-nsJ1QiMbbifhkkXdv6eNNJxOajg4fyVtkjnphkoiXByY+i0dOwopNs0p5scbCC6U6zZcwXvjnD9xu4IzKqnqGA==}
+  '@capsule-run/cli-linux-x64@0.8.1':
+    resolution: {integrity: sha512-kXCRuXLznqV+qommU+gsRGwfpCH3MWLlBdrrFbfIxX3IS3sYPEKKd+aWbjcVwOCDeR85QJeBICpVO9VmXJOw/Q==}
     cpu: [x64]
     os: [linux]
     hasBin: true
 
-  '@capsule-run/cli-win32-x64@0.8.0':
-    resolution: {integrity: sha512-Y1ScPzyyRepP8UMJyCukK+mzU0vfW2hHkQNI5gEAIRkBeVnRxr5YCEyKZQce2pTnbc5469xquso41re0QVevmQ==}
+  '@capsule-run/cli-win32-x64@0.8.1':
+    resolution: {integrity: sha512-Kl2CdpD8yT2uYN5sb9NuQIyvtx2Phbuu/VR3Fu/oHxydu2RnTbRuuc0gqIhsYEsaX+RaDXzXhL9d13xoxmMjNw==}
     cpu: [x64]
     os: [win32]
     hasBin: true
 
-  '@capsule-run/cli@0.8.0':
-    resolution: {integrity: sha512-B+3PS9CTOsvYntmhIwHdXMe2WM+A8JN4Nn9Q2PqKtd6jN603KA+CYFKYZ5tXYV3CW6BFIyrB79jv99s4kvK0aQ==}
+  '@capsule-run/cli@0.8.1':
+    resolution: {integrity: sha512-z6lVgUAD+wgx0pp3mb/ocnOIQncvWveBivj/TsI0h02N4ZdQtGa7cso3eDG3CQz3Z0VZ0QpRRPTcKEtrW5l0qw==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@capsule-run/sdk@0.8.0':
-    resolution: {integrity: sha512-FQ+Li8+9H8qjrUAMXnRA7SR/fr/wnE402n/oquQMyhQClw9Nc5xofL6Athynqc3BdrP/nOFx1nmTD6FpDo0Q3Q==}
+  '@capsule-run/sdk@0.8.1':
+    resolution: {integrity: sha512-wqAMw6O87oOrtwLcgjZQtYeNuDuYtQzwMBisC9SSTaBY1hoWzWtPq4EkuTmjgFdaen6T6m/gZVL52E7k3Uz2Dg==}
     peerDependencies:
       '@types/node': '>=18'
     peerDependenciesMeta:
@@ -1146,26 +1146,26 @@ snapshots:
       '@bytecodealliance/wizer-linux-x64': 10.0.0
       '@bytecodealliance/wizer-win32-x64': 10.0.0
 
-  '@capsule-run/cli-darwin-arm64@0.8.0':
+  '@capsule-run/cli-darwin-arm64@0.8.1':
     optional: true
 
-  '@capsule-run/cli-darwin-x64@0.8.0':
+  '@capsule-run/cli-darwin-x64@0.8.1':
     optional: true
 
-  '@capsule-run/cli-linux-x64@0.8.0':
+  '@capsule-run/cli-linux-x64@0.8.1':
     optional: true
 
-  '@capsule-run/cli-win32-x64@0.8.0':
+  '@capsule-run/cli-win32-x64@0.8.1':
     optional: true
 
-  '@capsule-run/cli@0.8.0':
+  '@capsule-run/cli@0.8.1':
     optionalDependencies:
-      '@capsule-run/cli-darwin-arm64': 0.8.0
-      '@capsule-run/cli-darwin-x64': 0.8.0
-      '@capsule-run/cli-linux-x64': 0.8.0
-      '@capsule-run/cli-win32-x64': 0.8.0
+      '@capsule-run/cli-darwin-arm64': 0.8.1
+      '@capsule-run/cli-darwin-x64': 0.8.1
+      '@capsule-run/cli-linux-x64': 0.8.1
+      '@capsule-run/cli-win32-x64': 0.8.1
 
-  '@capsule-run/sdk@0.8.0(@types/node@24.12.2)':
+  '@capsule-run/sdk@0.8.1(@types/node@24.12.2)':
     dependencies:
       '@bytecodealliance/jco': 1.17.6
       esbuild: 0.27.7

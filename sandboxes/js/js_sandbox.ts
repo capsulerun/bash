@@ -1,8 +1,10 @@
 import { task } from "@capsule-run/sdk";
+import type { State } from "@capsule-run/bash-types";
 
 const executeCode = task(
   { name: "executeCode", compute: "LOW", ram: "256MB" },
-  async (code: string): Promise<unknown> => {
+  async (state: State, code: string): Promise<unknown> => {
+    process.chdir(state.cwd);
     const capturedOutput: string[] = [];
     const originalLog = console.log;
 
@@ -38,8 +40,8 @@ const executeCode = task(
 
 export const executeCommand = task(
   { name: "executeCommand", compute: "LOW", ram: "64MB" },
-  async (scriptContent: string, args: any[]) => {
-
+  async (state: State, scriptContent: string, args: any[]) => {
+    process.chdir(state.cwd);
     const exports: { execute?: (args: any[]) => any } = {};
 
     const moduleWrapper = new Function('exports', scriptContent);
@@ -56,15 +58,15 @@ export const executeCommand = task(
 
 export const main = task(
   { name: "main", compute: "HIGH" },
-  async (action: string, ...args: string[]): Promise<unknown> => {
+  async (action: string, state: State, ...args: string[]): Promise<unknown> => {
     let response: { success: boolean; result: unknown; error: { message: string } | null };
 
     if (action === "LOAD") {
       response = { success: true, result: "Sandbox loaded successfully", error: null };
     } else if (action === "EXECUTE_COMMAND") {
-      response = await executeCommand(...args as [string, any[]]);
+      response = await executeCommand(state, ...args as [string, any[]]);
     } else if (action === "EXECUTE_CODE") {
-      response = await executeCode(...args as [string]);
+      response = await executeCode(state, ...args as [string]);
     } else {
       throw new Error(`Invalid action: ${action}`);
     }

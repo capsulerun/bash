@@ -8,7 +8,12 @@
     "strict": true,
     "types": ["node"],
     "declaration": false,
-    "composite": false
+    "composite": false,
+    "baseUrl": "../../",
+    "paths": {
+      "@capsule-run/bash-types": ["packages/bash-types/src/index.ts"]
+    }
   },
   "include": ["js_sandbox.ts"]
 }
+
