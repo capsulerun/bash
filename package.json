@@ -5,13 +5,18 @@
   "description": "Sandboxed bash for agents",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.21.0",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@capsule-run/cli": "^0.8.5",
+    "@capsule-run/sdk": "^0.8.5"
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
     "typescript": "^6.0.2",
-    "@types/node": "^25.5.2",
+    "@types/node": "^25.2.3",
     "vitest": "^4.1.4"
   }
 }

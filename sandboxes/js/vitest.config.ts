@@ -2,6 +2,8 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    projects: ['packages/*', 'sandboxes/js'],
+    name: 'sandbox-js',
+    environment: 'node',
+    testTimeout: 60_000,
   },
 })
