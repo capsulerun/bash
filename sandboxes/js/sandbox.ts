@@ -66,7 +66,7 @@ const executeCode = task(
   }
 );
 
-export const executeCommand = task(
+const executeCommand = task(
   { name: "executeCommand", compute: "LOW", ram: "64MB" },
   async (state: State, scriptContent: string, args: string[]) => {
     process.chdir(state.cwd);
