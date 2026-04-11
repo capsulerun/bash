@@ -115,6 +115,19 @@ const executeCommand = task(
   }
 )
 
+export const resolveDirectoryPath = task(
+  { name: "resolveDirectoryPath", compute: "LOW", ram: "32MB" },
+  async (state: State, targetPath: string) => {
+    process.chdir(state.cwd);
+
+    if (!fs.existsSync(targetPath)) {
+      throw new Error(`Directory path ${targetPath} does not exist`);
+    }
+
+    return '/' + path.resolve(targetPath);
+  }
+)
+
 export const main = task(
   { name: "main", compute: "HIGH" },
   async (action: string, state: string, ...args: string[]): Promise<unknown> => {
@@ -131,6 +144,8 @@ export const main = task(
       response = await executeCode(parsedState, parsedArgs[0]);
     } else if (action === "EXECUTE_FILE") {
       response = await executeFile(parsedState, parsedArgs[0], parsedArgs.slice(1));
+    } else if (action === "RESOLVE_DIRECTORY_PATH") {
+      response = await resolveDirectoryPath(parsedState, parsedArgs[0]);
     } else {
       throw new Error(`Invalid action: ${action}`);
     }

@@ -29,6 +29,10 @@ importers:
         version: 4.1.4(@types/node@25.6.0)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
 
   packages/bash:
+    dependencies:
+      '@capsule-run/bash-types':
+        specifier: workspace:*
+        version: link:../bash-types
     devDependencies:
       tsup:
         specifier: ^8.0.0
@@ -41,6 +45,10 @@ importers:
         version: 8.5.1(postcss@8.5.9)(typescript@6.0.2)
 
   packages/bash-wasm:
+    dependencies:
+      '@capsule-run/bash-types':
+        specifier: workspace:*
+        version: link:../bash-types
     devDependencies:
       tsup:
         specifier: ^8.0.0
