@@ -138,5 +138,12 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+
+# DS Store
+.DS_Store
+
+
 # Capsule
 .capsule/
+
+

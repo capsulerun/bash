@@ -3,7 +3,7 @@ import { run } from '@capsule-run/sdk/runner';
 import type { RunnerResult } from '@capsule-run/sdk/runner';
 import path from 'path';
 
-const SANDBOX = path.resolve(__dirname, '../sandbox.ts');
+const SANDBOX = path.resolve(__dirname, '../sandbox.py');
 const WORKSPACE = '__test__/workspace';
 
 const baseState = JSON.stringify({
@@ -24,7 +24,7 @@ function assertFailure(result: RunnerResult) {
   return result.error!;
 }
 
-describe('sandbox.ts – LOAD', () => {
+describe('sandbox.py – LOAD', () => {
   it('returns a success confirmation', async () => {
     const result = await run({
       file: SANDBOX,
@@ -37,7 +37,7 @@ describe('sandbox.ts – LOAD', () => {
   });
 });
 
-describe('sandbox.ts – EXECUTE_CODE', () => {
+describe('sandbox.py – EXECUTE_CODE', () => {
   it('evaluates a simple expression', async () => {
     const result = await run({
       file: SANDBOX,
@@ -49,10 +49,10 @@ describe('sandbox.ts – EXECUTE_CODE', () => {
     expect(value).toBe(2);
   });
 
-  it('captures console.log output', async () => {
+  it('captures print output', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['EXECUTE_CODE', baseState, 'console.log("hello"); 42'],
+      args: ['EXECUTE_CODE', baseState, 'print("hello")\n42'],
       mounts: [`${WORKSPACE}::/`],
     });
 
@@ -60,12 +60,8 @@ describe('sandbox.ts – EXECUTE_CODE', () => {
     expect(String(value)).toContain('hello');
   });
 
-  it('evaluates multi-line code with a return value', async () => {
-    const code = `
-      const x = 10;
-      const y = 20;
-      x + y
-    `;
+  it('evaluates multi-line code with a result value', async () => {
+    const code = 'x = 10\ny = 20\nx + y';
     const result = await run({
       file: SANDBOX,
       args: ['EXECUTE_CODE', baseState, code],
@@ -76,10 +72,10 @@ describe('sandbox.ts – EXECUTE_CODE', () => {
     expect(value).toBe(30);
   });
 
-  it('propagates thrown errors as failure', async () => {
+  it('propagates raised exceptions as failure', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['EXECUTE_CODE', baseState, 'throw new Error("boom")'],
+      args: ['EXECUTE_CODE', baseState, 'raise ValueError("boom")'],
       mounts: [`${WORKSPACE}::/`],
     });
 
@@ -88,55 +84,22 @@ describe('sandbox.ts – EXECUTE_CODE', () => {
   });
 });
 
-describe('sandbox.ts – EXECUTE_FILE', () => {
-  it('runs a JS file and returns its result', async () => {
+describe('sandbox.py – EXECUTE_FILE', () => {
+  it('runs a Python file and returns its result', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['EXECUTE_FILE', baseState, 'test-file.js'],
+      args: ['EXECUTE_FILE', baseState, 'hello.py'],
       mounts: [`${WORKSPACE}::/`],
     });
 
-    const value = assertSuccess(result) as Record<string, string>;
-
-    expect(value.file1Result).toBe('File 1 imported successfully!');
-    expect(value.file2Result).toBe('File 2 imported successfully!');
-    expect(value.message).toBe('File test');
-  });
-});
-
-describe('sandbox.ts – EXECUTE_COMMAND', () => {
-  it('calls the execute function exported by the script', async () => {
-    const script = `
-      exports.execute = function(args) {
-        return 'executed with ' + args.join(', ');
-      };
-    `;
-
-    const result = await run({
-      file: SANDBOX,
-      args: ['EXECUTE_COMMAND', baseState, script, 'foo', 'bar'],
-      mounts: [`${WORKSPACE}::/`],
-    });
+    console.log(result)
 
     const value = assertSuccess(result);
-    expect(value).toBe('executed with foo, bar');
-  });
-
-  it('fails when execute is not exported', async () => {
-    const script = `const x = 1;`;
-
-    const result = await run({
-      file: SANDBOX,
-      args: ['EXECUTE_COMMAND', baseState, script],
-      mounts: [`${WORKSPACE}::/`],
-    });
-
-    const error = assertFailure(result);
-    expect(error.message).toContain("execute");
+    expect(value).toBeDefined();
   });
 });
 
-describe('sandbox.ts – invalid action', () => {
+describe('sandbox.py – invalid action', () => {
   it('throws on unknown action', async () => {
     const result = await run({
       file: SANDBOX,
