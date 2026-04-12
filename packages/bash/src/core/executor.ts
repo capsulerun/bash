@@ -24,6 +24,11 @@ export class Executor {
 
         for (const r of node.redirects) {
             if (r.op === '<') {
+                if (r.file === '/dev/null') {
+                    stdin = '';
+                    continue;
+                }
+
                 try {
                     stdin = await this.runtime.executeCode(this.state, `
                         const fs = require('fs');
@@ -45,8 +50,26 @@ export class Executor {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127 };
         }
 
+        let currentStdout = result.stdout;
+        let currentStderr = result.stderr;
+
         for (const r of node.redirects) {
             if (r.op === '>' || r.op === '>>') {
+                if (r.file === '/dev/null') {
+                    currentStdout = '';
+                    continue;
+                }
+                
+                if (r.file === '/dev/stdout') {
+                    continue;
+                }
+                
+                if (r.file === '/dev/stderr') {
+                    currentStderr += currentStdout;
+                    currentStdout = '';
+                    continue;
+                }
+
                 try {
                     await this.runtime.executeCode(this.state, `
                         const fs = require('fs');
@@ -54,15 +77,17 @@ export class Executor {
                         const filePath = path.resolve(${JSON.stringify(r.file)});
 
                         fs.mkdirSync(path.dirname(filePath), { recursive: true });
-                        fs.${r.op === '>>' ? 'appendFileSync' : 'writeFileSync'}(filePath, ${JSON.stringify(result.stdout)});
+                        fs.${r.op === '>>' ? 'appendFileSync' : 'writeFileSync'}(filePath, ${JSON.stringify(currentStdout)});
                     `);
 
-                    result = { ...result, stdout: '' };
+                    currentStdout = '';
                 } catch {
                     return { stdout: '', stderr: `bash: ${r.file}: No such file or directory`, exitCode: 1 };
                 }
             }
         }
+
+        result = { ...result, stdout: currentStdout, stderr: currentStderr };
 
         this.state.setLastExitCode(result.exitCode);
         return result;
