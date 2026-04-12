@@ -3,7 +3,7 @@ import fs from "fs";
 
 import { run } from '@capsule-run/sdk/runner';
 
-import type { BaseRuntime, RuntimeResult, State } from "@capsule-run/bash-types";
+import type { BaseRuntime, State } from "@capsule-run/bash-types";
 
 
 export class WasmRuntime implements BaseRuntime {
@@ -33,10 +33,14 @@ export class WasmRuntime implements BaseRuntime {
             mounts: [`${this.hostWorkspace}::/`],
         })
 
+        if (result.error) {
+            throw result.error.message;
+        }
+
         return result.result;
     }
 
-    async executeFile(state: State, filePath: string, language: string = "js"): Promise<RuntimeResult> {
+    async executeFile(state: State, filePath: string, language: string = "js"): Promise<string> {
         const result = await run({
             file: language === "js" || language === "javascript" ? this.jsSandbox : this.pythonSandbox,
             args: ["EXECUTE_FILE", JSON.stringify(state), filePath],
@@ -44,14 +48,10 @@ export class WasmRuntime implements BaseRuntime {
         })
 
         if (result.error) {
-            return {
-                stdout: "",
-                stderr: result.error.message,
-                exitCode: 127,
-            }
+            throw result.error.message;
         }
 
-        return JSON.parse(result.result as string) as RuntimeResult;
+        return result.result as string;
     }
 
     async resolveDirectoryPath(state: State, directoryPath: string): Promise<string> {
@@ -62,7 +62,7 @@ export class WasmRuntime implements BaseRuntime {
         })
 
         if (result.error) {
-            throw result.error;
+            throw result.error.message;
         }
 
         return result.result as string;

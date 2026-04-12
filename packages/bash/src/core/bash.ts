@@ -17,9 +17,7 @@ export class Bash {
         this.filesystem.init();
     }
 
-    run(command: string) {
-
-    }
+    run(command: string) {}
 
     reset() {
         this.filesystem.reset();
