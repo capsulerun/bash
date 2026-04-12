@@ -16,5 +16,4 @@ export interface State {
    * The return code of the last executed command (ex: 0 for success, 1 for error).
    */
   lastExitCode: number;
-
 }

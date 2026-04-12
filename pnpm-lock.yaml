@@ -49,12 +49,18 @@ importers:
       '@capsule-run/bash-types':
         specifier: workspace:*
         version: link:../bash-types
+      '@capsule-run/cli':
+        specifier: ^0.8.5
+        version: 0.8.5
+      '@capsule-run/sdk':
+        specifier: ^0.8.5
+        version: 0.8.5(@types/node@25.6.0)
     devDependencies:
       tsup:
         specifier: ^8.0.0
         version: 8.5.1(postcss@8.5.9)(typescript@6.0.2)
 
-  sandboxes/js:
+  wasm-sandboxes/js:
     dependencies:
       '@capsule-run/bash-types':
         specifier: workspace:*
@@ -73,11 +79,11 @@ importers:
         specifier: '*'
         version: 4.1.4(@types/node@25.2.3)(vite@8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1))
 
-  sandboxes/python:
+  wasm-sandboxes/python:
     devDependencies:
       '@capsule-run/sdk':
         specifier: ^0.8.4
-        version: 0.8.4(@types/node@25.2.3)
+        version: 0.8.5(@types/node@25.2.3)
       '@types/node':
         specifier: 25.2.3
         version: 25.2.3
@@ -167,14 +173,6 @@ packages:
     resolution: {integrity: sha512-MPa+9PNsrZ9aV1356GHP6X93ehD8XxQRnPncFw8Xp9BDd2O6q3bdtFf9ZOPHXbktrpb33Fn8/lVQ9m6tKPGJmg==}
     engines: {node: '>=18'}
     hasBin: true
-
-  '@capsule-run/sdk@0.8.4':
-    resolution: {integrity: sha512-m+LgAycO6KiVY5ntegmhsue5GwWqZr6c9pSfQk2475+H3wf5Th8hP/mE6KcZIFcyJvQBER+l5QW1+qTTmT6Ijg==}
-    peerDependencies:
-      '@types/node': '>=18'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
 
   '@capsule-run/sdk@0.8.5':
     resolution: {integrity: sha512-Z8RwcuL3EH5MldZ+3WXd8/0HEDHt758Mem6mB0TQbDF4psoETGtVAqDioyYrTjxtKzGuAN/yiIWcVYv8KyNt6A==}
@@ -1514,15 +1512,6 @@ snapshots:
       '@capsule-run/cli-darwin-x64': 0.8.5
       '@capsule-run/cli-linux-x64': 0.8.5
       '@capsule-run/cli-win32-x64': 0.8.5
-
-  '@capsule-run/sdk@0.8.4(@types/node@25.2.3)':
-    dependencies:
-      '@bytecodealliance/jco': 1.17.6
-      esbuild: 0.27.7
-      typescript: 5.9.3
-      unenv: 2.0.0-rc.24
-    optionalDependencies:
-      '@types/node': 25.2.3
 
   '@capsule-run/sdk@0.8.5(@types/node@25.2.3)':
     dependencies:

@@ -6,23 +6,22 @@ export class Bash {
     private runtime: BaseRuntime;
     private filesystem: Filesystem;
 
-    public readonly state: StateManager;
+    public readonly stateManager: StateManager;
 
-    constructor({ runtime, initialCwd = "workspace" }: BashOptions) {
+    constructor({ runtime, hostWorkspace = ".capsule/session/workspace", initialCwd = "workspace" }: BashOptions) {
         this.runtime = runtime;
-        this.filesystem = new Filesystem(".capsule/session/workspace");
-        this.state = new StateManager(runtime, initialCwd);
+        this.runtime.hostWorkspace = hostWorkspace;
+        this.stateManager = new StateManager(runtime, initialCwd);
+        this.filesystem = new Filesystem(hostWorkspace);
 
         this.filesystem.init();
     }
 
-    run(command: string) {
-        this.runtime.executeCommand(command);
-    }
+    run(command: string) {}
 
     reset() {
         this.filesystem.reset();
-        this.state.reset();
+        this.stateManager.reset();
     }
 
 }

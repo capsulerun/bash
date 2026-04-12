@@ -7,6 +7,11 @@ export interface BashOptions {
     runtime: BaseRuntime;
 
     /**
+     * The host workspace directory
+     */
+    hostWorkspace?: string;
+
+    /**
      * The initial working directory
      */
     initialCwd?: string;

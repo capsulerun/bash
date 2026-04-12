@@ -20,7 +20,7 @@ export class Filesystem {
             'etc/os-release': 'NAME="Capsule OS"\nVERSION="1.0"\nID=capsule\n',
             'etc/passwd': 'root:x:0:0:root:/root:/bin/bash\n',
             'proc/cpuinfo': 'processor\t: 0\nvendor_id\t: CapsuleVirtualCPU\n',
-            'workspace/README.md': '# Welcome to the Capsule Bash Environment\\n\\nYou are operating inside a secure and minimalist sandbox.\\n\\n## Environment Details:\\n- **OS:** Capsule Bash (Mocked Linux)\\n- **Capabilities:** Standard bash operations are supported, but advanced system calls may be restricted.\\n- **Working Directory:** `/workspace` is your designated safe zone.'
+            'workspace/README.md': '# Welcome to the Capsule Bash Environment\\n\\nYou are operating inside a secure and minimalist sandboxed bash.'
         };
 
         for (const [relativePath, content] of Object.entries(files)) {
