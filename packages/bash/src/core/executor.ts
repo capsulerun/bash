@@ -1,6 +1,10 @@
 import path from 'path';
-import type { BaseRuntime, CommandHandler, CommandResult, State } from '@capsule-run/bash-types';
+import { parsedCommandOptions } from '../helpers/commandOptions';
+import { displayCommandManual } from '../helpers/commandManual';
+
+import type { BaseRuntime, CommandHandler, CommandManual, CommandResult, State } from '@capsule-run/bash-types';
 import type { ASTNode, CommandNode } from './parser';
+
 
 export class Executor {
 
@@ -21,6 +25,7 @@ export class Executor {
 
     private async executeCommand(node: CommandNode, stdin: string): Promise<CommandResult> {
         const [name, ...args] = node.args;
+        let result: CommandResult;
 
         for (const r of node.redirects) {
             if (r.op === '<') {
@@ -41,13 +46,15 @@ export class Executor {
             }
         }
 
-        const handler = await this.searchCommandHandler(name);
-        let result: CommandResult;
+        const opts = parsedCommandOptions(args);
+        const command = await this.searchCommandHandler(name);
 
-        if (handler) {
-            result = await handler({ args, stdin, state: this.state, runtime: this.runtime });
-        } else {
+        if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127 };
+        } else if (opts.hasFlag('h', 'help') && command.manual) {
+            result = { stdout: displayCommandManual(command.manual), stderr: '', exitCode: 0 };
+        } else {
+            result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
         }
 
         let currentStdout = result.stdout;
@@ -59,11 +66,11 @@ export class Executor {
                     currentStdout = '';
                     continue;
                 }
-                
+
                 if (r.file === '/dev/stdout') {
                     continue;
                 }
-                
+
                 if (r.file === '/dev/stderr') {
                     currentStderr += currentStdout;
                     currentStdout = '';
@@ -127,13 +134,13 @@ export class Executor {
         return this.execute(node.right);
     }
 
-    private async searchCommandHandler(name: string): Promise<CommandHandler | undefined> {
+    private async searchCommandHandler(name: string): Promise<{handler: CommandHandler, manual?: CommandManual} | undefined> {
         const commandsDir = path.resolve(__dirname, '../commands');
         const handlerPath = path.join(commandsDir, name, 'handler');
 
         try {
             const mod = require(handlerPath);
-            return mod.handle as CommandHandler;
+            return { handler: mod.handler as CommandHandler, manual: mod.manual as CommandManual };
         } catch {
             return undefined;
         }

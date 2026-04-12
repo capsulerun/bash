@@ -8,27 +8,23 @@ export class StateManager {
       cwd: initialCwd,
       env: {},
       lastExitCode: 0,
+      absoluteCwd: () => this.state.cwd.startsWith('/') ? this.state.cwd : `/${this.state.cwd}`,
       setLastExitCode: (code: number) => {
         this.state.lastExitCode = code;
       },
       setEnv: (key: string, value: string) => {
         this.state.env[key] = value;
+      },
+      changeDirectory: async (targetPath: string) => {
+        try {
+          const resolvedPath = await this.runtime.resolvePath(this.state, targetPath);
+          this.state.cwd = resolvedPath;
+          return true;
+        } catch {
+          return false;
+        }
       }
     };
-  }
-
-  get displayCwd(): string {
-    return this.state.cwd.startsWith('/') ? this.state.cwd : `/${this.state.cwd}`;
-  }
-
-  public async changeDirectory(targetPath: string): Promise<boolean> {
-    try {
-      const resolvedPath = await this.runtime.resolvePath(this.state, targetPath);
-      this.state.cwd = resolvedPath;
-      return true;
-    } catch {
-      return false;
-    }
   }
 
   public reset() {
