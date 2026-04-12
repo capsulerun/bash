@@ -102,7 +102,6 @@ const executeCommand = task(
     process.chdir(state.cwd);
     const exports: { execute?: (args: string[]) => any } = {};
 
-    console.log(args)
     const moduleWrapper = new Function('exports', scriptContent);
 
     moduleWrapper(exports);
