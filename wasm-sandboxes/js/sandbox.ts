@@ -96,34 +96,16 @@ const executeCode = task(
   }
 );
 
-const executeCommand = task(
-  { name: "executeCommand", compute: "LOW", ram: "64MB" },
-  async (state: State, scriptContent: string, args: string[]) => {
-    process.chdir(state.cwd);
-    const exports: { execute?: (args: string[]) => any } = {};
-
-    const moduleWrapper = new Function('exports', scriptContent);
-
-    moduleWrapper(exports);
-
-    if (!exports.execute) {
-      throw new Error("Script must export an 'execute' function");
-    }
-
-    return await exports.execute(args);
-  }
-)
-
-export const resolveDirectoryPath = task(
-  { name: "resolveDirectoryPath", compute: "LOW", ram: "32MB" },
+export const resolvePath = task(
+  { name: "resolvePath", compute: "LOW", ram: "32MB" },
   async (state: State, targetPath: string) => {
     process.chdir(state.cwd);
 
     if (!fs.existsSync(targetPath)) {
-      throw new Error(`Directory path ${targetPath} does not exist`);
+      throw new Error(`Path ${targetPath} does not exist`);
     }
 
-    return '/' + path.resolve(targetPath);
+    return path.resolve(targetPath);
   }
 )
 
@@ -137,14 +119,12 @@ export const main = task(
 
     if (action === "LOAD") {
       response = { success: true, result: "Sandbox loaded successfully", error: null };
-    } else if (action === "EXECUTE_COMMAND") {
-      response = await executeCommand(parsedState, parsedArgs[0], parsedArgs.slice(1));
     } else if (action === "EXECUTE_CODE") {
       response = await executeCode(parsedState, parsedArgs[0]);
     } else if (action === "EXECUTE_FILE") {
       response = await executeFile(parsedState, parsedArgs[0], parsedArgs.slice(1));
-    } else if (action === "RESOLVE_DIRECTORY_PATH") {
-      response = await resolveDirectoryPath(parsedState, parsedArgs[0]);
+    } else if (action === "RESOLVE_PATH") {
+      response = await resolvePath(parsedState, parsedArgs[0]);
     } else {
       throw new Error(`Invalid action: ${action}`);
     }

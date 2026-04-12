@@ -1,10 +1,14 @@
-import type { BaseRuntime, BashOptions } from "@capsule-run/bash-types";
+import type { BaseRuntime, BashOptions, CommandResult } from "@capsule-run/bash-types";
 import { StateManager } from "./stateManager";
 import { Filesystem } from "./filesystem";
+import { Parser } from "./parser";
+import { Executor } from "./executor";
 
 export class Bash {
     private runtime: BaseRuntime;
     private filesystem: Filesystem;
+    private parser: Parser;
+    private executor: Executor;
 
     public readonly stateManager: StateManager;
 
@@ -13,11 +17,16 @@ export class Bash {
         this.runtime.hostWorkspace = hostWorkspace;
         this.stateManager = new StateManager(runtime, initialCwd);
         this.filesystem = new Filesystem(hostWorkspace);
+        this.parser = new Parser();
+        this.executor = new Executor(runtime, this.stateManager.state);
 
         this.filesystem.init();
     }
 
-    run(command: string) {}
+    async run(command: string): Promise<CommandResult> {
+        const ast = this.parser.parse(command);
+        return this.executor.execute(ast);
+    }
 
     reset() {
         this.filesystem.reset();

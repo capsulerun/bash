@@ -10,17 +10,17 @@ export interface BaseRuntime {
     /**
      * Execute a code
      */
-    executeCode(state: State, code: string, language: string): Promise<unknown>;
+    executeCode(state: State, code: string, language?: string): Promise<unknown>;
 
     /**
      * Execute a file
      */
-    executeFile(state: State, filePath: string, language: string): Promise<unknown>;
+    executeFile(state: State, filePath: string, language?: string): Promise<unknown>;
 
     /**
-     * Resolve a directory path
+     * Resolve a path in the sandbox
      */
-    resolveDirectoryPath(state: State, directoryPath: string): Promise<string>;
+    resolvePath(state: State, path: string): Promise<string>;
 }
 
 export interface RuntimeResult {
