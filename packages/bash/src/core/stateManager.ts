@@ -18,9 +18,14 @@ export class StateManager {
     return this.state.cwd.startsWith('/') ? this.state.cwd : `/${this.state.cwd}`;
   }
 
-  public async changeDirectory(targetPath: string): Promise<void> {
-    const resolvedPath = await this.runtime.resolveDirectoryPath(targetPath);
-    this.state.cwd = resolvedPath;
+  public async changeDirectory(targetPath: string): Promise<boolean> {
+    try {
+      const resolvedPath = await this.runtime.resolveDirectoryPath(this.state, targetPath);
+      this.state.cwd = resolvedPath;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   public setEnv(key: string, value: string): void {

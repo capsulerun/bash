@@ -1,23 +1,26 @@
+import { State } from "./state";
+
 export interface BaseRuntime {
+
     /**
-     * Execute a command
+     * The host workspace directory
      */
-    executeCommand(code: string): Promise<RuntimeResult>;
+    hostWorkspace?: string;
 
     /**
      * Execute a code
      */
-    executeCode(language: string, code: string): Promise<RuntimeResult>;
+    executeCode(state: State, code: string, language: string): Promise<unknown>;
 
     /**
      * Execute a file
      */
-    executeFile(language: string, filePath: string): Promise<RuntimeResult>;
+    executeFile(state: State, filePath: string, language: string): Promise<unknown>;
 
     /**
      * Resolve a directory path
      */
-    resolveDirectoryPath(directoryPath: string): Promise<string>;
+    resolveDirectoryPath(state: State, directoryPath: string): Promise<string>;
 }
 
 export interface RuntimeResult {
