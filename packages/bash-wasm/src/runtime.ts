@@ -54,10 +54,10 @@ export class WasmRuntime implements BaseRuntime {
         return result.result as string;
     }
 
-    async resolveDirectoryPath(state: State, directoryPath: string): Promise<string> {
+    async resolvePath(state: State, path: string): Promise<string> {
         const result = await run({
             file: this.jsSandbox,
-            args: ["RESOLVE_DIRECTORY_PATH", JSON.stringify(state), directoryPath],
+            args: ["RESOLVE_PATH", JSON.stringify(state), path],
             mounts: [`${this.hostWorkspace}::/`],
         })
 

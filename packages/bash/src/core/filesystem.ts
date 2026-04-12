@@ -2,11 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 export class Filesystem {
-    private workspace: string;
-
-    constructor(workspace: string) {
-        this.workspace = workspace;
-    }
+    constructor(private readonly workspace: string) {}
 
     init() {
         const directories = ['bin', 'dev', 'etc', 'proc', 'root', 'sys', 'tmp', 'workspace'];

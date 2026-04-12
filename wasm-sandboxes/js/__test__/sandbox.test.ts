@@ -104,38 +104,6 @@ describe('sandbox.ts – EXECUTE_FILE', () => {
   });
 });
 
-describe('sandbox.ts – EXECUTE_COMMAND', () => {
-  it('calls the execute function exported by the script', async () => {
-    const script = `
-      exports.execute = function(args) {
-        return 'executed with ' + args.join(', ');
-      };
-    `;
-
-    const result = await run({
-      file: SANDBOX,
-      args: ['EXECUTE_COMMAND', baseState, script, 'foo', 'bar'],
-      mounts: [`${WORKSPACE}::/`],
-    });
-
-    const value = assertSuccess(result);
-    expect(value).toBe('executed with foo, bar');
-  });
-
-  it('fails when execute is not exported', async () => {
-    const script = `const x = 1;`;
-
-    const result = await run({
-      file: SANDBOX,
-      args: ['EXECUTE_COMMAND', baseState, script],
-      mounts: [`${WORKSPACE}::/`],
-    });
-
-    const error = assertFailure(result);
-    expect(error.message).toContain("execute");
-  });
-});
-
 describe('sandbox.ts – invalid action', () => {
   it('throws on unknown action', async () => {
     const result = await run({
@@ -149,48 +117,59 @@ describe('sandbox.ts – invalid action', () => {
 });
 
 
-describe('sandbox.ts – RESOLVE_DIRECTORY_PATH', () => {
+describe('sandbox.ts – RESOLVE_PATH', () => {
   it('resolves a directory path', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['RESOLVE_DIRECTORY_PATH', baseState, 'imports'],
+      args: ['RESOLVE_PATH', baseState, 'imports'],
       mounts: [`${WORKSPACE}::/`],
     });
 
     const value = assertSuccess(result);
-    expect(value).toBe('/imports');
+    expect(value).toBe('imports');
   });
 
   it('Should return an error because the directory path does not exist', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['RESOLVE_DIRECTORY_PATH', baseState, '../non-existent-directory'],
+      args: ['RESOLVE_PATH', baseState, '../non-existent-directory'],
       mounts: [`${WORKSPACE}::/`],
     });
 
     const value = assertFailure(result);
-    expect(value.message).toContain("Directory path ../non-existent-directory does not exist");
+    expect(value.message).toContain("Path ../non-existent-directory does not exist");
   });
 
   it('resolves a directory path', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['RESOLVE_DIRECTORY_PATH', baseState, 'imports/../imports/complex-path-testing'],
+      args: ['RESOLVE_PATH', baseState, 'imports/../imports/complex-path-testing'],
       mounts: [`${WORKSPACE}::/`],
     });
 
     const value = assertSuccess(result);
-    expect(value).toBe('/imports/complex-path-testing');
+    expect(value).toBe('imports/complex-path-testing');
   });
 
   it('Should works with a different initial cwd', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['RESOLVE_DIRECTORY_PATH', JSON.stringify({ cwd: 'imports', env: {}, lastExitCode: 0 }), 'complex-path-testing'],
+      args: ['RESOLVE_PATH', JSON.stringify({ cwd: 'imports', env: {}, lastExitCode: 0 }), 'complex-path-testing'],
       mounts: [`${WORKSPACE}::/`],
     });
 
     const value = assertSuccess(result);
-    expect(value).toBe('/imports/complex-path-testing');
+    expect(value).toBe('imports/complex-path-testing');
+  });
+
+   it('Should works with a file path', async () => {
+    const result = await run({
+      file: SANDBOX,
+      args: ['RESOLVE_PATH', baseState, 'test-file.js'],
+      mounts: [`${WORKSPACE}::/`],
+    });
+
+    const value = assertSuccess(result);
+    expect(value).toBe('test-file.js');
   });
 });

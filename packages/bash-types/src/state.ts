@@ -16,4 +16,14 @@ export interface State {
    * The return code of the last executed command (ex: 0 for success, 1 for error).
    */
   lastExitCode: number;
+
+  /**
+   * Set the exit code of the last executed command
+   */
+  setLastExitCode(code: number): void;
+
+  /**
+   * Set an environment variable
+   */
+  setEnv(key: string, value: string): void;
 }
