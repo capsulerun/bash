@@ -4,6 +4,6 @@ export default defineConfig({
   test: {
     name: 'bash',
     environment: 'node',
-    // setupFiles: ['./test/setup.ts'],
+    include: ['src/**/*.test.ts'],
   },
 })

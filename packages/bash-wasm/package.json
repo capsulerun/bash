@@ -12,8 +12,8 @@
     "tsup": "^8.0.0"
   },
   "dependencies": {
-    "@capsule-run/cli": "^0.8.5",
-    "@capsule-run/sdk": "^0.8.5",
+    "@capsule-run/cli": "^0.8.6",
+    "@capsule-run/sdk": "^0.8.6",
     "@capsule-run/bash-types": "workspace:*"
   }
 }

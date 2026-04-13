@@ -63,3 +63,27 @@ jobs:
       - name: Run tests
         working-directory: wasm-sandboxes/python
         run: pnpm vitest run
+
+  bash-core-tests:
+    name: Bash Core Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        working-directory: packages/bash
+        run: pnpm vitest run
+

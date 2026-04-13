@@ -18,6 +18,16 @@ export interface State {
   lastExitCode: number;
 
   /**
+   * Get the absolute path of the current working directory
+   */
+  absoluteCwd(): string;
+
+  /**
+   * Change the current working directory
+   */
+  changeDirectory(targetPath: string): Promise<boolean>;
+
+  /**
    * Set the exit code of the last executed command
    */
   setLastExitCode(code: number): void;
