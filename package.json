@@ -10,8 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@capsule-run/cli": "^0.8.5",
-    "@capsule-run/sdk": "^0.8.5"
+    "@capsule-run/cli": "^0.8.6",
+    "@capsule-run/sdk": "^0.8.6"
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
