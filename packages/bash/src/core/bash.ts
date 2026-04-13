@@ -1,4 +1,4 @@
-import type { BaseRuntime, BashOptions, CommandResult } from "@capsule-run/bash-types";
+import type { BaseRuntime, BashOptions, CommandHandler, CommandResult, CustomCommand } from "@capsule-run/bash-types";
 import { StateManager } from "./stateManager";
 import { Filesystem } from "./filesystem";
 import { Parser } from "./parser";
@@ -9,16 +9,19 @@ export class Bash {
     private filesystem: Filesystem;
     private parser: Parser;
     private executor: Executor;
+    private customCommands: CustomCommand[];
 
     public readonly stateManager: StateManager;
 
-    constructor({ runtime, hostWorkspace = ".capsule/session/workspace", initialCwd = "workspace" }: BashOptions) {
+    constructor({ runtime, customCommands = [], hostWorkspace = ".capsule/session/workspace", initialCwd = "workspace" }: BashOptions) {
         this.runtime = runtime;
         this.runtime.hostWorkspace = hostWorkspace;
+        this.customCommands = customCommands;
+
         this.stateManager = new StateManager(runtime, initialCwd);
         this.filesystem = new Filesystem(hostWorkspace);
         this.parser = new Parser();
-        this.executor = new Executor(runtime, this.stateManager.state);
+        this.executor = new Executor(runtime, this.customCommands, this.stateManager.state);
 
         this.filesystem.init();
     }
