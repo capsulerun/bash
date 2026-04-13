@@ -8,8 +8,62 @@ function wasmRelative(cwd: string, filePath: string): string {
   return path.resolve(cwd, filePath).replace(/^\//, '');
 }
 
+function resolveNodeModule(fromPath: string, id: string): string | null {
+  let dir = path.dirname('/' + fromPath);
+
+  while (true) {
+    const base = wasmRelative('/', path.join(dir, 'node_modules', id));
+    const candidates = [base, base + '.js', base + '/index.js'];
+
+    const pkgJson = base + '/package.json';
+
+    if (fs.existsSync(pkgJson)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(pkgJson, 'utf-8') as string);
+        const main = pkg.main || 'index.js';
+        candidates.unshift(wasmRelative('/', path.join(dir, 'node_modules', id, main)));
+      } catch {}
+    }
+
+    for (const candidate of candidates) {
+      if (fs.existsSync(candidate)) return candidate;
+    }
+
+    const parent = path.dirname(dir);
+    if (parent === dir) return null;
+
+    dir = parent;
+  }
+}
+
+const makeRequire = (fromPath: string) => (id: string) => {
+  let depPath: string;
+
+  if (!id.startsWith('.') && !id.startsWith('/')) {
+    const resolved = resolveNodeModule(fromPath, id);
+
+    if (!resolved) throw new Error(`Cannot find module '${id}'`);
+
+    depPath = resolved;
+  } else {
+    const base = wasmRelative('/', path.resolve('/' + path.dirname(fromPath), id));
+
+    depPath = fs.existsSync(base) ? base
+      : fs.existsSync(base + '.js') ? base + '.js'
+      : base + '/index.js';
+  }
+
+  const src = fs.readFileSync(depPath, 'utf-8') as string;
+  const m = { exports: {} as any };
+  const fn = new Function('module', 'exports', 'require', '__filename', '__dirname', src);
+
+  fn(m, m.exports, makeRequire(depPath), depPath, path.dirname(depPath));
+
+  return m.exports;
+};
+
 const executeFile = task(
-  { name: "executeFile", compute: "MEDIUM", ram: "512MB" },
+  { name: "executeFile", compute: "MEDIUM", ram: "512MB", allowedHosts: ["*"] },
   async (state: State, filePath: string, args: string[]) => {
     const capturedOutput: string[] = [];
     const relPath = wasmRelative(state.cwd, filePath);
@@ -28,18 +82,6 @@ const executeFile = task(
     try {
       const code = fs.readFileSync(relPath, 'utf-8') as string;
       const mod = { exports: {} as any };
-
-      const makeRequire = (fromPath: string) => (id: string) => {
-        const base = wasmRelative('/', path.resolve('/' + path.dirname(fromPath), id));
-        const depPath = fs.existsSync(base) ? base
-          : fs.existsSync(base + '.js') ? base + '.js'
-          : base + '/index.js';
-        const src = fs.readFileSync(depPath, 'utf-8') as string;
-        const m = { exports: {} as any };
-        const fn = new Function('module', 'exports', 'require', '__filename', '__dirname', src);
-        fn(m, m.exports, makeRequire(depPath), depPath, path.dirname(depPath));
-        return m.exports;
-      };
       const customRequire = makeRequire(relPath);
 
       const fn = new Function('module', 'exports', 'require', '__filename', '__dirname', code);
@@ -60,7 +102,7 @@ const executeFile = task(
 
 
 const executeCode = task(
-  { name: "executeCode", compute: "LOW", ram: "256MB" },
+  { name: "executeCode", compute: "LOW", ram: "256MB", allowedHosts: ["*"] },
   async (state: State, code: string): Promise<unknown> => {
     process.chdir(state.cwd);
     const capturedOutput: string[] = [];
@@ -70,14 +112,16 @@ const executeCode = task(
       capturedOutput.push(args.map(arg => String(arg)).join(' '));
     };
 
+    const require = makeRequire(wasmRelative(state.cwd, '.'));
+
     try {
       let result;
       try {
         result = eval(code);
       } catch (e) {
         if (e instanceof SyntaxError && e.message.includes("return")) {
-          const fn = new Function(code);
-          result = fn();
+          const fn = new Function('require', code);
+          result = fn(require);
         } else {
           throw e;
         }

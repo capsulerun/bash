@@ -6,6 +6,15 @@ from io import StringIO
 from dataclasses import dataclass
 from capsule import task
 
+# Need to import them at build time
+import socket
+import ssl
+import urllib.request
+import urllib.parse
+import urllib.error
+import urllib.response
+import http.client
+import http.cookiejar
 
 @dataclass
 class State:
@@ -28,11 +37,15 @@ def wasm_relative(cwd: str, file_path: str) -> str:
     return joined.lstrip("/")
 
 
-@task(name="executeFile", compute="MEDIUM", ram="512MB")
+@task(name="executeFile", compute="MEDIUM", ram="512MB", allowed_hosts=["*"])
 def execute_file(state: str, file_path: str, args: list[str]):
-    parsed_state = State.from_json(state)
-    rel_path = wasm_relative(parsed_state.cwd, file_path)
+    state = State.from_json(state)
+    rel_path = wasm_relative(state.cwd, file_path)
     file_dir = os.path.dirname(rel_path) or "."
+
+    site_packages = os.path.join(state.cwd, "site-packages")
+    if site_packages not in sys.path:
+        sys.path.insert(0, site_packages)
 
     captured_output = StringIO()
     old_stdout = sys.stdout
@@ -72,8 +85,14 @@ def execute_file(state: str, file_path: str, args: list[str]):
     return public_result if public_result else None
 
 
-@task(name="executeCode", compute="LOW", ram="256MB")
-def execute_code(_state: str, code: str):
+@task(name="executeCode", compute="LOW", ram="256MB", allowed_hosts=["*"])
+def execute_code(state: str, code: str):
+    state = State.from_json(state)
+
+    site_packages = os.path.join(state.cwd, "site-packages")
+    if site_packages not in sys.path:
+        sys.path.insert(0, site_packages)
+
     tree = ast.parse(code)
 
     if not tree.body:
