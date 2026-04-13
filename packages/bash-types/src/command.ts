@@ -4,7 +4,7 @@ import { State } from "./state";
 /**
  * The context of a command execution
  */
-export type CommandContext = {
+export interface CommandContext {
     opts: CommandOptions;
     stdin: string;
     state: State;
@@ -12,24 +12,18 @@ export type CommandContext = {
 };
 
 /**
- * The handler of a command execution
- */
-export type CommandHandler = (ctx: CommandContext) => Promise<CommandResult>;
-
-/**
  * The result of a command execution
  */
-export type CommandResult = {
+export interface CommandResult {
     stdout: string;
     stderr: string;
     exitCode: number;
 };
 
-
 /**
  * The options of a command execution
  */
-export type CommandOptions  = {
+export interface CommandOptions {
     raw: string[];
     flags: Set<string>;
     options: Map<string, string>;
@@ -40,10 +34,32 @@ export type CommandOptions  = {
 /**
  * The manual of a command
  */
-export type CommandManual = {
+export interface CommandManual {
     name: string;
     description: string;
     usage: string;
     options?: Record<string, string>;
 };
+
+/**
+ * The custom command creation result
+ */
+export interface CustomCommand {
+    name: string;
+    handler: CommandHandler;
+    manual?: CommandManual;
+}
+
+/**
+ * The handler of a command execution
+ */
+export type CommandHandler = (ctx: CommandContext) => Promise<CommandResult>;
+
+
+/**
+ * The builder to create a custom command
+ */
+export type CreateCustomCommand = (name: string, handler: CommandHandler, manual?: CommandManual) => CustomCommand;
+
+
 

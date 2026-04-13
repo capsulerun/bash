@@ -1,3 +1,4 @@
+import { CommandHandler, CustomCommand } from "./command";
 import type { BaseRuntime } from "./runtime";
 
 export interface BashOptions {
@@ -5,6 +6,11 @@ export interface BashOptions {
      * The runtime to use for executing commands
      */
     runtime: BaseRuntime;
+
+    /**
+     * Array with custom commands added at runtime
+     */
+    customCommands?: CustomCommand[];
 
     /**
      * The host workspace directory

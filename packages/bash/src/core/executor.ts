@@ -2,7 +2,7 @@ import path from 'path';
 import { parsedCommandOptions } from '../helpers/commandOptions';
 import { displayCommandManual } from '../helpers/commandManual';
 
-import type { BaseRuntime, CommandHandler, CommandManual, CommandResult, State } from '@capsule-run/bash-types';
+import type { BaseRuntime, CommandHandler, CommandManual, CommandResult, CustomCommand, State } from '@capsule-run/bash-types';
 import type { ASTNode, CommandNode } from './parser';
 
 
@@ -10,6 +10,7 @@ export class Executor {
 
     constructor(
         private readonly runtime: BaseRuntime,
+        private readonly customCommands: CustomCommand[],
         private readonly state: State,
     ) {}
 
@@ -137,6 +138,11 @@ export class Executor {
     private async searchCommandHandler(name: string): Promise<{handler: CommandHandler, manual?: CommandManual} | undefined> {
         const commandsDir = path.resolve(__dirname, '../commands');
         const handlerPath = path.join(commandsDir, name, 'handler');
+
+        const customCommand = this.customCommands.find(cmd => cmd.name === name);
+        if (customCommand) {
+            return { handler: customCommand.handler, manual: customCommand.manual };
+        }
 
         try {
             const mod = require(handlerPath);
