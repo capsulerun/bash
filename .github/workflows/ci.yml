@@ -9,31 +9,8 @@ on:
       - main
 
 jobs:
-  javascript-sandbox-tests:
-    name: JavaScript Sandbox Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run tests
-        working-directory: wasm-sandboxes/js
-        run: pnpm vitest run
-
-  python-sandbox-tests:
-    name: Python Sandbox Tests
+  bash-wasm-tests:
+    name: Bash WASM Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -57,11 +34,19 @@ jobs:
           python-version: '3.x'
 
       - name: Install Python dependencies
-        working-directory: wasm-sandboxes/python
+        working-directory: packages/bash-wasm/sandboxes/python
         run: pip install -r requirements.txt -q
 
-      - name: Run tests
-        working-directory: wasm-sandboxes/python
+      - name: Run Bash WASM core tests
+        working-directory: packages/bash-wasm
+        run: pnpm vitest run
+
+      - name: Run JavaScript Sandbox tests
+        working-directory: packages/bash-wasm/sandboxes/js
+        run: pnpm vitest run
+
+      - name: Run Python Sandbox tests
+        working-directory: packages/bash-wasm/sandboxes/python
         run: pnpm vitest run
 
   bash-core-tests:
