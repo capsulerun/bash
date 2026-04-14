@@ -19,8 +19,8 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
     const targets = opts.args.length > 0 ? opts.args : [state.cwd];
     const multipleDirectories = targets.length > 1;
 
-    const showLong = opts.hasFlag('l') || opts.hasFlag('la');
-    const showAll = opts.hasFlag('a') || opts.hasFlag('la');
+    const showLong = opts.hasFlag('l');
+    const showAll = opts.hasFlag('a');
 
     let exitCode = 0;
     const stderr: string[] = [];
@@ -89,7 +89,6 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
 
                     return `${permissions} ${hardlink} ${user} ${group} ${size} ${time} ${filename}`;
                 } catch (err) {
-                    // Safe swallow instead of failing the promise chain if we cannot stat one file
                     return undefined;
                 }
             }))).filter((file): file is string => file !== undefined);
