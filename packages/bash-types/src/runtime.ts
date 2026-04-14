@@ -20,7 +20,7 @@ export interface BaseRuntime {
     /**
      * Resolve a path in the sandbox
      */
-    resolvePath(state: State, path: string): Promise<string>;
+    resolvePath(state: State, path: string): Promise<string | undefined>;
 }
 
 export interface RuntimeResult {

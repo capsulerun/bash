@@ -16,13 +16,13 @@ export class StateManager {
         this.state.env[key] = value;
       },
       changeDirectory: async (targetPath: string) => {
-        try {
-          const resolvedPath = await this.runtime.resolvePath(this.state, targetPath);
-          this.state.cwd = resolvedPath;
-          return true;
-        } catch {
+        const resolvedPath = await this.runtime.resolvePath(this.state, targetPath)
+        if (!resolvedPath) {
           return false;
         }
+
+        this.state.cwd = resolvedPath as string;
+        return true;
       }
     };
   }

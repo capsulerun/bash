@@ -58,7 +58,7 @@ export class WasmRuntime implements BaseRuntime {
         return result.result as string;
     }
 
-    async resolvePath(state: State, path: string): Promise<string> {
+    async resolvePath(state: State, path: string): Promise<string | undefined> {
         const result = await run({
             file: this.jsSandbox,
             args: ["RESOLVE_PATH", JSON.stringify(state), path],
@@ -66,7 +66,7 @@ export class WasmRuntime implements BaseRuntime {
         })
 
         if (result.error) {
-            throw result.error.message;
+            return;
         }
 
         return result.result as string;

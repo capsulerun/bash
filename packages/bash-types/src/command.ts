@@ -27,7 +27,7 @@ export interface CommandOptions {
     raw: string[];
     flags: Set<string>;
     options: Map<string, string>;
-    positionals: string[];
+    args: string[];
     hasFlag: (...names: string[]) => boolean;
 };
 

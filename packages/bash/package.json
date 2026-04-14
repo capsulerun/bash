@@ -2,7 +2,12 @@
   "name": "@capsule-run/bash",
   "version": "0.1.0",
   "description": "Sandboxed bash for agents",
-  "main": "index.js",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
