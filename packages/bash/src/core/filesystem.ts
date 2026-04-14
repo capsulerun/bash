@@ -16,7 +16,7 @@ export class Filesystem {
             'etc/os-release': 'NAME="Capsule OS"\nVERSION="1.0"\nID=capsule\n',
             'etc/passwd': 'root:x:0:0:root:/root:/bin/bash\n',
             'proc/cpuinfo': 'processor\t: 0\nvendor_id\t: CapsuleVirtualCPU\n',
-            'workspace/README.md': '# Welcome to the Capsule Bash Environment\\n\\nYou are operating inside a secure and minimalist sandboxed bash.'
+            'workspace/README.md': '# Welcome to the Capsule Bash Environment\n\nYou are operating inside a secure and minimalist sandboxed bash.'
         };
 
         for (const [relativePath, content] of Object.entries(files)) {

@@ -1,4 +1,10 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 import { parsedCommandOptions } from '../helpers/commandOptions';
 import { displayCommandManual } from '../helpers/commandManual';
 
@@ -55,6 +61,36 @@ export class Executor {
         } else if (opts.hasFlag('h', 'help') && command.manual) {
             result = { stdout: displayCommandManual(command.manual), stderr: '', exitCode: 0 };
         } else {
+            let invalidOption: string | undefined;
+
+            if (command.manual) {
+                for (const flag of opts.flags) {
+                    if (flag === 'h' || flag === 'help') continue;
+
+                    const isShort = flag.length === 1;
+                    const expectedName = isShort ? `-${flag}` : `--${flag}`;
+
+                    if (!command.manual.options || !command.manual.options.hasOwnProperty(expectedName)) {
+                        invalidOption = isShort ? flag : `--${flag}`;
+                        break;
+                    }
+                }
+
+                if (!invalidOption) {
+                    for (const key of opts.options.keys()) {
+                        const expectedName = `--${key}`;
+                        if (!command.manual.options || !command.manual.options.hasOwnProperty(expectedName)) {
+                            invalidOption = expectedName;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (invalidOption) {
+                return { stdout: '', stderr: `bash: ${name}: invalid option -- ${invalidOption}\n\nusage: ${command.manual?.usage}`, exitCode: 1 };
+            }
+
             result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
         }
 
