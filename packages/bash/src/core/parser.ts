@@ -7,11 +7,10 @@ export type FileRedirect = {
     file: string;
 };
 
-// Covers: 2>&1, 1>&2, N>&M
 export type FdRedirect = {
     op: '>&';
-    from: number; // source fd (1 = stdout, 2 = stderr)
-    to: number;   // target fd
+    from: number;
+    to: number;
 };
 
 export type Redirect = FileRedirect | FdRedirect;

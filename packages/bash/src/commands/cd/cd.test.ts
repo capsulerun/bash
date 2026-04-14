@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { handler } from './handler';
+import { handler } from './cd.handler';
 import { createMockContext } from '../../helpers/testUtils';
 
 describe('cd command', () => {
