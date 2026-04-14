@@ -98,6 +98,19 @@ export class Executor {
         let currentStderr = result.stderr;
 
         for (const r of node.redirects) {
+            if (r.op === '>&') {
+                if (r.from === 2 && r.to === 1) {
+                    currentStdout += currentStderr;
+                    currentStderr = '';
+
+                } else if (r.from === 1 && r.to === 2) {
+                    currentStderr += currentStdout;
+                    currentStdout = '';
+                }
+
+                continue;
+            }
+
             if (r.op === '>' || r.op === '>>') {
                 if (r.file === '/dev/null') {
                     currentStdout = '';

@@ -2,10 +2,19 @@ import shellQuote from 'shell-quote';
 
 export type RedirectOp = '>' | '>>' | '<';
 
-export type Redirect = {
+export type FileRedirect = {
     op: RedirectOp;
     file: string;
 };
+
+// Covers: 2>&1, 1>&2, N>&M
+export type FdRedirect = {
+    op: '>&';
+    from: number; // source fd (1 = stdout, 2 = stderr)
+    to: number;   // target fd
+};
+
+export type Redirect = FileRedirect | FdRedirect;
 
 export type CommandNode = {
     type: 'command';
@@ -138,8 +147,24 @@ export class Parser {
             } else if (isOp(token)) {
                 break;
             } else {
-                const str = tokenToString(this.consume());
-                if (str !== null) args.push(str);
+                const str = tokenToString(token);
+                if (
+                    str !== null &&
+                    /^\d+$/.test(str) &&
+                    isOp(this.tokens[this.pos + 1], '>') &&
+                    isOp(this.tokens[this.pos + 2], '&') &&
+                    /^\d+$/.test(tokenToString(this.tokens[this.pos + 3]) ?? '')
+                ) {
+                    this.pos += 4;
+                    redirects.push({
+                        op: '>&',
+                        from: parseInt(str),
+                        to: parseInt(tokenToString(this.tokens[this.pos - 1])!),
+                    });
+                } else {
+                    if (str !== null) args.push(str);
+                    this.consume();
+                }
             }
         }
 
