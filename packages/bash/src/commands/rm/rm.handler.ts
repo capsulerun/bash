@@ -12,37 +12,51 @@ export const manual: CommandManual = {
 };
 
 export const handler: CommandHandler = async ({ state, opts, runtime }: CommandContext) => {
-    const target = opts.args[0];
+    const stdout: string[] = [];
+    const stderr: string[] = [];
 
-    if(!target) {
-        return { stdout: '', stderr: `bash: rm: missing file operand`, exitCode: 1 };
-    }
+    Promise.all(opts.args.map(async (target) => {
+        if(!target) {
+            stderr.push(`bash: rm: missing file operand`);
+            return;
+        }
 
-    const targetAbsolutePath = await runtime.resolvePath(state, target);
-    const isDirectory = await runtime.executeCode(state, `require('fs').statSync('${targetAbsolutePath}').isDirectory();`)
-    const isEmpty = (await runtime.executeCode(state, `return require('fs').readdirSync('${targetAbsolutePath}');`) as string[]).length === 0;
+        const targetAbsolutePath = await runtime.resolvePath(state, target);
 
-    if(!targetAbsolutePath) {
-        return { stdout: '', stderr: `bash: rm: ${target}: No such file or directory`, exitCode: 1 };
-    }
+        if(!targetAbsolutePath) {
+            stderr.push(`bash: rm: ${target}: No such file or directory`);
+            return;
+        }
 
-    if(isDirectory && !opts.hasFlag("r") && !opts.hasFlag("f")) {
-        return { stdout: '', stderr: `bash: rm: ${target}: Is a directory`, exitCode: 1 };
-    }
+        const isDirectory = await runtime.executeCode(state, `require('fs').statSync('${targetAbsolutePath}').isDirectory();`)
+        const isFile = !isDirectory;
+        const isEmpty = isDirectory ? (await runtime.executeCode(state, `return require('fs').readdirSync('${targetAbsolutePath}');`) as string[]).length === 0 : false;
 
-    if(!isEmpty && opts.hasFlag("r") && !opts.hasFlag("f")) {
-        return { stdout: '', stderr: `bash: rm: ${target}: Directory not empty`, exitCode: 1 };
-    }
+        if(isDirectory && !opts.hasFlag("r") && !opts.hasFlag("f")) {
+            stderr.push(`bash: rm: ${target}: Is a directory`);
+            return;
+        }
 
-    if(isEmpty && !opts.hasFlag("r")) {
-        await runtime.executeCode(state, `(async () => { await require('fs').rm('${targetAbsolutePath}', { recursive: true }); })();`);
-        return { stdout: '', stderr: '', exitCode: 0 };
-    }
+        if(isDirectory && !isEmpty && opts.hasFlag("r") && !opts.hasFlag("f")) {
+            stderr.push(`bash: rm: ${target}: Directory not empty`);
+            return;
+        }
 
-    if(opts.hasFlag("r") && opts.hasFlag("f")) {
-        await runtime.executeCode(state, `(async () => { await require('fs').rm('${targetAbsolutePath}', { recursive: true }); })();`);
-        return { stdout: '', stderr: '', exitCode: 0 };
-    }
+        if(isDirectory && isEmpty && !opts.hasFlag("r")) {
+            await runtime.executeCode(state, `require('fs').rmdirSync('${targetAbsolutePath}', { recursive: true });`);
+            return;
+        }
 
-    return { stdout: '', stderr: `bash: rm: ${target}: No such file or directory`, exitCode: 1 };
+        if(isDirectory && opts.hasFlag("r") && opts.hasFlag("f")) {
+            await runtime.executeCode(state, `(async () => { await require('fs').rm('${targetAbsolutePath}', { recursive: true }); })();`);
+            return;
+        }
+
+        if(isFile) {
+            await runtime.executeCode(state, `require('fs').unlinkSync('${targetAbsolutePath}');`);
+            return;
+        }
+    }))
+
+    return { stdout: '', stderr: stderr.join("\n"), exitCode: stderr.length > 0 ? 1 : 0 };
 };
