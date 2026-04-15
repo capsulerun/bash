@@ -89,7 +89,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
 
                     return `${permissions} ${hardlink} ${user} ${group} ${size} ${time} ${filename}`;
                 } catch (err) {
-                    return undefined;
+                    return;
                 }
             }))).filter((file): file is string => file !== undefined);
 

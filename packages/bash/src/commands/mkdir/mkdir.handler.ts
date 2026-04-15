@@ -17,7 +17,6 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
     await Promise.all(opts.args.map(async (arg) => {
         const parentFolder = arg.split('/').slice(0, -1).join('/');
-
         const parentFolderAbsolutePath = (await runtime.resolvePath(state, parentFolder));
 
         if(!parentFolderAbsolutePath && arg.includes('..')) {

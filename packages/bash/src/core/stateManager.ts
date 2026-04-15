@@ -3,7 +3,7 @@ import type { BaseRuntime, State } from '@capsule-run/bash-types';
 export class StateManager {
   public readonly state: State;
 
-  constructor(private readonly runtime: BaseRuntime, initialCwd: string = 'workspace') {
+  constructor(private readonly runtime: BaseRuntime, initialCwd: string = '/workspace') {
     this.state = {
       cwd: initialCwd,
       env: {},
@@ -28,7 +28,7 @@ export class StateManager {
   }
 
   public reset() {
-    this.state.cwd = 'workspace';
+    this.state.cwd = '/workspace';
     this.state.env = {};
     this.state.lastExitCode = 0;
   }

@@ -18,6 +18,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         return { stdout: '', stderr: `bash: mv: missing file operand`, exitCode: 1 };
     }
 
+    const sourceFileName = path.basename(source);
     const sourceAbsolutePath = await runtime.resolvePath(state, source);
     const isSourceFolder = sourceAbsolutePath ? await runtime.executeCode(state, `require('fs').statSync('${sourceAbsolutePath}').isDirectory();`) : false;
 
@@ -33,35 +34,36 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     }
 
     if(isDestinationFolder) {
-        console.log('sourceAbsolutePath', source)
-        console.log('destinationAbsolutePath', destination)
-
-        await runtime.executeCode(state, `(async () => await require('fs').cp('${source}', '${destination}', { recursive: true }))()`);
-        await runtime.executeCode(state, `require('fs').rmSync('${sourceAbsolutePath}', { recursive: true });`);
+        await runtime.executeCode(state, `
+            const fs = require('fs');
+            (async () => {
+                ${isSourceFolder ?
+                    `await fs.cp('${sourceAbsolutePath}', '${destinationAbsolutePath}', { recursive: true });` :
+                    `await fs.copyFile('${sourceAbsolutePath}', '${path.join(destinationAbsolutePath as string, sourceFileName)}');`
+                }
+                fs.rmSync('${sourceAbsolutePath}', ${isSourceFolder ? '{ recursive: true }' : '{}'});
+            })()
+        `);
         return { stdout: '', stderr: '', exitCode: 0 };
     }
 
-    if(!isDestinationFolder) {
-        console.log('1')
-        if(destinationAbsolutePath) {
-            await runtime.executeCode(state, `const fs = require('fs');
-                fs.rmSync('${destinationAbsolutePath}');
-                fs.renameSync('${sourceAbsolutePath}', '${destinationAbsolutePath}');
-            `);
-        }
-        // await runtime.executeCode(state, `require('fs').rmSync('${sourceAbsolutePath}', { recursive: true });`);
+    if(!isDestinationFolder && destinationAbsolutePath) {
+        await runtime.executeCode(state, `const fs = require('fs');
+            (async () => {
+                await fs.rm('${destinationAbsolutePath}', { recursive: true });
+                await fs.copyFile('${sourceAbsolutePath}', '${destinationAbsolutePath}');
+                await fs.rm('${sourceAbsolutePath}');
+            })()
+        `);
         return { stdout: '', stderr: '', exitCode: 0 };
     }
 
-    // if(sourceAbsolutePath && !destinationAbsolutePath) {
-    //     try {
-    //         await runtime.executeCode(state, `require('fs').renameSync('${sourceAbsolutePath}', '${destination}');`);
-    //         return { stdout: '', stderr: '', exitCode: 0 };
-    //     } catch (error) {
-    //         return { stdout: '', stderr: `bash: mv: ${destination}: No such file or directory`, exitCode: 1 };
-    //     }
-    // }
-
+    if(!isDestinationFolder && !destinationAbsolutePath) {
+        await runtime.executeCode(state, `const fs = require('fs');
+            fs.renameSync('${sourceAbsolutePath}', '${destination}');
+        `);
+        return { stdout: '', stderr: '', exitCode: 0 };
+    }
 
     return { stdout: '', stderr: `bash: mv: ${destination}: No such file or directory`, exitCode: 1 };
 };

@@ -1,6 +1,7 @@
 import { task } from "@capsule-run/sdk";
 import path from "path";
 import fs from "fs";
+import fsPromises from "fs/promises";
 
 import type { State } from "@capsule-run/bash-types";
 
@@ -36,7 +37,7 @@ function resolveNodeModule(fromPath: string, id: string): string | null {
   }
 }
 
-const builtins: Record<string, unknown> = { fs, path };
+const builtins: Record<string, unknown> = { fs, path, 'fs/promises': fsPromises };
 
 const makeRequire = (fromPath: string) => (id: string) => {
   let depPath: string;
