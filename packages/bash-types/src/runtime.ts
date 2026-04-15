@@ -15,7 +15,7 @@ export interface BaseRuntime {
     /**
      * Execute a file
      */
-    executeFile(state: State, filePath: string, language?: string): Promise<unknown>;
+    executeFile(state: State, filePath: string, args: string[], language?: string): Promise<unknown>;
 
     /**
      * Resolve a path in the sandbox

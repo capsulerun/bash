@@ -44,10 +44,10 @@ export class WasmRuntime implements BaseRuntime {
         return result.result;
     }
 
-    async executeFile(state: State, filePath: string, language: string = "js"): Promise<string> {
+    async executeFile(state: State, filePath: string, args: string[], language: string = "js"): Promise<string> {
         const result = await run({
             file: language === "js" || language === "javascript" ? this.jsSandbox : this.pythonSandbox,
-            args: ["EXECUTE_FILE", JSON.stringify(state), filePath],
+            args: ["EXECUTE_FILE", JSON.stringify(state), filePath, ...args],
             mounts: [`${this.hostWorkspace}::/`],
         })
 

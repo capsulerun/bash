@@ -9,7 +9,6 @@
     "types": ["node"],
     "declaration": false,
     "composite": false
-  },
-  "include": ["sandbox.ts"]
+  }
 }
 
