@@ -171,10 +171,8 @@ export class Executor {
                     continue;
                 }
 
-                console.log("writing to file", r.file)
-
                 try {
-                    console.log(await this.runtime.executeCode(this.state, `
+                    await this.runtime.executeCode(this.state, `
                         const fs = require('fs');
                         const path = require('path');
                         const filePath = path.resolve(${JSON.stringify(r.file)});
@@ -182,9 +180,9 @@ export class Executor {
                         fs.mkdirSync(path.dirname(filePath), { recursive: true });
                         fs.${r.op === '>>' ? 'appendFileSync' : 'writeFileSync'}(filePath, ${JSON.stringify(currentStdout)});
                         return filePath;
-                    `));
+                    `);
 
-                    currentStdout = '';
+                    currentStdout = 'File created ✔';
                 } catch {
                     return { stdout: '', stderr: `bash: ${r.file}: No such file or directory`, exitCode: 1 };
                 }
