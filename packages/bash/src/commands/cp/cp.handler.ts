@@ -38,7 +38,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
         await runtime.executeCode(state, `require('fs').copyFileSync('${sourceAbsolutePath}', '${destinationPath}');`);
 
-        return { stdout: '', stderr: '', exitCode: 0 };
+        return { stdout: 'File copied ✔', stderr: '', exitCode: 0 };
     }
 
     if(!destinationAbsolutePath && parentDestinationAbsolutePath && !isSourceFolder) {
@@ -46,12 +46,12 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         const destinationPath = path.join(parentDestinationAbsolutePath, destinationFileName)
 
         await runtime.executeCode(state, `require('fs').copyFileSync('${sourceAbsolutePath}', '${destinationPath}');`);
-        return { stdout: '', stderr: '', exitCode: 0 };
+        return { stdout: 'File copied ✔', stderr: '', exitCode: 0 };
     }
 
     if(opts.hasFlag('r') && isSourceFolder) {
         await runtime.executeCode(state, `(async () => await require('fs').cp('${sourceAbsolutePath}', '${destinationAbsolutePath || destination}', { recursive: true }))()`)
-        return { stdout: '', stderr: '', exitCode: 0 };
+        return { stdout: 'Folder copied ✔', stderr: '', exitCode: 0 };
     }
 
 

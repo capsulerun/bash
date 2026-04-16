@@ -24,5 +24,5 @@ export const handler: CommandHandler = async ({ opts, state }: CommandContext) =
         return { stdout: '', stderr: `bash: cd: ${targetPath}: No such file or directory`, exitCode: 1 };
     }
 
-    return { stdout: '', stderr: '', exitCode: 0 };
+    return { stdout: `Directory changed to ${targetPath} ✔`, stderr: '', exitCode: 0 };
 };

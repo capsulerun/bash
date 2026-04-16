@@ -10,7 +10,7 @@ export const manual: CommandManual = {
     }
 };
 
-export const handler: CommandHandler = async ({ opts, state, runtime }: CommandContext) => {
+export const handler: CommandHandler = async ({ opts }: CommandContext) => {
     const stdout: string[] = [];
 
     await Promise.all(opts.args.map(async (arg) => {

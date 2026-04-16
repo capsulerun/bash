@@ -44,16 +44,19 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
         if(isDirectory && isEmpty && !opts.hasFlag("r")) {
             await runtime.executeCode(state, `require('fs').rmdirSync('${targetAbsolutePath}', { recursive: true });`);
+            stdout.push(`Folder ${target} removed ✔`);
             return;
         }
 
         if(isDirectory && opts.hasFlag("r") && opts.hasFlag("f")) {
             await runtime.executeCode(state, `(async () => { await require('fs').rm('${targetAbsolutePath}', { recursive: true }); })();`);
+            stdout.push(`Folder ${target} removed ✔`)
             return;
         }
 
         if(isFile) {
             await runtime.executeCode(state, `require('fs').unlinkSync('${targetAbsolutePath}');`);
+            stdout.push(`File ${target} removed ✔`)
             return;
         }
     }))

@@ -25,5 +25,5 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         }
     }))
 
-    return { stdout: '', stderr: stderr.join('\n'), exitCode: stderr.length > 0 ? 1 : 0 };
+    return { stdout: 'File created ✔', stderr: stderr.join('\n'), exitCode: stderr.length > 0 ? 1 : 0 };
 }
