@@ -9,7 +9,7 @@ const sessions = new Map<string, Bash>();
 
 function getSession(sessionId: string): Bash {
     if (!sessions.has(sessionId)) {
-        sessions.set(sessionId, new Bash({ runtime: new WasmRuntime() }));
+        sessions.set(sessionId, new Bash({ runtime: new WasmRuntime(), hostWorkspace: `.capsule/sessions/${sessionId}` }));
     }
     return sessions.get(sessionId)!;
 }
