@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@capsule-run/cli':
-        specifier: ^0.8.6
-        version: 0.8.6
+        specifier: ^0.8.7
+        version: 0.8.7
       '@capsule-run/sdk':
-        specifier: ^0.8.6
-        version: 0.8.6(@types/node@25.6.0)
+        specifier: ^0.8.7
+        version: 0.8.7(@types/node@25.6.0)
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
@@ -26,7 +26,23 @@ importers:
         version: 6.0.2
       vitest:
         specifier: ^4.1.4
-        version: 4.1.4(@types/node@25.6.0)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+        version: 4.1.4(@types/node@25.6.0)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0))
+
+  examples/typescript:
+    dependencies:
+      '@capsule-run/bash':
+        specifier: workspace:*
+        version: link:../../packages/bash
+      '@capsule-run/bash-types':
+        specifier: workspace:*
+        version: link:../../packages/bash-types
+      '@capsule-run/bash-wasm':
+        specifier: workspace:*
+        version: link:../../packages/bash-wasm
+    devDependencies:
+      tsx:
+        specifier: ^4.19.3
+        version: 4.21.0
 
   packages/bash:
     dependencies:
@@ -42,13 +58,13 @@ importers:
         version: 1.7.5
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.9)(typescript@6.0.2)
+        version: 8.5.1(postcss@8.5.9)(tsx@4.21.0)(typescript@6.0.2)
 
   packages/bash-types:
     devDependencies:
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.9)(typescript@6.0.2)
+        version: 8.5.1(postcss@8.5.9)(tsx@4.21.0)(typescript@6.0.2)
 
   packages/bash-wasm:
     dependencies:
@@ -56,46 +72,18 @@ importers:
         specifier: workspace:*
         version: link:../bash-types
       '@capsule-run/cli':
-        specifier: ^0.8.6
-        version: 0.8.6
+        specifier: ^0.8.7
+        version: 0.8.7
       '@capsule-run/sdk':
-        specifier: ^0.8.6
-        version: 0.8.6(@types/node@25.6.0)
+        specifier: ^0.8.7
+        version: 0.8.7(@types/node@25.6.0)
     devDependencies:
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.9)(typescript@6.0.2)
-
-  wasm-sandboxes/js:
-    dependencies:
-      '@capsule-run/bash-types':
-        specifier: workspace:*
-        version: link:../../packages/bash-types
-      '@capsule-run/cli':
-        specifier: ^0.8.6
-        version: 0.8.6
-      '@capsule-run/sdk':
-        specifier: ^0.8.6
-        version: 0.8.6(@types/node@25.2.3)
-    devDependencies:
-      '@types/node':
-        specifier: 25.2.3
-        version: 25.2.3
+        version: 8.5.1(postcss@8.5.9)(tsx@4.21.0)(typescript@6.0.2)
       vitest:
         specifier: '*'
-        version: 4.1.4(@types/node@25.2.3)(vite@8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1))
-
-  wasm-sandboxes/python:
-    devDependencies:
-      '@capsule-run/sdk':
-        specifier: ^0.8.4
-        version: 0.8.6(@types/node@25.2.3)
-      '@types/node':
-        specifier: 25.2.3
-        version: 25.2.3
-      vitest:
-        specifier: '*'
-        version: 4.1.4(@types/node@25.2.3)(vite@8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1))
+        version: 4.1.4(@types/node@25.6.0)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0))
 
 packages:
 
@@ -151,37 +139,37 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  '@capsule-run/cli-darwin-arm64@0.8.6':
-    resolution: {integrity: sha512-ZIYvT/LqRGUi1TiV3C+yQ61KhfUWcyv7bGJujMgUczQ2klIRPVHMEArZItHMugUJRBZ7xoU7qSeidmyBRd1D3A==}
+  '@capsule-run/cli-darwin-arm64@0.8.7':
+    resolution: {integrity: sha512-sney8KObCF0FCWWUUGCGK0Y81wl6Gj/TNPf8oXoutzB8SJDjrb62U0jevDnD0yXq6NccGNhu8WxxKk7IAkt3xA==}
     cpu: [arm64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-darwin-x64@0.8.6':
-    resolution: {integrity: sha512-LKStnHeNSEXu1Yfh/6mZlQ1kWsb8+bEca3dYk4WcXe82YuKS+moA2A4BfMdHBh/FKRkmqbjwd8vMyZdUA7SvvQ==}
+  '@capsule-run/cli-darwin-x64@0.8.7':
+    resolution: {integrity: sha512-/WvwOw/BB024TGcV45g031v122HEBNapKlFRYaykTcSWHTQlhqOB1NrohZr5HWmrQXIrMmwrpM+yvtnXI/Ne/A==}
     cpu: [x64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-linux-x64@0.8.6':
-    resolution: {integrity: sha512-qqQb0qje8U6ZTe+tUfIiYIXykbrrOAcGg8D/4A34MXdi7PzQB/ShcKagSiXzoPG26cue6kD5ELcvsKdWLWLY8A==}
+  '@capsule-run/cli-linux-x64@0.8.7':
+    resolution: {integrity: sha512-axd4ejpbHearOaa5yf1nVWCBW0LOvMYK5IX14v9oQSRrIWgVDwQlszcmQqO/yvI6J6C7m6NrkVNHnsoPOX4blw==}
     cpu: [x64]
     os: [linux]
     hasBin: true
 
-  '@capsule-run/cli-win32-x64@0.8.6':
-    resolution: {integrity: sha512-s6cZ5aKiRNAeXTfxFelErMDm6v4vMJUFPImTLJ/235F8mjeIEKmmGSJzuPmaT2oGpVdzo/4tMi7FwOJstTS97A==}
+  '@capsule-run/cli-win32-x64@0.8.7':
+    resolution: {integrity: sha512-v0ZFRumwrUnOG2JCnuSRYMhtKZT07PNkiE8tWk5Wixhm1Yzftpt8+xp4/Ia+VuujtXUSlRJImEotrBiLnezHqw==}
     cpu: [x64]
     os: [win32]
     hasBin: true
 
-  '@capsule-run/cli@0.8.6':
-    resolution: {integrity: sha512-E2tVDGquvPBAiq0bs7fUdpDKz7j2WMmHpUWT4NGEFm2F1S6la3GT+DqY0et0Q7BP3ennJGPiHgTXIuH0rLzKpA==}
+  '@capsule-run/cli@0.8.7':
+    resolution: {integrity: sha512-VlwPhG/+PP6faRsGLEGTvFr16FFL9VfXDdNel+u3/DsRTgKHZ6nuSZ55mqITrhbfUhekMCRSZi5nF3ZVXLBaIA==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@capsule-run/sdk@0.8.6':
-    resolution: {integrity: sha512-vVwP7TvRWrbUdvnscEZ2a3ecXM1m1UUxfmr0InIZ3PGb9o0vbVIti0kutFeAIfNlvDXM2P0GS7j5br/U5DlIcA==}
+  '@capsule-run/sdk@0.8.7':
+    resolution: {integrity: sha512-k/+d8DhdAuGL9BpC4PP9R15cA6uzVa+wa0uNZNJhXwc+wRx0S7yBrGiW2MQQjUWlvWnuv6pyZ5QYSOGOUkI1fw==}
     peerDependencies:
       '@types/node': '>=18'
     peerDependenciesMeta:
@@ -861,9 +849,6 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/node@25.2.3':
-    resolution: {integrity: sha512-m0jEgYlYz+mDJZ2+F4v8D1AyQb+QzsNqRuI7xg1VQX/KlKS0qT9r1Mo16yo5F/MtifXFgaofIFsdFMox2SxIbQ==}
-
   '@types/node@25.6.0':
     resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
 
@@ -1032,6 +1017,9 @@ packages:
   get-east-asian-width@1.5.0:
     resolution: {integrity: sha512-CQ+bEO+Tva/qlmw24dCejulK5pMzVnUOFOijVogd3KQs07HnRIgp8TGipvCCRT06xeYEbpbgwaCxglFyiuIcmA==}
     engines: {node: '>=18'}
+
+  get-tsconfig@4.13.7:
+    resolution: {integrity: sha512-7tN6rFgBlMgpBML5j8typ92BKFi2sFQvIdpAqLA2beia5avZDrMs0FLZiM5etShWq5irVyGcGMEA1jcDaK7A/Q==}
 
   is-interactive@2.0.0:
     resolution: {integrity: sha512-qP1vozQRI+BMOPcjFzrjXuQvdak2pHNUMZoeG2eRbiSqyvbEf/wQtEOTOX1guk6E3t36RkaqiSt8A/6YElNxLQ==}
@@ -1226,6 +1214,9 @@ packages:
     resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
     engines: {node: '>=8'}
 
+  resolve-pkg-maps@1.0.0:
+    resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
+
   restore-cursor@5.1.0:
     resolution: {integrity: sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA==}
     engines: {node: '>=18'}
@@ -1348,6 +1339,11 @@ packages:
       typescript:
         optional: true
 
+  tsx@4.21.0:
+    resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
@@ -1360,9 +1356,6 @@ packages:
 
   ufo@1.6.3:
     resolution: {integrity: sha512-yDJTmhydvl5lJzBmy/hyOAA0d+aqCBuwl818haVdYCRrWV84o7YyeVm4QlVHStqNrrJSTb6jKuFAVqAFsr+K3Q==}
-
-  undici-types@7.16.0:
-    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
   undici-types@7.19.2:
     resolution: {integrity: sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg==}
@@ -1507,35 +1500,26 @@ snapshots:
       '@bytecodealliance/wizer-linux-x64': 10.0.0
       '@bytecodealliance/wizer-win32-x64': 10.0.0
 
-  '@capsule-run/cli-darwin-arm64@0.8.6':
+  '@capsule-run/cli-darwin-arm64@0.8.7':
     optional: true
 
-  '@capsule-run/cli-darwin-x64@0.8.6':
+  '@capsule-run/cli-darwin-x64@0.8.7':
     optional: true
 
-  '@capsule-run/cli-linux-x64@0.8.6':
+  '@capsule-run/cli-linux-x64@0.8.7':
     optional: true
 
-  '@capsule-run/cli-win32-x64@0.8.6':
+  '@capsule-run/cli-win32-x64@0.8.7':
     optional: true
 
-  '@capsule-run/cli@0.8.6':
+  '@capsule-run/cli@0.8.7':
     optionalDependencies:
-      '@capsule-run/cli-darwin-arm64': 0.8.6
-      '@capsule-run/cli-darwin-x64': 0.8.6
-      '@capsule-run/cli-linux-x64': 0.8.6
-      '@capsule-run/cli-win32-x64': 0.8.6
+      '@capsule-run/cli-darwin-arm64': 0.8.7
+      '@capsule-run/cli-darwin-x64': 0.8.7
+      '@capsule-run/cli-linux-x64': 0.8.7
+      '@capsule-run/cli-win32-x64': 0.8.7
 
-  '@capsule-run/sdk@0.8.6(@types/node@25.2.3)':
-    dependencies:
-      '@bytecodealliance/jco': 1.17.6
-      esbuild: 0.27.7
-      typescript: 5.9.3
-      unenv: 2.0.0-rc.24
-    optionalDependencies:
-      '@types/node': 25.2.3
-
-  '@capsule-run/sdk@0.8.6(@types/node@25.6.0)':
+  '@capsule-run/sdk@0.8.7(@types/node@25.6.0)':
     dependencies:
       '@bytecodealliance/jco': 1.17.6
       esbuild: 0.27.7
@@ -1942,10 +1926,6 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
-  '@types/node@25.2.3':
-    dependencies:
-      undici-types: 7.16.0
-
   '@types/node@25.6.0':
     dependencies:
       undici-types: 7.19.2
@@ -1961,21 +1941,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.4(vite@8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1))':
+  '@vitest/mocker@4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0))':
     dependencies:
       '@vitest/spy': 4.1.4
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1)
-
-  '@vitest/mocker@4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))':
-    dependencies:
-      '@vitest/spy': 4.1.4
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0)
 
   '@vitest/pretty-format@4.1.4':
     dependencies:
@@ -2137,6 +2109,10 @@ snapshots:
 
   get-east-asian-width@1.5.0: {}
 
+  get-tsconfig@4.13.7:
+    dependencies:
+      resolve-pkg-maps: 1.0.0
+
   is-interactive@2.0.0: {}
 
   is-unicode-supported@1.3.0: {}
@@ -2284,11 +2260,12 @@ snapshots:
       mlly: 1.8.2
       pathe: 2.0.3
 
-  postcss-load-config@6.0.1(postcss@8.5.9):
+  postcss-load-config@6.0.1(postcss@8.5.9)(tsx@4.21.0):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       postcss: 8.5.9
+      tsx: 4.21.0
 
   postcss@8.5.9:
     dependencies:
@@ -2299,6 +2276,8 @@ snapshots:
   readdirp@4.1.2: {}
 
   resolve-from@5.0.0: {}
+
+  resolve-pkg-maps@1.0.0: {}
 
   restore-cursor@5.1.0:
     dependencies:
@@ -2435,7 +2414,7 @@ snapshots:
   tslib@2.8.1:
     optional: true
 
-  tsup@8.5.1(postcss@8.5.9)(typescript@6.0.2):
+  tsup@8.5.1(postcss@8.5.9)(tsx@4.21.0)(typescript@6.0.2):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.7)
       cac: 6.7.14
@@ -2446,7 +2425,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.9)
+      postcss-load-config: 6.0.1(postcss@8.5.9)(tsx@4.21.0)
       resolve-from: 5.0.0
       rollup: 4.60.1
       source-map: 0.7.6
@@ -2463,13 +2442,18 @@ snapshots:
       - tsx
       - yaml
 
+  tsx@4.21.0:
+    dependencies:
+      esbuild: 0.27.7
+      get-tsconfig: 4.13.7
+    optionalDependencies:
+      fsevents: 2.3.3
+
   typescript@5.9.3: {}
 
   typescript@6.0.2: {}
 
   ufo@1.6.3: {}
-
-  undici-types@7.16.0: {}
 
   undici-types@7.19.2: {}
 
@@ -2477,20 +2461,7 @@ snapshots:
     dependencies:
       pathe: 2.0.3
 
-  vite@8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1):
-    dependencies:
-      lightningcss: 1.32.0
-      picomatch: 4.0.4
-      postcss: 8.5.9
-      rolldown: 1.0.0-rc.15
-      tinyglobby: 0.2.16
-    optionalDependencies:
-      '@types/node': 25.2.3
-      esbuild: 0.28.0
-      fsevents: 2.3.3
-      terser: 5.46.1
-
-  vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1):
+  vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -2502,11 +2473,12 @@ snapshots:
       esbuild: 0.28.0
       fsevents: 2.3.3
       terser: 5.46.1
+      tsx: 4.21.0
 
-  vitest@4.1.4(@types/node@25.2.3)(vite@8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1)):
+  vitest@4.1.4(@types/node@25.6.0)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0)):
     dependencies:
       '@vitest/expect': 4.1.4
-      '@vitest/mocker': 4.1.4(vite@8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1))
+      '@vitest/mocker': 4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0))
       '@vitest/pretty-format': 4.1.4
       '@vitest/runner': 4.1.4
       '@vitest/snapshot': 4.1.4
@@ -2523,34 +2495,7 @@ snapshots:
       tinyexec: 1.1.1
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.0.8(@types/node@25.2.3)(esbuild@0.28.0)(terser@5.46.1)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 25.2.3
-    transitivePeerDependencies:
-      - msw
-
-  vitest@4.1.4(@types/node@25.6.0)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)):
-    dependencies:
-      '@vitest/expect': 4.1.4
-      '@vitest/mocker': 4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
-      '@vitest/pretty-format': 4.1.4
-      '@vitest/runner': 4.1.4
-      '@vitest/snapshot': 4.1.4
-      '@vitest/spy': 4.1.4
-      '@vitest/utils': 4.1.4
-      es-module-lexer: 2.0.0
-      expect-type: 1.3.0
-      magic-string: 0.30.21
-      obug: 2.1.1
-      pathe: 2.0.3
-      picomatch: 4.0.4
-      std-env: 4.0.0
-      tinybench: 2.9.0
-      tinyexec: 1.1.1
-      tinyglobby: 0.2.16
-      tinyrainbow: 3.1.0
-      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(tsx@4.21.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.6.0

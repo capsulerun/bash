@@ -4,7 +4,7 @@ import type { RunnerResult } from '@capsule-run/sdk/runner';
 import path from 'path';
 
 const SANDBOX = path.resolve(__dirname, '../sandbox.py');
-const WORKSPACE = '__test__/workspace';
+const WORKSPACE = './sandboxes/python/__test__/workspace';
 
 const baseState = JSON.stringify({
   cwd: '/',
@@ -82,6 +82,25 @@ describe('sandbox.py – EXECUTE_CODE', () => {
     const error = assertFailure(result);
     expect(error.message).toContain('boom');
   });
+
+
+//   it('url request test', async () => {
+//     const result = await run({
+//       file: SANDBOX,
+//       args: ['EXECUTE_CODE', baseState, `import urllib.request
+// import json
+
+// url = "https://jsonplaceholder.typicode.com/posts/1"
+
+// with urllib.request.urlopen(url) as response:
+//     print(json.loads(response.read().decode("utf-8")))
+// `],
+//       mounts: [`${WORKSPACE}::/`],
+//     });
+
+//     console.log(result)
+
+//   });
 });
 
 describe('sandbox.py – EXECUTE_FILE', () => {
@@ -91,8 +110,6 @@ describe('sandbox.py – EXECUTE_FILE', () => {
       args: ['EXECUTE_FILE', baseState, 'hello.py'],
       mounts: [`${WORKSPACE}::/`],
     });
-
-    console.log(result)
 
     const value = assertSuccess(result);
     expect(value).toBeDefined();

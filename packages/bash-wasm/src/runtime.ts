@@ -1,5 +1,9 @@
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import { run } from '@capsule-run/sdk/runner';
 
@@ -20,9 +24,9 @@ export class WasmRuntime implements BaseRuntime {
             this.jsSandbox = jsWasmPath;
             this.pythonSandbox = pyWasmPath;
         } else {
-            this.jsSandbox = path.resolve(__dirname, "../../wasm-sandboxes/js/sandbox.ts");
+            this.jsSandbox = path.resolve(__dirname, "../sandboxes/js/sandbox.ts");
             // We need to install the requirements.txt first to run the python sandbox
-            this.pythonSandbox = path.resolve(__dirname, "../../wasm-sandboxes/python/sandbox.py");
+            this.pythonSandbox = path.resolve(__dirname, "../sandboxes/python/sandbox.py");
         }
     }
 
@@ -30,7 +34,7 @@ export class WasmRuntime implements BaseRuntime {
         const result = await run({
             file: language === "js" || language === "javascript" ? this.jsSandbox : this.pythonSandbox,
             args: ["EXECUTE_CODE", JSON.stringify(state), code],
-            mounts: [`${this.hostWorkspace}::/`],
+            mounts: [`${this.hostWorkspace}::/`]
         })
 
         if (result.error) {
@@ -40,10 +44,10 @@ export class WasmRuntime implements BaseRuntime {
         return result.result;
     }
 
-    async executeFile(state: State, filePath: string, language: string = "js"): Promise<string> {
+    async executeFile(state: State, filePath: string, args: string[], language: string = "js"): Promise<string> {
         const result = await run({
             file: language === "js" || language === "javascript" ? this.jsSandbox : this.pythonSandbox,
-            args: ["EXECUTE_FILE", JSON.stringify(state), filePath],
+            args: ["EXECUTE_FILE", JSON.stringify(state), filePath, ...args],
             mounts: [`${this.hostWorkspace}::/`],
         })
 
@@ -54,15 +58,15 @@ export class WasmRuntime implements BaseRuntime {
         return result.result as string;
     }
 
-    async resolvePath(state: State, path: string): Promise<string> {
+    async resolvePath(state: State, path: string): Promise<string | undefined> {
         const result = await run({
             file: this.jsSandbox,
             args: ["RESOLVE_PATH", JSON.stringify(state), path],
-            mounts: [`${this.hostWorkspace}::/`],
+            mounts: [`${this.hostWorkspace}::/`]
         })
 
         if (result.error) {
-            throw result.error.message;
+            return;
         }
 
         return result.result as string;

@@ -3,19 +3,19 @@ import type { CommandContext, CommandHandler, CommandManual } from "@capsule-run
 export const manual: CommandManual = {
     name: "cd",
     description: "Change the working directory.",
-    usage: "cd [-L] [dir]",
-    options: {
-        "-L": "force symbolic links to be followed"
-    }
+    usage: "cd [dir]"
 };
 
 export const handler: CommandHandler = async ({ opts, state }: CommandContext) => {
 
-    if(opts.hasFlag('L')) { /* no particular behavior for now */ }
-
     let targetPath = "/workspace";
-    if(opts.positionals[0]) {
-        targetPath = opts.positionals[0];
+
+    if(opts.args.length > 1) {
+        return { stdout: '', stderr: `bash: cd: too many arguments`, exitCode: 1 };
+    }
+
+    if(opts.args[0] && opts.args[0] !== "~") {
+        targetPath = opts.args[0];
     }
 
     const success = await state.changeDirectory(targetPath);

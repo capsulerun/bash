@@ -3,7 +3,7 @@ import type { BaseRuntime, State } from '@capsule-run/bash-types';
 export class StateManager {
   public readonly state: State;
 
-  constructor(private readonly runtime: BaseRuntime, initialCwd: string = 'workspace') {
+  constructor(private readonly runtime: BaseRuntime, initialCwd: string = '/workspace') {
     this.state = {
       cwd: initialCwd,
       env: {},
@@ -16,19 +16,19 @@ export class StateManager {
         this.state.env[key] = value;
       },
       changeDirectory: async (targetPath: string) => {
-        try {
-          const resolvedPath = await this.runtime.resolvePath(this.state, targetPath);
-          this.state.cwd = resolvedPath;
-          return true;
-        } catch {
+        const resolvedPath = await this.runtime.resolvePath(this.state, targetPath)
+        if (!resolvedPath) {
           return false;
         }
+
+        this.state.cwd = resolvedPath as string;
+        return true;
       }
     };
   }
 
   public reset() {
-    this.state.cwd = 'workspace';
+    this.state.cwd = '/workspace';
     this.state.env = {};
     this.state.lastExitCode = 0;
   }

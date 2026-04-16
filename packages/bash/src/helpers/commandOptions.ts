@@ -1,12 +1,12 @@
 import type { CommandOptions } from "@capsule-run/bash-types";
 
-export function parsedCommandOptions(args: string[]): CommandOptions {
+export function parsedCommandOptions(raw: string[]): CommandOptions {
     const flags: Set<string> = new Set();
     const options: Map<string, string> = new Map();
-    const positionals: string[] = [];
+    const args: string[] = [];
 
-    for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
+    for (let i = 0; i < raw.length; i++) {
+        const arg = raw[i];
 
         if (arg.startsWith('--') && arg.includes('=')) {
             const [key, ...val] = arg.slice(2).split('=');
@@ -14,8 +14,8 @@ export function parsedCommandOptions(args: string[]): CommandOptions {
         }
         else if (arg.startsWith('--')) {
             const key = arg.slice(2);
-            if (args[i + 1] && !args[i + 1].startsWith('-')) {
-                options.set(key, args[++i]);
+            if (raw[i + 1] && !raw[i + 1].startsWith('-')) {
+                options.set(key, raw[++i]);
             } else {
                 flags.add(key);
             }
@@ -27,15 +27,15 @@ export function parsedCommandOptions(args: string[]): CommandOptions {
         }
 
         else {
-            positionals.push(arg);
+            args.push(arg);
         }
     }
 
     return {
-        raw: args,
+        raw,
         flags,
         options,
-        positionals,
+        args,
         hasFlag: (...names: string[]) => names.some(name => flags.has(name))
     };
 }

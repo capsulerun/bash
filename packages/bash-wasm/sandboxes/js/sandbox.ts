@@ -1,6 +1,7 @@
 import { task } from "@capsule-run/sdk";
 import path from "path";
 import fs from "fs";
+import fsPromises from "fs/promises";
 
 import type { State } from "@capsule-run/bash-types";
 
@@ -36,10 +37,14 @@ function resolveNodeModule(fromPath: string, id: string): string | null {
   }
 }
 
+const builtins: Record<string, unknown> = { fs, path, 'fs/promises': fsPromises };
+
 const makeRequire = (fromPath: string) => (id: string) => {
   let depPath: string;
 
   if (!id.startsWith('.') && !id.startsWith('/')) {
+    if (id in builtins) return builtins[id];
+
     const resolved = resolveNodeModule(fromPath, id);
 
     if (!resolved) throw new Error(`Cannot find module '${id}'`);
@@ -130,7 +135,7 @@ const executeCode = task(
       const output = capturedOutput.join('\n');
 
       if (output) {
-        return output + '\n' + result;
+        return output + (result ? "\n" + result : "");
       }
 
       return result;
@@ -145,7 +150,7 @@ export const resolvePath = task(
   async (state: State, targetPath: string) => {
     process.chdir(state.cwd);
 
-    if (!fs.existsSync(targetPath)) {
+    if (!fs.existsSync(path.resolve(targetPath))) {
       throw new Error(`Path ${targetPath} does not exist`);
     }
 

@@ -1,10 +1,19 @@
 import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 import { parsedCommandOptions } from '../helpers/commandOptions';
 import { displayCommandManual } from '../helpers/commandManual';
 
 import type { BaseRuntime, CommandHandler, CommandManual, CommandResult, CustomCommand, State } from '@capsule-run/bash-types';
 import type { ASTNode, CommandNode } from './parser';
 
+
+type FsSnapshot = Record<string, number>;
 
 export class Executor {
 
@@ -13,6 +22,45 @@ export class Executor {
         private readonly customCommands: CustomCommand[],
         private readonly state: State,
     ) {}
+
+    private snapshotFs(): FsSnapshot {
+        const snapshot: FsSnapshot = {};
+        const workspace = this.runtime.hostWorkspace;
+        if (!workspace) return snapshot;
+
+        const walk = (dir: string) => {
+            try {
+                for (const entry of fs.readdirSync(dir)) {
+                    const fullPath = path.join(dir, entry);
+                    try {
+                        const stat = fs.statSync(fullPath);
+                        if (stat.isDirectory()) walk(fullPath);
+                        else snapshot[fullPath.slice(workspace.length)] = stat.mtimeMs;
+                    } catch {}
+                }
+            } catch {}
+        };
+
+        walk(workspace);
+        return snapshot;
+    }
+
+    private diffSnapshots(before: FsSnapshot, after: FsSnapshot): { created: string[]; modified: string[]; deleted: string[] } {
+        const created: string[] = [];
+        const modified: string[] = [];
+        const deleted: string[] = [];
+
+        for (const [path, size] of Object.entries(after)) {
+            if (!(path in before)) created.push(path);
+            else if (before[path] !== size) modified.push(path);
+        }
+
+        for (const path of Object.keys(before)) {
+            if (!(path in after)) deleted.push(path);
+        }
+
+        return { created, modified, deleted };
+    }
 
     async execute(node: ASTNode, stdin = ''): Promise<CommandResult> {
         switch (node.type) {
@@ -50,11 +98,43 @@ export class Executor {
         const opts = parsedCommandOptions(args);
         const command = await this.searchCommandHandler(name);
 
+        const before = this.snapshotFs();
+
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127 };
         } else if (opts.hasFlag('h', 'help') && command.manual) {
             result = { stdout: displayCommandManual(command.manual), stderr: '', exitCode: 0 };
         } else {
+            let invalidOption: string | undefined;
+
+            if (command.manual) {
+                for (const flag of opts.flags) {
+                    if (flag === 'h' || flag === 'help') continue;
+
+                    const isShort = flag.length === 1;
+                    const expectedName = isShort ? `-${flag}` : `--${flag}`;
+
+                    if (!command.manual.options || !command.manual.options.hasOwnProperty(expectedName)) {
+                        invalidOption = isShort ? flag : `--${flag}`;
+                        break;
+                    }
+                }
+
+                if (!invalidOption) {
+                    for (const key of opts.options.keys()) {
+                        const expectedName = `--${key}`;
+                        if (!command.manual.options || !command.manual.options.hasOwnProperty(expectedName)) {
+                            invalidOption = expectedName;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (invalidOption) {
+                return { stdout: '', stderr: `bash: ${name}: invalid option -- ${invalidOption}\n\nusage: ${command.manual?.usage}`, exitCode: 1 };
+            }
+
             result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
         }
 
@@ -62,6 +142,19 @@ export class Executor {
         let currentStderr = result.stderr;
 
         for (const r of node.redirects) {
+            if (r.op === '>&') {
+                if (r.from === 2 && r.to === 1) {
+                    currentStdout += currentStderr;
+                    currentStderr = '';
+
+                } else if (r.from === 1 && r.to === 2) {
+                    currentStderr += currentStdout;
+                    currentStdout = '';
+                }
+
+                continue;
+            }
+
             if (r.op === '>' || r.op === '>>') {
                 if (r.file === '/dev/null') {
                     currentStdout = '';
@@ -78,15 +171,18 @@ export class Executor {
                     continue;
                 }
 
+                console.log("writing to file", r.file)
+
                 try {
-                    await this.runtime.executeCode(this.state, `
+                    console.log(await this.runtime.executeCode(this.state, `
                         const fs = require('fs');
                         const path = require('path');
                         const filePath = path.resolve(${JSON.stringify(r.file)});
 
                         fs.mkdirSync(path.dirname(filePath), { recursive: true });
                         fs.${r.op === '>>' ? 'appendFileSync' : 'writeFileSync'}(filePath, ${JSON.stringify(currentStdout)});
-                    `);
+                        return filePath;
+                    `));
 
                     currentStdout = '';
                 } catch {
@@ -95,7 +191,10 @@ export class Executor {
             }
         }
 
-        result = { ...result, stdout: currentStdout, stderr: currentStderr };
+        const after = this.snapshotFs();
+        const diff = this.diffSnapshots(before, after);
+
+        result = { ...result, stdout: currentStdout, stderr: currentStderr, diff, state: { cwd: this.state.cwd, env: this.state.env } };
 
         this.state.setLastExitCode(result.exitCode);
         return result;
@@ -137,7 +236,7 @@ export class Executor {
 
     private async searchCommandHandler(name: string): Promise<{handler: CommandHandler, manual?: CommandManual} | undefined> {
         const commandsDir = path.resolve(__dirname, '../commands');
-        const handlerPath = path.join(commandsDir, name, 'handler');
+        const handlerPath = path.join(commandsDir, name, `${name}.handler`);
 
         const customCommand = this.customCommands.find(cmd => cmd.name === name);
         if (customCommand) {

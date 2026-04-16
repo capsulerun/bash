@@ -145,5 +145,6 @@ vite.config.ts.timestamp-*
 
 # Capsule
 .capsule/
+.capsule/*
 
 

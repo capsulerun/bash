@@ -5,7 +5,7 @@ export interface BaseRuntime {
     /**
      * The host workspace directory
      */
-    hostWorkspace?: string;
+    hostWorkspace: string;
 
     /**
      * Execute a code
@@ -15,12 +15,12 @@ export interface BaseRuntime {
     /**
      * Execute a file
      */
-    executeFile(state: State, filePath: string, language?: string): Promise<unknown>;
+    executeFile(state: State, filePath: string, args: string[], language?: string): Promise<unknown>;
 
     /**
      * Resolve a path in the sandbox
      */
-    resolvePath(state: State, path: string): Promise<string>;
+    resolvePath(state: State, path: string): Promise<string | undefined>;
 }
 
 export interface RuntimeResult {
