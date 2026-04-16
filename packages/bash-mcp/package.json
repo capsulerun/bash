@@ -1,0 +1,32 @@
+{
+  "name": "@capsule-run/bash-mcp",
+  "version": "0.1.0",
+  "description": "MCP server exposing sandboxed bash made for agents",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "bash-mcp": "./src/index.ts"
+  },
+  "scripts": {
+    "start": "node --import tsx/esm src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts"
+  },
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.21.0",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0"
+  },
+  "dependencies": {
+    "@capsule-run/bash": "workspace:*",
+    "@capsule-run/bash-types": "workspace:*",
+    "@capsule-run/bash-wasm": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "zod": "^3.25.0"
+  }
+}
