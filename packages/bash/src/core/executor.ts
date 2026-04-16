@@ -13,7 +13,7 @@ import type { BaseRuntime, CommandHandler, CommandManual, CommandResult, CustomC
 import type { ASTNode, CommandNode } from './parser';
 
 
-type FsSnapshot = Record<string, number>; // path → size
+type FsSnapshot = Record<string, number>;
 
 export class Executor {
 
@@ -25,6 +25,9 @@ export class Executor {
 
     private snapshotFs(): FsSnapshot {
         const snapshot: FsSnapshot = {};
+        const workspace = this.runtime.hostWorkspace;
+        if (!workspace) return snapshot;
+
         const walk = (dir: string) => {
             try {
                 for (const entry of fs.readdirSync(dir)) {
@@ -32,12 +35,13 @@ export class Executor {
                     try {
                         const stat = fs.statSync(fullPath);
                         if (stat.isDirectory()) walk(fullPath);
-                        else snapshot[fullPath] = stat.mtimeMs;
+                        else snapshot[fullPath.slice(workspace.length)] = stat.mtimeMs;
                     } catch {}
                 }
             } catch {}
         };
-        walk(this.runtime.hostWorkspace);
+
+        walk(workspace);
         return snapshot;
     }
 
@@ -94,6 +98,8 @@ export class Executor {
         const opts = parsedCommandOptions(args);
         const command = await this.searchCommandHandler(name);
 
+        const before = this.snapshotFs();
+
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127 };
         } else if (opts.hasFlag('h', 'help') && command.manual) {
@@ -129,10 +135,7 @@ export class Executor {
                 return { stdout: '', stderr: `bash: ${name}: invalid option -- ${invalidOption}\n\nusage: ${command.manual?.usage}`, exitCode: 1 };
             }
 
-            const before = this.snapshotFs();
             result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
-            const after = this.snapshotFs();
-            result.diff = this.diffSnapshots(before, after);
         }
 
         let currentStdout = result.stdout;
@@ -188,7 +191,10 @@ export class Executor {
             }
         }
 
-        result = { ...result, stdout: currentStdout, stderr: currentStderr, state: { cwd: this.state.cwd, env: this.state.env } };
+        const after = this.snapshotFs();
+        const diff = this.diffSnapshots(before, after);
+
+        result = { ...result, stdout: currentStdout, stderr: currentStderr, diff, state: { cwd: this.state.cwd, env: this.state.env } };
 
         this.state.setLastExitCode(result.exitCode);
         return result;
