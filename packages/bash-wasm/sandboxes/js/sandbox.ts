@@ -150,7 +150,7 @@ export const resolvePath = task(
   async (state: State, targetPath: string) => {
     process.chdir(state.cwd);
 
-    if (!fs.existsSync(targetPath)) {
+    if (!fs.existsSync(path.resolve(targetPath))) {
       throw new Error(`Path ${targetPath} does not exist`);
     }
 

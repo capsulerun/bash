@@ -18,6 +18,15 @@ export interface CommandResult {
     stdout: string;
     stderr: string;
     exitCode: number;
+    diff?: {
+        created: string[];
+        modified: string[];
+        deleted: string[];
+    },
+    state?: {
+        cwd: string;
+        env: Record<string, string>;
+    }
 };
 
 /**

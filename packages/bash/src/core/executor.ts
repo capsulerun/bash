@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 
@@ -12,6 +13,8 @@ import type { BaseRuntime, CommandHandler, CommandManual, CommandResult, CustomC
 import type { ASTNode, CommandNode } from './parser';
 
 
+type FsSnapshot = Record<string, number>; // path → size
+
 export class Executor {
 
     constructor(
@@ -19,6 +22,41 @@ export class Executor {
         private readonly customCommands: CustomCommand[],
         private readonly state: State,
     ) {}
+
+    private snapshotFs(): FsSnapshot {
+        const snapshot: FsSnapshot = {};
+        const walk = (dir: string) => {
+            try {
+                for (const entry of fs.readdirSync(dir)) {
+                    const fullPath = path.join(dir, entry);
+                    try {
+                        const stat = fs.statSync(fullPath);
+                        if (stat.isDirectory()) walk(fullPath);
+                        else snapshot[fullPath] = stat.mtimeMs;
+                    } catch {}
+                }
+            } catch {}
+        };
+        walk(this.runtime.hostWorkspace);
+        return snapshot;
+    }
+
+    private diffSnapshots(before: FsSnapshot, after: FsSnapshot): { created: string[]; modified: string[]; deleted: string[] } {
+        const created: string[] = [];
+        const modified: string[] = [];
+        const deleted: string[] = [];
+
+        for (const [path, size] of Object.entries(after)) {
+            if (!(path in before)) created.push(path);
+            else if (before[path] !== size) modified.push(path);
+        }
+
+        for (const path of Object.keys(before)) {
+            if (!(path in after)) deleted.push(path);
+        }
+
+        return { created, modified, deleted };
+    }
 
     async execute(node: ASTNode, stdin = ''): Promise<CommandResult> {
         switch (node.type) {
@@ -91,7 +129,10 @@ export class Executor {
                 return { stdout: '', stderr: `bash: ${name}: invalid option -- ${invalidOption}\n\nusage: ${command.manual?.usage}`, exitCode: 1 };
             }
 
+            const before = this.snapshotFs();
             result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
+            const after = this.snapshotFs();
+            result.diff = this.diffSnapshots(before, after);
         }
 
         let currentStdout = result.stdout;
@@ -127,15 +168,18 @@ export class Executor {
                     continue;
                 }
 
+                console.log("writing to file", r.file)
+
                 try {
-                    await this.runtime.executeCode(this.state, `
+                    console.log(await this.runtime.executeCode(this.state, `
                         const fs = require('fs');
                         const path = require('path');
                         const filePath = path.resolve(${JSON.stringify(r.file)});
 
                         fs.mkdirSync(path.dirname(filePath), { recursive: true });
                         fs.${r.op === '>>' ? 'appendFileSync' : 'writeFileSync'}(filePath, ${JSON.stringify(currentStdout)});
-                    `);
+                        return filePath;
+                    `));
 
                     currentStdout = '';
                 } catch {
@@ -144,7 +188,7 @@ export class Executor {
             }
         }
 
-        result = { ...result, stdout: currentStdout, stderr: currentStderr };
+        result = { ...result, stdout: currentStdout, stderr: currentStderr, state: { cwd: this.state.cwd, env: this.state.env } };
 
         this.state.setLastExitCode(result.exitCode);
         return result;

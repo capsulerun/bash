@@ -5,7 +5,7 @@ export interface BaseRuntime {
     /**
      * The host workspace directory
      */
-    hostWorkspace?: string;
+    hostWorkspace: string;
 
     /**
      * Execute a code
