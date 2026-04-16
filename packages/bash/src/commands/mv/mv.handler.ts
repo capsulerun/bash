@@ -34,11 +34,13 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     }
 
     if(isDestinationFolder) {
+        console.log(sourceAbsolutePath, destinationAbsolutePath)
+        console.log(isSourceFolder)
         await runtime.executeCode(state, `
             const fs = require('fs');
             (async () => {
                 ${isSourceFolder ?
-                    `await fs.cp('${sourceAbsolutePath}', '${destinationAbsolutePath}', { recursive: true });` :
+                    `await fs.cp('${sourceAbsolutePath}', '${destinationAbsolutePath}', {recursive: true });` :
                     `await fs.copyFile('${sourceAbsolutePath}', '${path.join(destinationAbsolutePath as string, sourceFileName)}');`
                 }
                 fs.rmSync('${sourceAbsolutePath}', ${isSourceFolder ? '{ recursive: true }' : '{}'});

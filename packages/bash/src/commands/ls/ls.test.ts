@@ -1,5 +1,5 @@
 import { describe } from "vitest";
 
-describe('touch command', () => {
+describe('ls command', () => {
    // todo
 })

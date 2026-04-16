@@ -49,7 +49,6 @@ function parseSedExpression(expr: string): SedExpression | null {
         return null;
     }
 
-    // Convert sed backreferences \1 → $1 for JS replace
     const jsReplacement = replacement.replace(/\\(\d)/g, '$$$1');
 
     return { pattern, replacement: jsReplacement, global };

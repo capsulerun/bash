@@ -15,7 +15,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     const stdout: string[] = [];
     const stderr: string[] = [];
 
-    Promise.all(opts.args.map(async (target) => {
+    await Promise.all(opts.args.map(async (target) => {
         if(!target) {
             stderr.push(`bash: rm: missing file operand`);
             return;

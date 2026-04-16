@@ -20,7 +20,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
 
     const sourceFileName = source.split('/').pop() || source;
-    const parentDestinationFolder = destination.split('/').slice(0, -1).join('/');
+    const parentDestinationFolder = destination.split('/').slice(-1).join('/');
 
     const sourceAbsolutePath = await runtime.resolvePath(state, source);
     const parentDestinationAbsolutePath = await runtime.resolvePath(state, parentDestinationFolder)
