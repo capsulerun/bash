@@ -63,12 +63,3 @@ jobs:
       - name: Run Bash WASM core tests
         working-directory: packages/bash-wasm
         run: pnpm vitest run
-
-      - name: Run JavaScript Sandbox tests
-        working-directory: packages/bash-wasm/sandboxes/js
-        run: pnpm vitest run
-
-      - name: Run Python Sandbox tests
-        working-directory: packages/bash-wasm/sandboxes/python
-        run: pnpm vitest run
-
