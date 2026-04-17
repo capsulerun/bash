@@ -56,7 +56,6 @@ function parseRawArgs(raw: string[]): CurlArgs {
             }
         } else if (arg === '-d' && raw[i + 1]) {
             result.body = raw[++i];
-            // -d implies POST if no -X was given
             if (result.method === 'GET') result.method = 'POST';
         } else if (!arg.startsWith('-')) {
             result.url = arg;
@@ -83,6 +82,36 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
         return { stdout: '', stderr: 'bash: curl: no URL specified', exitCode: 1 };
     }
 
+    if (args.saveToFile) {
+        const filename = filenameFromUrl(args.url);
+        const absolutePath = await runtime.resolvePath(state, filename);
+        const targetPath = absolutePath ?? filename;
+
+        const saveResult = await runtime.executeCode(state, `
+            (async function() {
+                try {
+                    const response = await fetch(${JSON.stringify(args.url)}, {
+                        method: ${JSON.stringify(args.method)},
+                        headers: ${JSON.stringify(args.headers)},
+                        ${args.body !== null ? `body: ${JSON.stringify(args.body)},` : ''}
+                        redirect: ${JSON.stringify(args.followRedirects ? 'follow' : 'manual')},
+                    });
+                    const buffer = await response.arrayBuffer();
+                    require('fs').writeFileSync('${targetPath}', new Uint8Array(buffer));
+                    return { ok: true };
+                } catch (e) {
+                    return { ok: false, error: String(e) };
+                }
+            })()
+        `) as { ok: boolean; error?: string };
+
+        if (!saveResult.ok) {
+            return { stdout: '', stderr: args.silent ? '' : `bash: curl: ${args.url}: ${saveResult.error}`, exitCode: 1 };
+        }
+
+        return { stdout: 'File downloaded ✔', stderr: '', exitCode: 0 };
+    }
+
     const result = await runtime.executeCode(state, `
         (async function() {
             try {
@@ -92,7 +121,6 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
                     ${args.body !== null ? `body: ${JSON.stringify(args.body)},` : ''}
                     redirect: ${JSON.stringify(args.followRedirects ? 'follow' : 'manual')},
                 });
-
                 const text = await response.text();
                 return { ok: true, status: response.status, body: text };
             } catch (e) {
@@ -104,16 +132,6 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
     if (!result.ok) {
         const msg = `bash: curl: ${args.url}: ${result.error}`;
         return { stdout: '', stderr: args.silent ? '' : msg, exitCode: 1 };
-    }
-
-    if (args.saveToFile) {
-        const filename = filenameFromUrl(args.url);
-        const absolutePath = await runtime.resolvePath(state, filename);
-        const targetPath = absolutePath ?? filename;
-
-        await runtime.executeCode(state, `require('fs').writeFileSync('${targetPath}', ${JSON.stringify(result.body ?? '')});`);
-
-        return { stdout: '', stderr: args.silent ? '' : `  % Total\n100  ${(result.body ?? '').length}  Saved to: ${filename}`, exitCode: 0 };
     }
 
     return { stdout: result.body ?? '', stderr: '', exitCode: 0 };
