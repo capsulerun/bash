@@ -83,24 +83,6 @@ describe('sandbox.py – EXECUTE_CODE', () => {
     expect(error.message).toContain('boom');
   });
 
-
-//   it('url request test', async () => {
-//     const result = await run({
-//       file: SANDBOX,
-//       args: ['EXECUTE_CODE', baseState, `import urllib.request
-// import json
-
-// url = "https://jsonplaceholder.typicode.com/posts/1"
-
-// with urllib.request.urlopen(url) as response:
-//     print(json.loads(response.read().decode("utf-8")))
-// `],
-//       mounts: [`${WORKSPACE}::/`],
-//     });
-
-//     console.log(result)
-
-//   });
 });
 
 describe('sandbox.py – EXECUTE_FILE', () => {

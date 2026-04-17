@@ -10,6 +10,7 @@ describe('cd command', () => {
         const result = await handler(ctx);
 
         expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('Directory changed to /workspace');
         expect(changeDirectoryMock).toHaveBeenCalledWith('/workspace');
     });
 

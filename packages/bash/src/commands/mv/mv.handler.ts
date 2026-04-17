@@ -62,7 +62,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         await runtime.executeCode(state, `const fs = require('fs');
             fs.renameSync('${sourceAbsolutePath}', '${destination}');
         `);
-        return { stdout: 'File moved ✔', stderr: '', exitCode: 0 };
+        return { stdout: `${isSourceFolder ? 'Folder' : 'File'} moved ✔`, stderr: '', exitCode: 0 };
     }
 
     return { stdout: '', stderr: `bash: mv: ${destination}: No such file or directory`, exitCode: 1 };

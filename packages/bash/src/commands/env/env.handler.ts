@@ -13,5 +13,5 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
         stdout.push(`${key}=${value}`);
     });
 
-    return { stdout: stdout.length > 0 ? stdout.join('\n') : 'No environment variables found.', stderr: '', exitCode: 0 };
+    return { stdout: stdout.join('\n'), stderr: '', exitCode: 0 };
 };

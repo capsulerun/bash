@@ -1,5 +1,4 @@
 import type { CommandContext, CommandHandler, CommandManual } from "@capsule-run/bash-types";
-import fs from "fs";
 import path from "path";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -65,17 +64,17 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
                 const filepath = path.join(sandboxAbsolutePath, filename);
 
                 try {
-                    const unsafeGlobalStats = fs.statSync(path.join(runtime.hostWorkspace as string, filepath));
-                    const wasmSafeStats = await runtime.executeCode(state, `return require('fs').statSync('${filepath}');`) as Record<string, string | number>;
+                    const wasmSafeStats = await runtime.executeCode(state, `return require('fs').statSync('${filepath}');`) as any;
 
-                    const isDirectory = wasmSafeStats.mode === 0o40755;
+                    // Use arbitrary simple permission layout
+                    const isDirectory = wasmSafeStats.mode === 0o40755 || (wasmSafeStats.mode & 0o40000);
                     const permissions = (isDirectory ? "d" : "-") + "rwxr-xr-x";
 
-                    const hardlink = unsafeGlobalStats.nlink || 1;
+                    const hardlink = wasmSafeStats.nlink || 1;
                     const user = "Agent";
                     const group = "staff";
                     const size = wasmSafeStats.size || 0;
-                    const date = new Date(unsafeGlobalStats.mtime || Date.now());
+                    const date = new Date(wasmSafeStats.mtime || Date.now());
 
                     const padDate = date.getDate().toString().padStart(2, ' ');
                     const padHours = date.getHours().toString().padStart(2, '0');

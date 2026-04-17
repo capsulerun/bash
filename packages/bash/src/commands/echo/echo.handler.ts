@@ -11,14 +11,15 @@ export const manual: CommandManual = {
 };
 
 export const handler: CommandHandler = async ({ opts }: CommandContext) => {
-    const stdout: string[] = [];
+    let output = opts.args.join(' ');
 
-    await Promise.all(opts.args.map(async (arg) => {
-        let str = !opts.hasFlag("n") ? `${arg}\n` : arg;
-        str = !opts.hasFlag("e") ? str.replace(/\\n/g, "\n") : str;
+    if (opts.hasFlag("e")) {
+        output = output.replace(/\\n/g, "\n").replace(/\\t/g, "\t");
+    }
 
-        stdout.push(str);
-    }))
+    if (!opts.hasFlag("n")) {
+        output += "\n";
+    }
 
-    return { stdout: stdout.join(' '), stderr: '', exitCode: 0 };
+    return { stdout: output, stderr: '', exitCode: 0 };
 };

@@ -14,7 +14,7 @@ export const handler: CommandHandler = async ({ opts, state }: CommandContext) =
         return { stdout: '', stderr: `bash: cd: too many arguments`, exitCode: 1 };
     }
 
-    if(opts.args[0] && opts.args[0] !== "~") {
+    if(opts.args.length > 0 && opts.args[0] !== "~") {
         targetPath = opts.args[0];
     }
 

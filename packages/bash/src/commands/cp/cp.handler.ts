@@ -20,7 +20,8 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
 
     const sourceFileName = source.split('/').pop() || source;
-    const parentDestinationFolder = destination.split('/').slice(-1).join('/');
+    const parts = destination.split('/');
+    const parentDestinationFolder = parts.length > 1 ? parts.slice(0, -1).join('/') : '.';
 
     const sourceAbsolutePath = await runtime.resolvePath(state, source);
     const parentDestinationAbsolutePath = await runtime.resolvePath(state, parentDestinationFolder)
@@ -34,7 +35,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     }
 
     if(isDestinationFolder && !isSourceFolder) {
-        const destinationPath = path.join(destination, sourceFileName);
+        const destinationPath = path.join(destinationAbsolutePath as string, sourceFileName);
 
         await runtime.executeCode(state, `require('fs').copyFileSync('${sourceAbsolutePath}', '${destinationPath}');`);
 

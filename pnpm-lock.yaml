@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@capsule-run/cli':
-        specifier: ^0.8.7
-        version: 0.8.7
+        specifier: ^0.8.8
+        version: 0.8.8
       '@capsule-run/sdk':
-        specifier: ^0.8.7
-        version: 0.8.7(@types/node@25.6.0)
+        specifier: ^0.8.8
+        version: 0.8.8(@types/node@25.6.0)
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
@@ -72,11 +72,11 @@ importers:
         specifier: workspace:*
         version: link:../bash-types
       '@capsule-run/cli':
-        specifier: ^0.8.7
-        version: 0.8.7
+        specifier: ^0.8.8
+        version: 0.8.8
       '@capsule-run/sdk':
-        specifier: ^0.8.7
-        version: 0.8.7(@types/node@25.6.0)
+        specifier: ^0.8.8
+        version: 0.8.8(@types/node@25.6.0)
     devDependencies:
       tsup:
         specifier: ^8.0.0
@@ -139,37 +139,37 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  '@capsule-run/cli-darwin-arm64@0.8.7':
-    resolution: {integrity: sha512-sney8KObCF0FCWWUUGCGK0Y81wl6Gj/TNPf8oXoutzB8SJDjrb62U0jevDnD0yXq6NccGNhu8WxxKk7IAkt3xA==}
+  '@capsule-run/cli-darwin-arm64@0.8.8':
+    resolution: {integrity: sha512-7ymjs6KRw9rVtmnJVDIrDTivFCylCoaR5Ube86PmJCoofI9GN7NDW/09S/II3gEjqvL8s1l9RTs9vaOturJY/w==}
     cpu: [arm64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-darwin-x64@0.8.7':
-    resolution: {integrity: sha512-/WvwOw/BB024TGcV45g031v122HEBNapKlFRYaykTcSWHTQlhqOB1NrohZr5HWmrQXIrMmwrpM+yvtnXI/Ne/A==}
+  '@capsule-run/cli-darwin-x64@0.8.8':
+    resolution: {integrity: sha512-KaAOcxzJyqo0ySn7uYSvPgBYJ+d3O62bF6FJWSPui86UVdfOz3d6qPo5JTsUUF3OgU05hF8+0ZvYIYqpa1zpEg==}
     cpu: [x64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-linux-x64@0.8.7':
-    resolution: {integrity: sha512-axd4ejpbHearOaa5yf1nVWCBW0LOvMYK5IX14v9oQSRrIWgVDwQlszcmQqO/yvI6J6C7m6NrkVNHnsoPOX4blw==}
+  '@capsule-run/cli-linux-x64@0.8.8':
+    resolution: {integrity: sha512-03Z9cO4j/uukUk1M6ox62nQMDXVwuJ8DFYlTbUjLs+WKq1H3w4T+xjwLGS7NRJkVd+Gw8ZtcBRFVEcYMai7NMA==}
     cpu: [x64]
     os: [linux]
     hasBin: true
 
-  '@capsule-run/cli-win32-x64@0.8.7':
-    resolution: {integrity: sha512-v0ZFRumwrUnOG2JCnuSRYMhtKZT07PNkiE8tWk5Wixhm1Yzftpt8+xp4/Ia+VuujtXUSlRJImEotrBiLnezHqw==}
+  '@capsule-run/cli-win32-x64@0.8.8':
+    resolution: {integrity: sha512-RlQcfgeqR5fPqf0UOaVm8/jtPtMSoScMNnkk3KB9FFOELC59zHHgfkAkm11mOWzIUSCoJJNWHdCim8qOMSpTyg==}
     cpu: [x64]
     os: [win32]
     hasBin: true
 
-  '@capsule-run/cli@0.8.7':
-    resolution: {integrity: sha512-VlwPhG/+PP6faRsGLEGTvFr16FFL9VfXDdNel+u3/DsRTgKHZ6nuSZ55mqITrhbfUhekMCRSZi5nF3ZVXLBaIA==}
+  '@capsule-run/cli@0.8.8':
+    resolution: {integrity: sha512-DLd2202D/Iq2frgYejzCh/+qKsYWXKR+ZmhWcPKV08+arf5uPj9fQcUZ6elyu0qKi9HlfpJf0uSgMrP2JtEKnA==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@capsule-run/sdk@0.8.7':
-    resolution: {integrity: sha512-k/+d8DhdAuGL9BpC4PP9R15cA6uzVa+wa0uNZNJhXwc+wRx0S7yBrGiW2MQQjUWlvWnuv6pyZ5QYSOGOUkI1fw==}
+  '@capsule-run/sdk@0.8.8':
+    resolution: {integrity: sha512-ClZDyIlv3LnZw0C17ekVWNeBau8GTEz+XwEzX9YyKZeumuf+K7niLFtwleLKtp6M19NJuZl3c8BbJIWKY0WlOA==}
     peerDependencies:
       '@types/node': '>=18'
     peerDependenciesMeta:
@@ -1500,26 +1500,26 @@ snapshots:
       '@bytecodealliance/wizer-linux-x64': 10.0.0
       '@bytecodealliance/wizer-win32-x64': 10.0.0
 
-  '@capsule-run/cli-darwin-arm64@0.8.7':
+  '@capsule-run/cli-darwin-arm64@0.8.8':
     optional: true
 
-  '@capsule-run/cli-darwin-x64@0.8.7':
+  '@capsule-run/cli-darwin-x64@0.8.8':
     optional: true
 
-  '@capsule-run/cli-linux-x64@0.8.7':
+  '@capsule-run/cli-linux-x64@0.8.8':
     optional: true
 
-  '@capsule-run/cli-win32-x64@0.8.7':
+  '@capsule-run/cli-win32-x64@0.8.8':
     optional: true
 
-  '@capsule-run/cli@0.8.7':
+  '@capsule-run/cli@0.8.8':
     optionalDependencies:
-      '@capsule-run/cli-darwin-arm64': 0.8.7
-      '@capsule-run/cli-darwin-x64': 0.8.7
-      '@capsule-run/cli-linux-x64': 0.8.7
-      '@capsule-run/cli-win32-x64': 0.8.7
+      '@capsule-run/cli-darwin-arm64': 0.8.8
+      '@capsule-run/cli-darwin-x64': 0.8.8
+      '@capsule-run/cli-linux-x64': 0.8.8
+      '@capsule-run/cli-win32-x64': 0.8.8
 
-  '@capsule-run/sdk@0.8.7(@types/node@25.6.0)':
+  '@capsule-run/sdk@0.8.8(@types/node@25.6.0)':
     dependencies:
       '@bytecodealliance/jco': 1.17.6
       esbuild: 0.27.7

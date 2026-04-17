@@ -15,6 +15,10 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     const stdout: string[] = [];
     const stderr: string[] = [];
 
+    if (opts.args.length === 0) {
+        return { stdout: '', stderr: 'bash: rm: missing operand', exitCode: 1 };
+    }
+
     await Promise.all(opts.args.map(async (target) => {
         if(!target) {
             stderr.push(`bash: rm: missing file operand`);
@@ -28,7 +32,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
             return;
         }
 
-        const isDirectory = await runtime.executeCode(state, `require('fs').statSync('${targetAbsolutePath}').isDirectory();`)
+        const isDirectory = await runtime.executeCode(state, `return require('fs').statSync('${targetAbsolutePath}').isDirectory();`)
         const isFile = !isDirectory;
         const isEmpty = isDirectory ? (await runtime.executeCode(state, `return require('fs').readdirSync('${targetAbsolutePath}');`) as string[]).length === 0 : false;
 
@@ -61,5 +65,5 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         }
     }))
 
-    return { stdout: '', stderr: stderr.join("\n"), exitCode: stderr.length > 0 ? 1 : 0 };
+    return { stdout: stdout.join('\n'), stderr: stderr.join("\n"), exitCode: stderr.length > 0 ? 1 : 0 };
 };
