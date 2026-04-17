@@ -11,8 +11,11 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     const stderr: string[] = [];
 
     await Promise.all(opts.args.map(async (arg) => {
-        const parentFolder = arg.split('/').slice(-1).join('/');
+        if (!arg) return;
 
+        const segments = arg.split('/');
+        const parentFolder = segments.length > 1 ? segments.slice(0, -1).join('/') : '.';
+        
         const parentFolderAbsolutePath = (await runtime.resolvePath(state, parentFolder));
 
         if (!parentFolderAbsolutePath) {
@@ -20,10 +23,14 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
             return;
         }
 
-        if (!await runtime.executeCode(state, `require('fs').existsSync('${arg}');`)) {
-            await runtime.executeCode(state, `require('fs').writeFileSync('${arg}', '');`)
+        const filename = segments[segments.length - 1];
+        const absolutePath = `${parentFolderAbsolutePath}/${filename}`.replace('//', '/');
+
+        const exists = await runtime.executeCode(state, `return require('fs').existsSync('${absolutePath}');`) as boolean;
+        if (!exists) {
+            await runtime.executeCode(state, `require('fs').writeFileSync('${absolutePath}', '');`);
         }
     }))
 
-    return { stdout: '', stderr: stderr.join('\n'), exitCode: stderr.length > 0 ? 1 : 0 };
+    return { stdout: 'File created ✔', stderr: stderr.join('\n'), exitCode: stderr.length > 0 ? 1 : 0 };
 }

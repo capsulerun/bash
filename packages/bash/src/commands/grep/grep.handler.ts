@@ -75,7 +75,6 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
             return;
         }
 
-        // Single executeCode call: returns { isDirectory, entries?, content? }
         const info = await runtime.executeCode(state, `
             (function() {
                 const fs = require('fs');

@@ -18,8 +18,9 @@ interface Counts {
 }
 
 function count(content: string): Counts {
+    const lines = content.split('\n');
     return {
-        lines: content === '' ? 0 : content.split('\n').length,
+        lines: lines.length - 1,
         words: content.trim() === '' ? 0 : content.trim().split(/\s+/).length,
         bytes: new TextEncoder().encode(content).length,
     };
@@ -37,7 +38,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
     const showLines = opts.hasFlag('l');
     const showWords = opts.hasFlag('w');
     const showBytes = opts.hasFlag('c');
-    // No flags = show all
+
     const flags = {
         lines: showLines || (!showLines && !showWords && !showBytes),
         words: showWords || (!showLines && !showWords && !showBytes),
@@ -48,7 +49,6 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
     const stdout: string[] = [];
     const stderr: string[] = [];
 
-    // No files: count stdin
     if (fileArgs.length === 0) {
         const content = stdin ?? '';
         stdout.push(format(count(content), flags, ''));

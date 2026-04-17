@@ -34,8 +34,6 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     }
 
     if(isDestinationFolder) {
-        console.log(sourceAbsolutePath, destinationAbsolutePath)
-        console.log(isSourceFolder)
         await runtime.executeCode(state, `
             const fs = require('fs');
             (async () => {
@@ -46,7 +44,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
                 fs.rmSync('${sourceAbsolutePath}', ${isSourceFolder ? '{ recursive: true }' : '{}'});
             })()
         `);
-        return { stdout: '', stderr: '', exitCode: 0 };
+        return { stdout: `${isSourceFolder ? 'Folder' : 'File'} moved ✔`, stderr: '', exitCode: 0 };
     }
 
     if(!isDestinationFolder && destinationAbsolutePath) {
@@ -57,14 +55,14 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
                 await fs.rm('${sourceAbsolutePath}');
             })()
         `);
-        return { stdout: '', stderr: '', exitCode: 0 };
+        return { stdout: 'File moved ✔', stderr: '', exitCode: 0 };
     }
 
     if(!isDestinationFolder && !destinationAbsolutePath) {
         await runtime.executeCode(state, `const fs = require('fs');
             fs.renameSync('${sourceAbsolutePath}', '${destination}');
         `);
-        return { stdout: '', stderr: '', exitCode: 0 };
+        return { stdout: `${isSourceFolder ? 'Folder' : 'File'} moved ✔`, stderr: '', exitCode: 0 };
     }
 
     return { stdout: '', stderr: `bash: mv: ${destination}: No such file or directory`, exitCode: 1 };

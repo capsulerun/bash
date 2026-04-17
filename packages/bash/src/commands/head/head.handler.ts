@@ -15,9 +15,10 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
     const stdout: string[] = [];
 
     const lineNumber = opts.hasFlag("n") ? opts.args[0] : 10;
-    const multipleFiles = opts.args.length > 1;
+    const fileArgs = opts.hasFlag("n") ? opts.args.slice(1) : opts.args;
+    const multipleFiles = fileArgs.length > 1;
 
-    await Promise.all(opts.args.map(async (arg) => {
+    await Promise.all(fileArgs.map(async (arg) => {
         const destinationAbsolutePath = await runtime.resolvePath(state, arg)
 
         if(!destinationAbsolutePath) {

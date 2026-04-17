@@ -16,12 +16,11 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     const stderr: string[] = [];
 
     await Promise.all(opts.args.map(async (arg) => {
-        const parentFolder = arg.split('/').slice(-1).join('/');
+        const segments = arg.split('/');
+        const parentFolder = segments.length > 1 ? segments.slice(0, -1).join('/') : '.';
 
-        console.log(parentFolder)
         const parentFolderAbsolutePath = (await runtime.resolvePath(state, parentFolder));
 
-        console.log(parentFolderAbsolutePath, arg)
         if(!parentFolderAbsolutePath && arg.includes('..')) {
             stderr.push(`bash: mkdir: '${arg}': Permission denied`);
             return;
@@ -40,5 +39,5 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     }))
 
 
-    return { stdout: '', stderr: stderr.join('\n'), exitCode: stderr.length > 0 ? 1 : 0 };
+    return { stdout: 'Folder created ✔', stderr: stderr.join('\n'), exitCode: stderr.length > 0 ? 1 : 0 };
 }

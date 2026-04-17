@@ -10,6 +10,7 @@ import { parsedCommandOptions } from '../helpers/commandOptions';
 import { displayCommandManual } from '../helpers/commandManual';
 
 import type { BaseRuntime, CommandHandler, CommandManual, CommandResult, CustomCommand, State } from '@capsule-run/bash-types';
+import { Parser } from './parser';
 import type { ASTNode, CommandNode } from './parser';
 
 
@@ -72,9 +73,59 @@ export class Executor {
         }
     }
 
+    private async executeScript(filePath: string, scriptArgs: string[]): Promise<CommandResult> {
+        const absolutePath = await this.runtime.resolvePath(this.state, filePath);
+        if (!absolutePath) {
+            return { stdout: '', stderr: `bash: ${filePath}: No such file or directory`, exitCode: 1 };
+        }
+
+        let content: string;
+        try {
+            content = await this.runtime.executeCode(this.state, `require('fs').readFileSync('${absolutePath}', 'utf8');`) as string;
+        } catch {
+            return { stdout: '', stderr: `bash: sh: ${filePath}: No such file or directory`, exitCode: 1 };
+        }
+
+        const lines = content.split('\n').filter(line => !line.startsWith('#!'));
+        let script = lines.join('\n');
+
+        scriptArgs.forEach((arg, i) => {
+            script = script.replace(new RegExp(`\\$${i + 1}`, 'g'), arg);
+        });
+
+        script = script.replace(/\$\d+/g, '');
+
+        const parser = new Parser();
+        const stdout: string[] = [];
+        const stderr: string[] = [];
+        let exitCode = 0;
+
+        for (const line of script.split('\n')) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) continue;
+
+            try {
+                const ast = parser.parse(trimmed);
+                const result = await this.execute(ast);
+                if (result.stdout) stdout.push(result.stdout);
+                if (result.stderr) stderr.push(result.stderr);
+                exitCode = result.exitCode;
+                if (exitCode !== 0) break;
+            } catch {}
+        }
+
+        return { stdout: stdout.join('\n'), stderr: stderr.join('\n'), exitCode };
+    }
+
     private async executeCommand(node: CommandNode, stdin: string): Promise<CommandResult> {
         const [name, ...args] = node.args;
         let result: CommandResult;
+
+        if (name === 'sh' || name === 'bash') {
+            const [file, ...scriptArgs] = args;
+            if (!file) return { stdout: '', stderr: `bash: ${name}: missing script operand`, exitCode: 1 };
+            return this.executeScript(file, scriptArgs);
+        }
 
         for (const r of node.redirects) {
             if (r.op === '<') {
@@ -171,10 +222,8 @@ export class Executor {
                     continue;
                 }
 
-                console.log("writing to file", r.file)
-
                 try {
-                    console.log(await this.runtime.executeCode(this.state, `
+                    await this.runtime.executeCode(this.state, `
                         const fs = require('fs');
                         const path = require('path');
                         const filePath = path.resolve(${JSON.stringify(r.file)});
@@ -182,9 +231,9 @@ export class Executor {
                         fs.mkdirSync(path.dirname(filePath), { recursive: true });
                         fs.${r.op === '>>' ? 'appendFileSync' : 'writeFileSync'}(filePath, ${JSON.stringify(currentStdout)});
                         return filePath;
-                    `));
+                    `);
 
-                    currentStdout = '';
+                    currentStdout = 'File created ✔';
                 } catch {
                     return { stdout: '', stderr: `bash: ${r.file}: No such file or directory`, exitCode: 1 };
                 }
