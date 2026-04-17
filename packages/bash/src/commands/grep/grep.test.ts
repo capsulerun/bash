@@ -80,7 +80,7 @@ describe('grep command', () => {
     it('should recurse with -r flag', async () => {
         const resolvePathMock = vi.fn().mockImplementation(async (state, path) => `/workspace/${path}`);
         const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
-            if (code.includes('dir')) return { isDirectory: true, entries: ['file'] };
+            if (code.includes('/workspace/dir\'')) return { isDirectory: true, entries: ['file'] };
             return { isDirectory: false, content: 'hello inside!' };
         });
 
