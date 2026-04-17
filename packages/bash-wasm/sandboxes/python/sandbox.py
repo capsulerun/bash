@@ -130,8 +130,8 @@ def execute_code(state: str, code: str):
 
 @task(name="main", compute="HIGH")
 def main(action: str, state: str, *args: str):
-    if action == "LOAD":
-        response = {"success": True, "result": "Sandbox loaded successfully", "error": None}
+    if action == "PRELOAD":
+        response = {"success": True, "result": "Sandbox preloaded successfully", "error": None}
     elif action == "EXECUTE_CODE":
         response = execute_code(state, args[0])
     elif action == "EXECUTE_FILE":

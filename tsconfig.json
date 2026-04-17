@@ -17,6 +17,7 @@
     { "path": "./packages/bash" },
     { "path": "./packages/bash-wasm" },
     { "path": "./packages/bash-types" },
-    { "path": "./packages/bash-mcp" }
+    { "path": "./packages/bash-mcp" },
+    { "path": "./packages/shell" }
   ]
 }

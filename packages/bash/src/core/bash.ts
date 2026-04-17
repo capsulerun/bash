@@ -26,6 +26,10 @@ export class Bash {
         this.filesystem.init();
     }
 
+    async preload() {
+        await this.runtime.preload(this.stateManager.state);
+    }
+
     async run(command: string): Promise<CommandResult> {
         const ast = this.parser.parse(command);
         return this.executor.execute(ast);
