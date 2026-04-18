@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { CommandResult } from '@capsule-run/bash-types';
 import { bash } from '../bash.js';
 
@@ -7,6 +7,7 @@ export type HistoryEntry = {
     stdout: string;
     stderr: string;
     exitCode: number;
+    durationMs: number;
     diff?: {
         created: string[];
         modified: string[];
@@ -22,6 +23,13 @@ export function useShell() {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [running, setRunning] = useState(false);
     const [lastExitCode, setLastExitCode] = useState(0);
+    const [sandboxReady, setSandboxReady] = useState(false);
+
+    useEffect(() => {
+        bash.preload().then(() => {
+            setSandboxReady(true);
+        });
+    }, []);
 
     const submit = useCallback(async (command: string) => {
         if (!command.trim()) return;
@@ -33,13 +41,16 @@ export function useShell() {
 
         setRunning(true);
 
+        const startTime = Date.now();
         const result: CommandResult = await bash.run(command);
+        const durationMs = Date.now() - startTime;
 
         const entry: HistoryEntry = {
             command,
             stdout: result.stdout,
             stderr: result.stderr,
             exitCode: result.exitCode,
+            durationMs,
             diff: result.diff,
             state: result.state,
         };
@@ -51,5 +62,5 @@ export function useShell() {
 
     const cwd = bash.stateManager.state.cwd;
 
-    return { history, running, lastExitCode, cwd, submit };
+    return { history, running, lastExitCode, cwd, submit, sandboxReady };
 }

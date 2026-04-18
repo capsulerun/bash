@@ -7,17 +7,16 @@
   "packageManager": "pnpm@10.21.0",
   "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "term": "pnpm --filter shell term"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@capsule-run/cli": "^0.8.8",
     "@capsule-run/sdk": "^0.8.8"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "esbuild": "^0.28.0",
     "typescript": "^6.0.2",
-    "@types/node": "^25.2.3",
     "vitest": "^4.1.4"
   }
 }
