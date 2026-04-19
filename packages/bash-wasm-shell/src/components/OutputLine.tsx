@@ -10,9 +10,9 @@ export function OutputLine({ entry }: Props) {
     const exitColor = entry.exitCode === 0 ? 'green' : 'red';
 
     return (
-        <Box flexDirection="column">
+        <Box flexDirection="column" marginLeft={1}>
             <Box gap={1}>
-                <Text bold dimColor>{entry.state?.cwd ?? '/workspace'}</Text>
+                <Text bold dimColor>{entry.state?.cwd != '/' ? entry.state?.cwd.slice(1) : entry.state?.cwd}</Text>
                 <Text bold color={exitColor}>❯</Text>
                 <Text>{entry.command}</Text>
             </Box>

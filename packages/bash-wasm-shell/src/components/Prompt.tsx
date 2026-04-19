@@ -43,8 +43,8 @@ export function Prompt({ cwd, lastExitCode, running, runningCommand, onSubmit, h
     const promptColor = lastExitCode === 0 ? 'green' : 'red';
 
     return (
-        <Box gap={1}>
-            <Text bold dimColor>{cwd}</Text>
+        <Box gap={1} marginLeft={1}>
+            <Text bold>{cwd != '/' ? cwd.slice(1) : cwd}</Text>
             <Text bold color={promptColor}>❯</Text>
 
             <TextInput
