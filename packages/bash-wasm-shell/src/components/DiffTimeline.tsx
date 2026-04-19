@@ -6,7 +6,7 @@ type Props = {
 };
 
 type DiffItem = {
-    filename?: string;
+    filenames?: string[];
     content?: string;
     type: 'created' | 'modified' | 'deleted' | 'stdout' | 'stderr' | 'exit';
     exitCode?: number;
@@ -24,7 +24,7 @@ const TYPE_CONFIG: Record<DiffItem['type'], TypeConfig> = {
     deleted:  { label: 'Deleted',  color: 'red'    },
     stdout:   { label: 'Stdout',   color: 'white'  },
     stderr:   { label: 'Stderr',   color: 'red'    },
-    exit:     { label: 'Exit',     color: 'gray'   },
+    exit:     { label: 'Exit',     color: 'green'   },
 };
 
 function formatDuration(ms: number): string {
@@ -32,15 +32,32 @@ function formatDuration(ms: number): string {
     return `${(ms / 1000).toFixed(1)}s`;
 }
 
+function groupDiffItems(items: DiffItem[]): DiffItem[] {
+    return items.reduce<DiffItem[]>((acc, item) => {
+        const isDiff = item.type === 'created' || item.type === 'modified' || item.type === 'deleted';
+        const prev = acc[acc.length - 1];
+
+        if (isDiff && prev?.type === item.type) {
+            prev.filenames = [...(prev.filenames ?? []), ...(item.filenames ?? [])];
+            return acc;
+        }
+
+        acc.push({ ...item, filenames: item.filenames });
+        return acc;
+    }, []);
+}
+
 export function DiffTimeline({ entry }: Props) {
-    const allItems: DiffItem[] = [
-        ...(entry.diff?.created || []).map(f => ({ filename: f, type: 'created' as const })),
-        ...(entry.diff?.modified || []).map(f => ({ filename: f, type: 'modified' as const })),
-        ...(entry.diff?.deleted || []).map(f => ({ filename: f, type: 'deleted' as const })),
+    const rawItems: DiffItem[] = [
+        ...(entry.diff?.created  || []).map(f => ({ filenames: [f], type: 'created'  as const })),
+        ...(entry.diff?.modified || []).map(f => ({ filenames: [f], type: 'modified' as const })),
+        ...(entry.diff?.deleted  || []).map(f => ({ filenames: [f], type: 'deleted'  as const })),
         ...(entry.stdout ? [{ content: entry.stdout.trimEnd(), type: 'stdout' as const }] : []),
         ...(entry.stderr ? [{ content: entry.stderr.trimEnd(), type: 'stderr' as const }] : []),
         { type: 'exit' as const, exitCode: entry.exitCode, durationMs: entry.durationMs },
     ];
+
+    const allItems = groupDiffItems(rawItems);
 
     return (
         <Box flexDirection="column" marginBottom={1} paddingLeft={2}>
@@ -50,15 +67,14 @@ export function DiffTimeline({ entry }: Props) {
                 const isDiff = item.type === 'created' || item.type === 'modified' || item.type === 'deleted';
                 const isExit = item.type === 'exit';
                 const contentLines = item.content ? item.content.split('\n').length : 0;
-                const numContentLines = isDiff ? 2 : isExit ? 1 : contentLines + 1;
-                const pipeCount = (numContentLines - 1) + (isLast ? 0 : 1);
+                const numContentLines = isDiff ? (item.filenames?.length || 2) + 1 : isExit ? 1 : contentLines + 1;
+                const pipeCount = numContentLines + (isLast ? -1 : 1);
                 const exitColor: 'green' | 'red' | TypeConfig['color'] = isExit
                     ? (item.exitCode === 0 ? 'green' : 'red')
                     : config.color;
 
                 return (
                     <Box key={index} flexDirection="row">
-                        {/* Timeline Column */}
                         <Box flexDirection="column" marginRight={2} alignItems="center">
                             <Text color={isExit ? exitColor : config.color}>●</Text>
                             {pipeCount > 0 && (
@@ -70,20 +86,21 @@ export function DiffTimeline({ entry }: Props) {
                             )}
                         </Box>
 
-                        {/* Content Column */}
+
                         <Box flexDirection="column" paddingBottom={isLast ? 0 : 1}>
                             {isExit ? (
                                 <Box flexDirection="row" gap={2}>
                                     <Text color={exitColor}>exit {item.exitCode}</Text>
-                                    {item.durationMs !== undefined && (
-                                        <Text dimColor>{formatDuration(item.durationMs)}</Text>
-                                    )}
                                 </Box>
                             ) : isDiff ? (
-                                <>
-                                    <Text bold>{item.filename}</Text>
-                                    <Text color={config.color}>{config.label}</Text>
-                                </>
+                                <Box flexDirection="column" gap={1}>
+                                    <Text bold>{config.label}</Text>
+                                    <Box flexDirection="column">
+                                        {item.filenames?.map((filename, i) => (
+                                            <Text key={i}> ➜ {filename}</Text>
+                                        ))}
+                                    </Box>
+                                </Box>
                             ) : (
                                 <Box flexDirection="column">
                                     <Text bold dimColor={item.type === 'stderr'}>{config.label}</Text>

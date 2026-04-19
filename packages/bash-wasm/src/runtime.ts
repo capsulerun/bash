@@ -30,12 +30,22 @@ export class WasmRuntime implements BaseRuntime {
         }
     }
 
-    async preload(state: State) {
-        await run({
-            file: this.jsSandbox,
-            args: ["PRELOAD", JSON.stringify(state)],
-            mounts: [`${this.hostWorkspace}::/`]
-        })
+    async preload(state: State, name: string = "js") {
+        if(name === "js") {
+          await run({
+                file: this.jsSandbox,
+                args: ["PRELOAD", JSON.stringify(state)],
+                mounts: [`${this.hostWorkspace}::/`]
+            })
+        }
+
+        if(name === "python") {
+            await run({
+                file: this.pythonSandbox,
+                args: ["PRELOAD", JSON.stringify(state)],
+                mounts: [`${this.hostWorkspace}::/`]
+            })
+        }
     }
 
     async executeCode(state: State, code: string, language: string = "js"): Promise<unknown> {

@@ -2,19 +2,10 @@ import ast
 import sys
 import os
 import json
+import builtins
 from io import StringIO
 from dataclasses import dataclass
 from capsule import task
-
-# Need to import them at build time
-import socket
-import ssl
-import urllib.request
-import urllib.parse
-import urllib.error
-import urllib.response
-import http.client
-import http.cookiejar
 
 @dataclass
 class State:
@@ -59,6 +50,7 @@ def execute_file(state: str, file_path: str, args: list[str]):
         with open(rel_path, 'r') as f:
             source = f.read()
         global_env = {
+            "__builtins__": builtins,
             "__name__": "__main__",
             "__file__": rel_path,
         }
@@ -99,7 +91,7 @@ def execute_code(state: str, code: str):
         return None
 
     last_node = tree.body[-1]
-    local_env = {}
+    local_env = {"__builtins__": builtins}
 
     captured_output = StringIO()
     old_stdout = sys.stdout

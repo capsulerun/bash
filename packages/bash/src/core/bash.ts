@@ -26,8 +26,8 @@ export class Bash {
         this.filesystem.init();
     }
 
-    async preload() {
-        await this.runtime.preload(this.stateManager.state);
+    async preload(name: string = "js") {
+        await this.runtime.preload(this.stateManager.state, name);
     }
 
     async run(command: string): Promise<CommandResult> {

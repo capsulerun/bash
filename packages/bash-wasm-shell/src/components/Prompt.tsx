@@ -42,9 +42,9 @@ export function Prompt({ cwd, running, onSubmit, sandboxReady, history }: Props)
 
     return (
         <Box flexDirection="column">
-            <Text dimColor>{cwd}</Text>
+            {/* <Text dimColor>{cwd}</Text> */}
             <Box gap={1}>
-                <Text bold>❯</Text>
+                <Text bold>{cwd} ❯ </Text>
                 <TextInput
                     value={input}
                     onChange={(val) => { setInput(val); setHistoryIndex(-1); }}

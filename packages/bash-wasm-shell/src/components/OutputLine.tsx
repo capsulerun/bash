@@ -9,13 +9,12 @@ type Props = {
 export function OutputLine({ entry }: Props) {
     return (
         <Box flexDirection="column" gap={0}>
-            {/* Command */}
             <Box marginBottom={1}>
-                <Text bold>❯ </Text>
+                {/* state.cwd */}
+                <Text bold>{entry.state?.cwd} ❯ </Text>
                 <Text>{entry.command}</Text>
             </Box>
 
-            {/* Output Timeline (Stdout, Stderr, Diffs) */}
             <DiffTimeline entry={entry} />
         </Box>
     );
