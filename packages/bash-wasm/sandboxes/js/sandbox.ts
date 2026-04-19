@@ -150,7 +150,7 @@ export const resolvePath = task(
   async (state: State, targetPath: string) => {
     process.chdir(state.cwd);
 
-    if (!fs.existsSync(path.resolve(targetPath))) {
+    if (!fs.existsSync(targetPath) && targetPath !== state.cwd) {
       throw new Error(`Path ${targetPath} does not exist`);
     }
 
@@ -166,8 +166,8 @@ export const main = task(
 
     let parsedState: State = JSON.parse(state);
 
-    if (action === "LOAD") {
-      response = { success: true, result: "Sandbox loaded successfully", error: null };
+    if (action === "PRELOAD") {
+      response = { success: true, result: "Sandbox preloaded successfully", error: null };
     } else if (action === "EXECUTE_CODE") {
       response = await executeCode(parsedState, parsedArgs[0]);
     } else if (action === "EXECUTE_FILE") {

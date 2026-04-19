@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "pretest": "pip install -r src/python/requirements.txt -q",
+    "pretest": "pip install -r sandboxes/python/requirements.txt -q",
     "test": "vitest run"
   },
   "license": "Apache-2.0",
@@ -19,8 +19,8 @@
     "tsup": "^8.0.0"
   },
   "dependencies": {
-    "@capsule-run/cli": "^0.8.8",
-    "@capsule-run/sdk": "^0.8.8",
-    "@capsule-run/bash-types": "workspace:*"
+    "@capsule-run/bash-types": "workspace:*",
+    "@capsule-run/sdk": "^0.8.9",
+    "@capsule-run/cli": "^0.8.9"
   }
 }

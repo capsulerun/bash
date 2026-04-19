@@ -8,6 +8,11 @@ export interface BaseRuntime {
     hostWorkspace: string;
 
     /**
+     * Preload the runtime
+     */
+    preload(state: State, name?: string): Promise<void>;
+
+    /**
      * Execute a code
      */
     executeCode(state: State, code: string, language?: string): Promise<unknown>;

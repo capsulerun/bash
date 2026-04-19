@@ -18,6 +18,7 @@ export interface CommandResult {
     stdout: string;
     stderr: string;
     exitCode: number;
+    durationMs?: number;
     diff?: {
         created: string[];
         modified: string[];
@@ -26,6 +27,7 @@ export interface CommandResult {
     state?: {
         cwd: string;
         env: Record<string, string>;
+        exitCode: number;
     }
 };
 

@@ -17,6 +17,7 @@ export class StateManager {
       },
       changeDirectory: async (targetPath: string) => {
         const resolvedPath = await this.runtime.resolvePath(this.state, targetPath)
+
         if (!resolvedPath) {
           return false;
         }

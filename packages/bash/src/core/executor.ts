@@ -74,16 +74,17 @@ export class Executor {
     }
 
     private async executeScript(filePath: string, scriptArgs: string[]): Promise<CommandResult> {
+        const start = Date.now();
         const absolutePath = await this.runtime.resolvePath(this.state, filePath);
         if (!absolutePath) {
-            return { stdout: '', stderr: `bash: ${filePath}: No such file or directory`, exitCode: 1 };
+            return { stdout: '', stderr: `bash: ${filePath}: No such file or directory`, exitCode: 1, durationMs: Date.now() - start };
         }
 
         let content: string;
         try {
             content = await this.runtime.executeCode(this.state, `require('fs').readFileSync('${absolutePath}', 'utf8');`) as string;
         } catch {
-            return { stdout: '', stderr: `bash: sh: ${filePath}: No such file or directory`, exitCode: 1 };
+            return { stdout: '', stderr: `bash: sh: ${filePath}: No such file or directory`, exitCode: 1, durationMs: Date.now() - start };
         }
 
         const lines = content.split('\n').filter(line => !line.startsWith('#!'));
@@ -114,16 +115,17 @@ export class Executor {
             } catch {}
         }
 
-        return { stdout: stdout.join('\n'), stderr: stderr.join('\n'), exitCode };
+        return { stdout: stdout.join('\n'), stderr: stderr.join('\n'), exitCode, durationMs: Date.now() - start };
     }
 
     private async executeCommand(node: CommandNode, stdin: string): Promise<CommandResult> {
         const [name, ...args] = node.args;
         let result: CommandResult;
+        const start = Date.now();
 
         if (name === 'sh' || name === 'bash') {
             const [file, ...scriptArgs] = args;
-            if (!file) return { stdout: '', stderr: `bash: ${name}: missing script operand`, exitCode: 1 };
+            if (!file) return { stdout: '', stderr: `bash: ${name}: missing script operand`, exitCode: 1, durationMs: Date.now() - start };
             return this.executeScript(file, scriptArgs);
         }
 
@@ -141,7 +143,7 @@ export class Executor {
                         return fs.readFileSync(path.resolve(${JSON.stringify(r.file)}), 'utf8');
                     `) as string;
                 } catch {
-                    return { stdout: '', stderr: `bash: ${r.file}: No such file or directory`, exitCode: 1 };
+                    return { stdout: '', stderr: `bash: ${r.file}: No such file or directory`, exitCode: 1, durationMs: Date.now() - start };
                 }
             }
         }
@@ -152,9 +154,9 @@ export class Executor {
         const before = this.snapshotFs();
 
         if (!command) {
-            result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127 };
+            result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127, durationMs: Date.now() - start };
         } else if (opts.hasFlag('h', 'help') && command.manual) {
-            result = { stdout: displayCommandManual(command.manual), stderr: '', exitCode: 0 };
+            result = { stdout: displayCommandManual(command.manual), stderr: '', exitCode: 0, durationMs: Date.now() - start };
         } else {
             let invalidOption: string | undefined;
 
@@ -183,7 +185,7 @@ export class Executor {
             }
 
             if (invalidOption) {
-                return { stdout: '', stderr: `bash: ${name}: invalid option -- ${invalidOption}\n\nusage: ${command.manual?.usage}`, exitCode: 1 };
+                return { stdout: '', stderr: `bash: ${name}: invalid option -- ${invalidOption}\n\nusage: ${command.manual?.usage}`, exitCode: 1, durationMs: Date.now() - start };
             }
 
             result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
@@ -235,7 +237,7 @@ export class Executor {
 
                     currentStdout = 'File created ✔';
                 } catch {
-                    return { stdout: '', stderr: `bash: ${r.file}: No such file or directory`, exitCode: 1 };
+                    return { stdout: '', stderr: `bash: ${r.file}: No such file or directory`, exitCode: 1, durationMs: Date.now() - start };
                 }
             }
         }
@@ -243,22 +245,25 @@ export class Executor {
         const after = this.snapshotFs();
         const diff = this.diffSnapshots(before, after);
 
-        result = { ...result, stdout: currentStdout, stderr: currentStderr, diff, state: { cwd: this.state.cwd, env: this.state.env } };
-
+        const durationMs = Date.now() - start;
         this.state.setLastExitCode(result.exitCode);
+
+        result = { ...result, stdout: currentStdout, stderr: currentStderr, diff, state: { cwd: this.state.cwd, env: this.state.env, exitCode: result.exitCode }, durationMs };
         return result;
     }
 
     private async executePipeline(node: { type: 'pipeline'; commands: CommandNode[] }): Promise<CommandResult> {
         let stdin = '';
-        let result: CommandResult = { stdout: '', stderr: '', exitCode: 0 };
+        let result: CommandResult = { stdout: '', stderr: '', exitCode: 0, durationMs: 0 };
+        let durationMs = 0;
 
         for (const cmd of node.commands) {
             result = await this.executeCommand(cmd, stdin);
+            durationMs += result.durationMs || 0;
             stdin = result.stdout;
         }
 
-        return result;
+        return { ...result, durationMs };
     }
 
 
@@ -267,7 +272,8 @@ export class Executor {
 
         if (left.exitCode !== 0) return left;
 
-        return this.execute(node.right);
+        const right = await this.execute(node.right);
+        return { ...right, stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'), diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
     }
 
     private async executeOr(node: { type: 'or'; left: ASTNode; right: ASTNode }): Promise<CommandResult> {
@@ -275,12 +281,14 @@ export class Executor {
 
         if (left.exitCode === 0) return left;
 
-        return this.execute(node.right);
+        const right = await this.execute(node.right);
+        return { ...right, stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'), diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
     }
 
     private async executeSequence(node: { type: 'sequence'; left: ASTNode; right: ASTNode }): Promise<CommandResult> {
-        await this.execute(node.left);
-        return this.execute(node.right);
+        const left = await this.execute(node.left);
+        const right = await this.execute(node.right);
+        return { ...right, stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'), diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
     }
 
     private async searchCommandHandler(name: string): Promise<{handler: CommandHandler, manual?: CommandManual} | undefined> {
@@ -298,5 +306,16 @@ export class Executor {
         } catch {
             return undefined;
         }
+    }
+
+    private mergeDiffs(
+        a?: { created: string[]; modified: string[]; deleted: string[] },
+        b?: { created: string[]; modified: string[]; deleted: string[] }
+    ) {
+        return {
+            created:  [...(a?.created  ?? []), ...(b?.created  ?? [])],
+            modified: [...(a?.modified ?? []), ...(b?.modified ?? [])],
+            deleted:  [...(a?.deleted  ?? []), ...(b?.deleted  ?? [])],
+        };
     }
 }

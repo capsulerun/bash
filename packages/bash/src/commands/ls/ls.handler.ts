@@ -66,7 +66,6 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
                 try {
                     const wasmSafeStats = await runtime.executeCode(state, `return require('fs').statSync('${filepath}');`) as any;
 
-                    // Use arbitrary simple permission layout
                     const isDirectory = wasmSafeStats.mode === 0o40755 || (wasmSafeStats.mode & 0o40000);
                     const permissions = (isDirectory ? "d" : "-") + "rwxr-xr-x";
 

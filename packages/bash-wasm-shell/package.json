@@ -1,0 +1,26 @@
+{
+  "name": "bash-wasm-shell",
+  "version": "0.1.0",
+  "description": "Interactive shell UI for capsule-run/bash",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "bash-wasm-shell": "tsx src/index.tsx"
+  },
+  "packageManager": "pnpm@10.21.0",
+  "dependencies": {
+    "@capsule-run/bash": "workspace:*",
+    "@capsule-run/bash-types": "workspace:*",
+    "@capsule-run/bash-wasm": "workspace:*",
+    "ink": "^7.0.0",
+    "ink-image": "^2.0.0",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^19.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "tsx": "^4.0.0"
+  }
+}
