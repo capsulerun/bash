@@ -5,7 +5,7 @@ import { OutputLine } from './OutputLine.js';
 import { Prompt } from './Prompt.js';
 
 export function Shell() {
-    const { history, running, runningCommand, cwd, lastExitCode, submit, jsSandboxReady, pythonSandboxReady } = useShell();
+    const { history, running, runningCommand, cwd, lastExitCode, submit, jsSandboxReady, pythonSandboxReady, heredoc } = useShell();
     const sandboxReady = jsSandboxReady && pythonSandboxReady;
     const lastEntry = history[history.length - 1];
 
@@ -27,7 +27,7 @@ export function Shell() {
                     </Static>
 
                     {sandboxReady && (
-                        <Prompt cwd={cwd} lastExitCode={lastExitCode} running={running} runningCommand={runningCommand} onSubmit={submit} history={history.map(h => h.command)} />
+                        <Prompt cwd={cwd} lastExitCode={lastExitCode} running={running} runningCommand={runningCommand} onSubmit={submit} history={history.map(h => h.command)} heredoc={heredoc} />
                     )}
                 </Box>
             </Box>

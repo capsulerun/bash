@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import TextInput from 'ink-text-input';
-import Spinner from 'ink-spinner';
+import type { HeredocState } from '../hooks/useShell.js';
 
 type Props = {
     cwd: string;
@@ -10,9 +10,10 @@ type Props = {
     runningCommand: string;
     onSubmit: (command: string) => void;
     history: string[];
+    heredoc: HeredocState | null;
 };
 
-export function Prompt({ cwd, lastExitCode, running, runningCommand, onSubmit, history }: Props) {
+export function Prompt({ cwd, lastExitCode, running, runningCommand, onSubmit, history, heredoc }: Props) {
     const [input, setInput] = useState('');
     const [historyIndex, setHistoryIndex] = useState(-1);
 
@@ -41,6 +42,19 @@ export function Prompt({ cwd, lastExitCode, running, runningCommand, onSubmit, h
     });
 
     const promptColor = lastExitCode === 0 ? 'green' : 'red';
+
+    if (heredoc) {
+        return (
+            <Box gap={1} marginLeft={1}>
+                <Text bold color="yellow">{'>'}</Text>
+                <TextInput
+                    value={input}
+                    onChange={(val) => { setInput(val); }}
+                    onSubmit={handleSubmit}
+                />
+            </Box>
+        );
+    }
 
     return (
         <Box gap={1} marginLeft={1}>

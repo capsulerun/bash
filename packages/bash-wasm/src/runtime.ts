@@ -69,6 +69,8 @@ export class WasmRuntime implements BaseRuntime {
             mounts: [`${this.hostWorkspace}::/`],
         })
 
+        console.log(result);
+
         if (result.error) {
             throw result.error.message;
         }

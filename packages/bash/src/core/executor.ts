@@ -130,6 +130,11 @@ export class Executor {
         }
 
         for (const r of node.redirects) {
+            if (r.op === '<<') {
+                stdin = r.body;
+                continue;
+            }
+
             if (r.op === '<') {
                 if (r.file === '/dev/null') {
                     stdin = '';
