@@ -28,12 +28,12 @@ describe('sandbox.py – LOAD', () => {
   it('returns a success confirmation', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['LOAD', baseState],
+      args: ['PRELOAD', baseState],
       mounts: [`${WORKSPACE}::/`],
     });
 
     const value = assertSuccess(result);
-    expect(value).toBe('Sandbox loaded successfully');
+    expect(value).toBe('Sandbox preloaded successfully');
   });
 });
 
