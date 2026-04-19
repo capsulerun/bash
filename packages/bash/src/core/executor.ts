@@ -246,9 +246,9 @@ export class Executor {
         const diff = this.diffSnapshots(before, after);
 
         const durationMs = Date.now() - start;
-        result = { ...result, stdout: currentStdout, stderr: currentStderr, diff, state: { cwd: this.state.cwd, env: this.state.env }, durationMs };
-
         this.state.setLastExitCode(result.exitCode);
+
+        result = { ...result, stdout: currentStdout, stderr: currentStderr, diff, state: { cwd: this.state.cwd, env: this.state.env, exitCode: result.exitCode }, durationMs };
         return result;
     }
 
@@ -273,7 +273,7 @@ export class Executor {
         if (left.exitCode !== 0) return left;
 
         const right = await this.execute(node.right);
-        return { ...right, diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
+        return { ...right, stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'), diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
     }
 
     private async executeOr(node: { type: 'or'; left: ASTNode; right: ASTNode }): Promise<CommandResult> {
@@ -282,13 +282,13 @@ export class Executor {
         if (left.exitCode === 0) return left;
 
         const right = await this.execute(node.right);
-        return { ...right, diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
+        return { ...right, stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'), diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
     }
 
     private async executeSequence(node: { type: 'sequence'; left: ASTNode; right: ASTNode }): Promise<CommandResult> {
         const left = await this.execute(node.left);
         const right = await this.execute(node.right);
-        return { ...right, diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
+        return { ...right, stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'), diff: this.mergeDiffs(left.diff, right.diff), durationMs: (left.durationMs || 0) + (right.durationMs || 0) };
     }
 
     private async searchCommandHandler(name: string): Promise<{handler: CommandHandler, manual?: CommandManual} | undefined> {

@@ -42,6 +42,10 @@ export function useShell() {
             return;
         }
 
+        if(command.trim() === 'exit') {
+            process.exit(0);
+        }
+
         setRunning(true);
         setRunningCommand(command);
 

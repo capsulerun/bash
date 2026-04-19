@@ -46,18 +46,12 @@ export function Prompt({ cwd, lastExitCode, running, runningCommand, onSubmit, h
         <Box gap={1}>
             <Text bold dimColor>{cwd}</Text>
             <Text bold color={promptColor}>❯</Text>
-            {running ? (
-                <>
-                    <Text dimColor>{runningCommand}</Text>
-                    <Text color="cyan"><Spinner type="dots" /></Text>
-                </>
-            ) : (
-                <TextInput
-                    value={input}
-                    onChange={(val) => { setInput(val); setHistoryIndex(-1); }}
-                    onSubmit={handleSubmit}
-                />
-            )}
+
+            <TextInput
+                value={input}
+                onChange={(val) => { setInput(val); setHistoryIndex(-1); }}
+                onSubmit={handleSubmit}
+            />
         </Box>
     );
 }

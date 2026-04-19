@@ -40,7 +40,7 @@ export function Header({ jsReady, pythonReady }: Props) {
             <Box justifyContent="space-between" width="100%">
 
                 <Box flexDirection="column">
-                    <Text bold color="cyan">⬢ Capsule Bash</Text>
+                    <Text bold>⬢ Capsule Bash</Text>
                     <Text dimColor>Environnement v0.1.0</Text>
                 </Box>
 
