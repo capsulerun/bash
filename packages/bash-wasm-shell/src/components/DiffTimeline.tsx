@@ -13,18 +13,13 @@ type DiffItem = {
     durationMs?: number;
 };
 
-type TypeConfig = {
-    label: string;
-    color: 'green' | 'yellow' | 'red' | 'white' | 'gray';
-};
-
-const TYPE_CONFIG: Record<DiffItem['type'], TypeConfig> = {
+const TYPE_STYLE: Record<DiffItem['type'], { label: string; color: string }> = {
     created:  { label: 'Created',  color: 'green'  },
     modified: { label: 'Modified', color: 'yellow' },
     deleted:  { label: 'Deleted',  color: 'red'    },
     stdout:   { label: 'Stdout',   color: 'white'  },
     stderr:   { label: 'Stderr',   color: 'red'    },
-    exit:     { label: 'Exit',     color: 'green'   },
+    exit:     { label: 'Exit',     color: 'green'  },
 };
 
 function formatDuration(ms: number): string {
@@ -42,9 +37,16 @@ function groupDiffItems(items: DiffItem[]): DiffItem[] {
             return acc;
         }
 
-        acc.push({ ...item, filenames: item.filenames });
+        acc.push({ ...item });
         return acc;
     }, []);
+}
+
+function contentHeight(item: DiffItem): number {
+    const isDiff = item.type === 'created' || item.type === 'modified' || item.type === 'deleted';
+    if (isDiff) return (item.filenames?.length ?? 0) + 1;
+    if (item.type === 'exit') return 1;
+    return (item.content?.split('\n').length ?? 0) + 1;
 }
 
 export function DiffTimeline({ entry }: Props) {
@@ -57,26 +59,22 @@ export function DiffTimeline({ entry }: Props) {
         { type: 'exit' as const, exitCode: entry.exitCode, durationMs: entry.durationMs },
     ];
 
-    const allItems = groupDiffItems(rawItems);
+    const items = groupDiffItems(rawItems);
 
     return (
-        <Box flexDirection="column" marginBottom={1} paddingLeft={2}>
-            {allItems.map((item, index) => {
-                const isLast = index === allItems.length - 1;
-                const config = TYPE_CONFIG[item.type];
+        <Box flexDirection="column" paddingLeft={2} marginBottom={1} marginTop={1}>
+            {items.map((item, index) => {
+                const isLast = index === items.length - 1;
+                const style = TYPE_STYLE[item.type];
                 const isDiff = item.type === 'created' || item.type === 'modified' || item.type === 'deleted';
                 const isExit = item.type === 'exit';
-                const contentLines = item.content ? item.content.split('\n').length : 0;
-                const numContentLines = isDiff ? (item.filenames?.length || 2) + 1 : isExit ? 1 : contentLines + 1;
-                const pipeCount = numContentLines + (isLast ? -1 : 1);
-                const exitColor: 'green' | 'red' | TypeConfig['color'] = isExit
-                    ? (item.exitCode === 0 ? 'green' : 'red')
-                    : config.color;
+                const exitColor = isExit ? (item.exitCode === 0 ? 'green' : 'red') : style.color;
+                const pipeCount = contentHeight(item) + (isLast ? -1 : 1);
 
                 return (
                     <Box key={index} flexDirection="row">
                         <Box flexDirection="column" marginRight={2} alignItems="center">
-                            <Text color={isExit ? exitColor : config.color}>●</Text>
+                            <Text color={isExit ? exitColor : style.color}>●</Text>
                             {pipeCount > 0 && (
                                 <Box flexDirection="column">
                                     {Array.from({ length: pipeCount }).map((_, i) => (
@@ -86,24 +84,26 @@ export function DiffTimeline({ entry }: Props) {
                             )}
                         </Box>
 
-
-                        <Box flexDirection="column" paddingBottom={isLast ? 0 : 1}>
+                        <Box flexDirection="column">
                             {isExit ? (
-                                <Box flexDirection="row" gap={2}>
+                                <Box gap={1}>
                                     <Text color={exitColor}>exit {item.exitCode}</Text>
                                 </Box>
                             ) : isDiff ? (
                                 <Box flexDirection="column" gap={1}>
-                                    <Text bold>{config.label}</Text>
+                                    <Text bold>{style.label}</Text>
                                     <Box flexDirection="column">
                                         {item.filenames?.map((filename, i) => (
-                                            <Text key={i}> ➜ {filename}</Text>
+                                            <Text key={i}>
+                                                {item.type === 'created' ? <Text color={style.color}>[+]</Text> : item.type === 'modified' ? <Text color={style.color}>[~]</Text> : <Text color={style.color}>[-]</Text>}
+                                                {filename}
+                                            </Text>
                                         ))}
                                     </Box>
                                 </Box>
                             ) : (
                                 <Box flexDirection="column">
-                                    <Text bold dimColor={item.type === 'stderr'}>{config.label}</Text>
+                                    <Text bold dimColor={item.type === 'stderr'}>{style.label}</Text>
                                     <Box marginTop={1}>
                                         <Text dimColor={item.type === 'stderr'}>{item.content}</Text>
                                     </Box>

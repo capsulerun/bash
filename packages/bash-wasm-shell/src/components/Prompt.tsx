@@ -5,13 +5,14 @@ import Spinner from 'ink-spinner';
 
 type Props = {
     cwd: string;
+    lastExitCode: number;
     running: boolean;
+    runningCommand: string;
     onSubmit: (command: string) => void;
-    sandboxReady: boolean;
     history: string[];
 };
 
-export function Prompt({ cwd, running, onSubmit, sandboxReady, history }: Props) {
+export function Prompt({ cwd, lastExitCode, running, runningCommand, onSubmit, history }: Props) {
     const [input, setInput] = useState('');
     const [historyIndex, setHistoryIndex] = useState(-1);
 
@@ -22,8 +23,7 @@ export function Prompt({ cwd, running, onSubmit, sandboxReady, history }: Props)
     };
 
     useInput((_input, key) => {
-        if (running || !sandboxReady) return;
-
+        if (running) return;
         if (key.upArrow) {
             const nextIndex = Math.min(historyIndex + 1, history.length - 1);
             setHistoryIndex(nextIndex);
@@ -40,17 +40,24 @@ export function Prompt({ cwd, running, onSubmit, sandboxReady, history }: Props)
         }
     });
 
+    const promptColor = lastExitCode === 0 ? 'green' : 'red';
+
     return (
-        <Box flexDirection="column">
-            {/* <Text dimColor>{cwd}</Text> */}
-            <Box gap={1}>
-                <Text bold>{cwd} ❯ </Text>
+        <Box gap={1}>
+            <Text bold dimColor>{cwd}</Text>
+            <Text bold color={promptColor}>❯</Text>
+            {running ? (
+                <>
+                    <Text dimColor>{runningCommand}</Text>
+                    <Text color="cyan"><Spinner type="dots" /></Text>
+                </>
+            ) : (
                 <TextInput
                     value={input}
                     onChange={(val) => { setInput(val); setHistoryIndex(-1); }}
                     onSubmit={handleSubmit}
                 />
-            </Box>
+            )}
         </Box>
     );
 }

@@ -27,6 +27,7 @@ export interface CommandResult {
     state?: {
         cwd: string;
         env: Record<string, string>;
+        exitCode: number;
     }
 };
 

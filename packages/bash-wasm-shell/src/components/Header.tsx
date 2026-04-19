@@ -1,123 +1,53 @@
-import { Box, Text, useStdout } from 'ink';
+import { Box, Spacer, Text, useStdout } from 'ink';
 import Spinner from 'ink-spinner';
-
-// const logoLarge = [
-// '                     ......                     ',
-// '                 ..... :. ....                  ',
-// '              .....    :.    ....               ',
-// '           ......      :.       .....           ',
-// '        ......         :.          .....        ',
-// '     ......            :.             ......    ',
-// '    ......             ..             ......    ',
-// '    ........     ..:::::::::.      ..... ...    ',
-// '    ............:::...::::::::: .....    ...    ',
-// '    ...............   .::::::.....       ...    ',
-// '    ...................:::.....-:        ...    ',
-// '    ........................::---.       ...    ',
-// '    .....................:::::---.       ...    ',
-// '    ...:::::::::::::::..::::-----.       .:.    ',
-// '    ...:::::::::::::::..::------:.       .:.    ',
-// '    ...:::::::::::::::..::-----..:::..   .:.    ',
-// '    ...:::::::::::::::..:---:.     .:::...:.    ',
-// '    ...:::::::::::::::..:..           .:.::.    ',
-// '     .....::::::::::::..:           ..::::.     ',
-// '        .....:::::::::..:         .::::.        ',
-// '           .....::::::..:     ..:::..           ',
-// '              ......::..:   .:::.               ',
-// '                 ......::.:::..                 ',
-// '                     ..:::.                     ',
-// '                                             '
-// ]
-
-// const logoMedium = [
-
-// '               ..               ',
-// '           ..........           ',
-// '        .....  :.  ....         ',
-// '     .....     :.      ....     ',
-// '   ....        :.         ...   ',
-// '   ......  ..:::::..   ......   ',
-// '   ............:::::.....  ..   ',
-// '   ............:::..::     ..   ',
-// '   ..............:::--.    ..   ',
-// '   ..::::::::::.:::---     ..   ',
-// '   ..::::::::::.:----:::.  .:   ',
-// '   ..::::::::::.:--:   .:::.:   ',
-// '   ...:::::::::.:       ..:::   ',
-// '     ....::::::.:     .::..     ',
-// '        ....:::.: ..::..        ',
-// '           .....:::..           ',
-// '               ..               ',
-// ]
-
-
-
-// const logoSmall = [
-//  '          .         ',
-//  '       .. : ..      ',
-//  '   ...    :     ..  ',
-//  '  ...   .::.    ... ',
-//  '  ......  :::..   . ',
-//  '  .........::-.   . ',
-//  '  .:::::::.:--    : ',
-//  '  .:::::::.--  :: : ',
-//  '   ..::::::    .:.  ',
-//  '      ..::: .:.     ',
-//  '         .::         ',
-// ]
-
 
 type Props = {
     jsReady: boolean;
     pythonReady: boolean;
 };
 
+function SandboxStatus({ ready, label }: { ready: boolean; label: string }) {
+    return (
+        <Box gap={1}>
+            {ready ? (
+                <>
+                    <Text color="green">●</Text>
+                    <Text dimColor>{label}</Text>
+                </>
+            ) : (
+                <>
+                    <Text color="yellow"><Spinner type="dots" /></Text>
+                    <Text dimColor>{label}</Text>
+                </>
+            )}
+        </Box>
+    );
+}
+
 export function Header({ jsReady, pythonReady }: Props) {
     const { stdout } = useStdout();
 
     return (
-        <Box flexDirection="column" borderBottom borderStyle="round" borderColor="#444444" marginBottom={1}  padding={1} width={stdout?.columns || 80} alignItems="center" justifyContent="center">
+        <Box
+            flexDirection="column"
+            borderStyle="round"
+            borderColor="#444444"
+            width={stdout?.columns || 80}
+            paddingX={2}
+            paddingY={1}
+            marginBottom={1}
+        >
+            <Box justifyContent="space-between" width="100%">
 
-            <Box flexDirection="column" alignItems="center">
-
-                {/* ASCII Logo */}
-                {/* <Box marginBottom={1} flexDirection="column" alignItems="center">
-                    {logoMedium.map((line, i) => (
-                        <Text key={i}>{line}</Text>
-                    ))}
-                </Box> */}
-
-                <Box flexDirection="column" alignItems="center">
-                    <Box marginBottom={1}>
-                        <Text bold>Capsule Bash v0.1.0</Text>
-                    </Box>
-
-                    <Box flexDirection="row" alignItems="center" justifyContent="center">
-                        {jsReady ? (
-                            <Text dimColor>✓ JS Sandbox ready</Text>
-                        ) : (
-                            <>
-                                <Box marginRight={1}>
-                                    <Text><Spinner type="dots" /></Text>
-                                </Box>
-                                <Text dimColor>Loading JS sandbox</Text>
-                            </>
-                        )}
-                    </Box>
-                    <Box flexDirection="row" alignItems="center" justifyContent="center">
-                        {pythonReady ? (
-                            <Text dimColor>✓ Python Sandbox ready</Text>
-                        ) : (
-                            <>
-                                <Box marginRight={1}>
-                                    <Text><Spinner type="dots" /></Text>
-                                </Box>
-                                <Text dimColor>Loading Python sandbox</Text>
-                            </>
-                        )}
-                    </Box>
+                <Box flexDirection="column">
+                    <Text bold color="cyan">⬢ Capsule Bash</Text>
+                    <Text dimColor>Environnement v0.1.0</Text>
                 </Box>
 
+                <Box flexDirection="column" alignItems="flex-end">
+                    <SandboxStatus ready={jsReady} label="Sandbox JS" />
+                    <SandboxStatus ready={pythonReady} label="Sandbox Python" />
+                </Box>
             </Box>
         </Box>
     );
