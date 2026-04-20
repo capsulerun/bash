@@ -21,7 +21,7 @@
 npm install @capsule-run/bash @capsule-run/bash-wasm
 ```
 
-### As a library
+### TypeScript SDK
 
 ```typescript
 import { Bash } from "@capsule-run/bash";
@@ -56,7 +56,7 @@ console.log(result);
 }
 ```
 
-See the [bash-mcp README](packages/bash-mcp) for configuration details.
+See the [MCP README](packages/bash-mcp) for configuration details.
 
 ### Interactive shell
 
@@ -65,7 +65,7 @@ pnpm -s bash-wasm-shell
 ```
 
 > [!IMPORTANT]
-> Python and `pip` are required to compile the Python sandbox. Both sandboxes (JS and Python) are needed to run the shell.
+> Python and pip are required to compile the Python sandbox. Both sandboxes (JS and Python) are needed to run the shell.
 
 ## How It Works
 
@@ -73,7 +73,10 @@ Capsule Bash is built around three ideas:
 
 ### Commands and sandboxes
 
-Bash commands are reimplemented in JavaScript and each one runs inside a sandbox, isolating the host system from anything the agent executes. The sandbox layer is modular. Plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly.
+Bash commands are reimplemented in TypeScript and each one runs inside a sandbox, isolating the host system from anything the agent executes. The sandbox layer is modular. Plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly.
+
+> [!NOTE]
+> Not all bash commands are implemented yet. See packages/bash/src/commands/ for the current list.
 
 ### Instant feedback
 
@@ -85,11 +88,11 @@ The agent operates in a mounted workspace directory (`.capsule/session/workspace
 
 ## Limitations
 
-`WasmRuntime` runs in Node.js only so browser environments are not supported with existing runtime yet.
+`WasmRuntime` runs in Node.js only. So, browser environments are not supported with the existing runtime yet.
 
 ## Contributing
 
-Contributions are welcome. Whether it's documentation, new commands, or bug reports.
+Contributions are welcome, whether it's documentation, new commands, or bug reports.
 
 ### Adding or improving commands
 
