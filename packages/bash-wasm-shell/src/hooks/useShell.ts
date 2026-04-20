@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { CommandResult } from '@capsule-run/bash-types';
-import { bash } from '../bash.js';
+import { bash, preloadPromises } from '../bash.js';
 
 export type HistoryEntry = {
     command: string;
@@ -20,6 +20,12 @@ export type HistoryEntry = {
     };
 };
 
+export type HeredocState = {
+    command: string;
+    delimiter: string;
+    lines: string[];
+};
+
 export function useShell() {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [running, setRunning] = useState(false);
@@ -28,14 +34,39 @@ export function useShell() {
     const [cwd, setCwd] = useState(bash.stateManager.state.cwd);
     const [jsSandboxReady, setJsSandboxReady] = useState(false);
     const [pythonSandboxReady, setPythonSandboxReady] = useState(false);
+    const [heredoc, setHeredoc] = useState<HeredocState | null>(null);
+    const heredocRef = useRef<HeredocState | null>(null);
 
     useEffect(() => {
-        bash.preload("js").then(() => setJsSandboxReady(true)).catch(() => {});
-        bash.preload("python").then(() => setPythonSandboxReady(true)).catch(() => {});
+        preloadPromises.js.then(() => setJsSandboxReady(true));
+        preloadPromises.python.then(() => setPythonSandboxReady(true));
     }, []);
 
     const submit = useCallback(async (command: string) => {
         if (!command.trim()) return;
+
+        const current = heredocRef.current;
+        if (current) {
+            if (command.trim() === current.delimiter) {
+                const fullCommand = `${current.command}\n${current.lines.join('\n')}\n${current.delimiter}`;
+                heredocRef.current = null;
+                setHeredoc(null);
+                await submit(fullCommand);
+            } else {
+                const updated = { ...current, lines: [...current.lines, command] };
+                heredocRef.current = updated;
+                setHeredoc(updated);
+            }
+            return;
+        }
+
+        const heredocMatch = !command.includes('\n') && command.match(/<<\s*'?(\w+)'?/);
+        if (heredocMatch) {
+            const next = { command, delimiter: heredocMatch[1], lines: [] };
+            heredocRef.current = next;
+            setHeredoc(next);
+            return;
+        }
 
         if (command.trim() === 'clear') {
             setHistory([]);
@@ -81,5 +112,5 @@ export function useShell() {
         }
     }, []);
 
-    return { history, running, runningCommand, lastExitCode, cwd, submit, jsSandboxReady, pythonSandboxReady };
+    return { history, running, runningCommand, lastExitCode, cwd, submit, jsSandboxReady, pythonSandboxReady, heredoc };
 }

@@ -7,13 +7,18 @@ export type FileRedirect = {
     file: string;
 };
 
+export type HereDocRedirect = {
+    op: '<<';
+    body: string;
+};
+
 export type FdRedirect = {
     op: '>&';
     from: number;
     to: number;
 };
 
-export type Redirect = FileRedirect | FdRedirect;
+export type Redirect = FileRedirect | FdRedirect | HereDocRedirect;
 
 export type CommandNode = {
     type: 'command';
@@ -61,13 +66,43 @@ function tokenToString(token: ShellToken): string | null {
 export class Parser {
     private tokens: ShellToken[] = [];
     private pos = 0;
+    private heredocs: Map<string, string> = new Map();
 
     parse(input: string): ASTNode {
-        this.tokens = (shellQuote.parse(input) as ShellToken[]).filter(
+        this.heredocs = new Map();
+        const processed = this.extractHeredocs(input);
+        this.tokens = (shellQuote.parse(processed) as ShellToken[]).filter(
             (t) => !(typeof t === 'object' && 'comment' in t)
         );
         this.pos = 0;
         return this.parseSequence();
+    }
+
+    private extractHeredocs(input: string): string {
+        const lines = input.split('\n');
+        let result = '';
+        let i = 0;
+        while (i < lines.length) {
+            const line = lines[i];
+            const match = line.match(/^(.*?)<<\s*'?(\w+)'?\s*(.*)$/);
+            if (match) {
+                const [, before, delimiter, after] = match;
+                const key = `__HEREDOC_${this.heredocs.size}__`;
+                const bodyLines: string[] = [];
+                i++;
+                while (i < lines.length && lines[i].trim() !== delimiter) {
+                    bodyLines.push(lines[i]);
+                    i++;
+                }
+                this.heredocs.set(key, bodyLines.join('\n'));
+                // Use < instead of << since shell-quote doesn't tokenize << as one op
+                result += `${before}< ${key}${after ? ' ' + after : ''}\n`;
+            } else {
+                result += line + '\n';
+            }
+            i++;
+        }
+        return result.trimEnd();
     }
 
     private peek(): ShellToken | undefined {
@@ -142,7 +177,11 @@ export class Parser {
 
                 if (file === null) throw new SyntaxError(`Expected filename after '${(token as { op: string }).op}'`);
 
-                redirects.push({ op: (token as { op: RedirectOp }).op, file });
+                if (isOp(token, '<') && this.heredocs.has(file)) {
+                    redirects.push({ op: '<<', body: this.heredocs.get(file)! });
+                } else {
+                    redirects.push({ op: (token as { op: RedirectOp }).op, file });
+                }
             } else if (isOp(token)) {
                 break;
             } else {

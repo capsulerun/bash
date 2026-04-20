@@ -24,10 +24,8 @@ export class Executor {
         private readonly state: State,
     ) {}
 
-    private snapshotFs(): FsSnapshot {
+    private snapshotFs(root: string): FsSnapshot {
         const snapshot: FsSnapshot = {};
-        const workspace = this.runtime.hostWorkspace;
-        if (!workspace) return snapshot;
 
         const walk = (dir: string) => {
             try {
@@ -35,15 +33,26 @@ export class Executor {
                     const fullPath = path.join(dir, entry);
                     try {
                         const stat = fs.statSync(fullPath);
-                        if (stat.isDirectory()) walk(fullPath);
-                        else snapshot[fullPath.slice(workspace.length)] = stat.mtimeMs;
+                        if (stat.isDirectory()) {
+                            snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
+                            walk(fullPath);
+                        } else {
+                            snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
+                        }
                     } catch {}
                 }
             } catch {}
         };
 
-        walk(workspace);
+        walk(root);
         return snapshot;
+    }
+
+    private cwdRoot(): string {
+        const workspace = this.runtime.hostWorkspace;
+        if (!workspace) return '';
+        const relativeCwd = this.state.cwd.replace(/^\//, '');
+        return relativeCwd ? path.join(workspace, relativeCwd) : workspace;
     }
 
     private diffSnapshots(before: FsSnapshot, after: FsSnapshot): { created: string[]; modified: string[]; deleted: string[] } {
@@ -130,6 +139,11 @@ export class Executor {
         }
 
         for (const r of node.redirects) {
+            if (r.op === '<<') {
+                stdin = r.body;
+                continue;
+            }
+
             if (r.op === '<') {
                 if (r.file === '/dev/null') {
                     stdin = '';
@@ -151,7 +165,8 @@ export class Executor {
         const opts = parsedCommandOptions(args);
         const command = await this.searchCommandHandler(name);
 
-        const before = this.snapshotFs();
+        const root = this.cwdRoot();
+        const before = this.snapshotFs(root);
 
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127, durationMs: Date.now() - start };
@@ -242,7 +257,7 @@ export class Executor {
             }
         }
 
-        const after = this.snapshotFs();
+        const after = this.snapshotFs(root);
         const diff = this.diffSnapshots(before, after);
 
         const durationMs = Date.now() - start;

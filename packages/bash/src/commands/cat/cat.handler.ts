@@ -6,10 +6,14 @@ export const manual: CommandManual = {
     usage: "cat [file]"
 };
 
-export const handler: CommandHandler = async ({ opts, state, runtime }: CommandContext) => {
+export const handler: CommandHandler = async ({ opts, stdin, state, runtime }: CommandContext) => {
 
     const stderr: string[] = [];
     const stdout: string[] = [];
+
+    if (opts.args.length === 0) {
+        return { stdout: stdin, stderr: '', exitCode: 0 };
+    }
 
     await Promise.all(opts.args.map(async (arg) => {
         const destinationAbsolutePath = await runtime.resolvePath(state, arg)

@@ -25,12 +25,14 @@ class State:
 
 def wasm_relative(cwd: str, file_path: str) -> str:
     joined = os.path.normpath(os.path.join(cwd, file_path))
-    return joined.lstrip("/")
+    return joined
 
 
 @task(name="executeFile", compute="MEDIUM", ram="512MB", allowed_hosts=["*"])
 def execute_file(state: str, file_path: str, args: list[str]):
     state = State.from_json(state)
+    os.chdir(state.cwd)
+
     rel_path = wasm_relative(state.cwd, file_path)
     file_dir = os.path.dirname(rel_path) or "."
 
@@ -80,6 +82,7 @@ def execute_file(state: str, file_path: str, args: list[str]):
 @task(name="executeCode", compute="LOW", ram="256MB", allowed_hosts=["*"])
 def execute_code(state: str, code: str):
     state = State.from_json(state)
+    os.chdir(state.cwd)
 
     site_packages = os.path.join(state.cwd, "site-packages")
     if site_packages not in sys.path:

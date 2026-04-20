@@ -8,7 +8,8 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bash-wasm-shell": "pnpm --filter bash-wasm-shell bash-wasm-shell"
+    "bash-wasm-shell": "pnpm --filter bash-wasm-shell bash-wasm-shell",
+    "prebuild-wasm": "bash ./scripts/prebuild-wasm-sandboxes.sh"
   },
   "dependencies": {
     "@capsule-run/cli": "^0.8.9",
