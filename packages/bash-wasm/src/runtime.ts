@@ -17,8 +17,8 @@ export class WasmRuntime implements BaseRuntime {
     public hostWorkspace: string = "";
 
     constructor() {
-        const jsWasmPath = path.resolve(__dirname, "../dist/sandboxes/js/sandbox.wasm");
-        const pyWasmPath = path.resolve(__dirname, "../dist/sandboxes/python/sandbox.wasm");
+        const jsWasmPath = path.resolve(__dirname, "../dist/sandboxes/js-sandbox.wasm");
+        const pyWasmPath = path.resolve(__dirname, "../dist/sandboxes/python-sandbox.wasm");
 
         if (fs.existsSync(jsWasmPath) && fs.existsSync(pyWasmPath)) {
             this.jsSandbox = jsWasmPath;
@@ -68,8 +68,6 @@ export class WasmRuntime implements BaseRuntime {
             args: ["EXECUTE_FILE", JSON.stringify(state), filePath, ...args],
             mounts: [`${this.hostWorkspace}::/`],
         })
-
-        console.log(result);
 
         if (result.error) {
             throw result.error.message;
