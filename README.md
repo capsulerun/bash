@@ -1,6 +1,12 @@
 <div align="center">
 
-# ```Capsule``` Bash
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark-mode.png" />
+  <source media="(prefers-color-scheme: light)" srcset="assets/logo-light-mode.png" />
+  <img alt="Capsule Bash" src="assets/logo-light-mode.png" width="80" />
+</picture>
+
+# `Capsule` Bash
 
 **Sandboxed bash made for agents**
 
@@ -12,19 +18,16 @@
 ## Quick Start
 
 ```bash
-# Core engine
-npm install @capsule-run/bash
-
-# Wasm execution environment (the sandbox)
-npm install @capsule-run/bash-wasm
+npm install @capsule-run/bash @capsule-run/bash-wasm
 ```
 
-### Via your backend
+### As a library
+
 ```typescript
 import { Bash } from "@capsule-run/bash";
 import { WasmRuntime } from "@capsule-run/bash-wasm";
 
-const bash = new Bash({ runtime: new WasmRuntime()});
+const bash = new Bash({ runtime: new WasmRuntime() });
 
 const result = await bash.run("mkdir src && touch src/index.ts");
 
@@ -33,14 +36,14 @@ console.log(result);
 {
   stdout: "Folder created ✔\nFile created ✔",
   stderr: "",
-  diff: {created: ['src', 'src/index.ts'], modified: [], deleted: [] },
+  diff: { created: ['src', 'src/index.ts'], modified: [], deleted: [] },
   duration: 10,
   exitCode: 0,
 }
 */
 ```
 
-#### Or Via MCP server
+### MCP server
 
 ```json
 {
@@ -53,65 +56,52 @@ console.log(result);
 }
 ```
 
-Read MCP readme to get more information [here](https://github.com/capsulerun/bash/packages/bash-mcp).
+See the [bash-mcp README](packages/bash-mcp) for configuration details.
 
-#### Or direct shell
+### Interactive shell
 
 ```bash
 pnpm -s bash-wasm-shell
 ```
 
 > [!IMPORTANT]
-> `pip` is required to compile the python sandbox. Both sandboxes js/python are needed to run the shell.
+> Python and `pip` are required to compile the Python sandbox. Both sandboxes (JS and Python) are needed to run the shell.
 
-## How it works
+## How It Works
 
-Capsule Bash is built around three main concepts that make it essential for agents :
+Capsule Bash is built around three ideas:
 
-- **Commands & Sandboxes**
+### Commands and sandboxes
 
-  Bash commands are reimplemented in JavaScript. Letting an agent freely use a bash environment, even a reimplemented one, could be risky for the host system. So each command needs to run in a sandbox.
+Bash commands are reimplemented in JavaScript and each one runs inside a sandbox, isolating the host system from anything the agent executes. The sandbox layer is modular. Plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly.
 
-  The sandbox part is modular. It allows you to plug in any sandboxed runtime into the main bash class.
-  By default, Capsule provides a `WasmRuntime` that uses [Capsule](https://github.com/capsulerun/capsule) to execute commands inside WebAssembly sandboxes.
+### Instant feedback
 
-- **Instant feedback**
+Traditional bash treats silence as success. In an agentic context, that forces a second call just to confirm the first one worked. Capsule Bash returns structured output for every command. Exit code, stdout, stderr, and a diff of filesystem changes.
 
-  Traditional bash is designed for humans. Apart from read‑only commands, silence is usually interpreted as success. But in an agentic environment, silence has no particular value.
+### Workspace isolation
 
-  When an agent runs a mutating command, it has no direct way to know if it succeeded. It has to run a second command to check. For example, create a file, then list the directory to confirm it exists. This means every mutating command can cost two calls.
-
-  `Capsule` Bash solves this by giving instant feedback. It returns all the important information for each command: exit code, stdout, stderr, and which files were changed.
-
-- **Workspace**
-
-  Capsule Bash uses a mounted workspace for the filesystem. You can see what the agent does in real time, but the agent only has access to the workspace folder. Your host system physically does not exist for the agent.
-
-  By default, you can inspect the workspace folder in `.capsule/session/workspace`. This gives you more control over the agent's filesystem and keeps your host safe.
-
-
+The agent operates in a mounted workspace directory (`.capsule/session/workspace` by default). Your host filesystem does not exist from the agent's perspective. You get full visibility into what the agent does without exposing your system.
 
 ## Limitations
 
-Bash-wasm(WasmRuntime) is not available for browser. It is meant to be used in a Node.js environment.
+`WasmRuntime` runs in Node.js only so browser environments are not supported with existing runtime yet.
 
 ## Contributing
 
-Contributions are welcome! You can contribute by improving the documentation, adding or improving commands, or reporting issues.
+Contributions are welcome. Whether it's documentation, new commands, or bug reports.
 
-### For adding or improving commands
+### Adding or improving commands
 
-Commands live in `packages/bash/src/commands/`. To add a new command or update an existing one:
+Commands live in `packages/bash/src/commands/`. To contribute:
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-command`
-3. Add your command in `packages/bash/src/commands/` (or update existing ones)
-4. Add a few unit tests
-5. Open a Pull Request
-
-That's it!
+3. Add or update your command in `packages/bash/src/commands/`
+4. Add unit tests
+5. Open a pull request
 
 ## License
 
-This project is licensed under the Apache License 2.0, see the [LICENSE](LICENSE) file for details.
+Apache License 2.0. See [LICENSE](LICENSE) for details.
 
