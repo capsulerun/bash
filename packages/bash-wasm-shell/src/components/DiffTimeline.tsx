@@ -94,10 +94,10 @@ export function DiffTimeline({ entry }: Props) {
                                     <Text bold>{style.label}</Text>
                                     <Box flexDirection="column">
                                         {item.filenames?.map((filename, i) => (
-                                            <Text key={i}>
+                                            <Box key={i} flexDirection="row" gap={1}>
                                                 {item.type === 'created' ? <Text color={style.color}>[+]</Text> : item.type === 'modified' ? <Text color={style.color}>[~]</Text> : <Text color={style.color}>[-]</Text>}
-                                                {filename}
-                                            </Text>
+                                                <Text>{filename}</Text>
+                                            </Box>
                                         ))}
                                     </Box>
                                 </Box>

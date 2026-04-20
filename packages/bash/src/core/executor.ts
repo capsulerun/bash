@@ -29,20 +29,26 @@ export class Executor {
         const workspace = this.runtime.hostWorkspace;
         if (!workspace) return snapshot;
 
+        const root = path.join(workspace, this.state.cwd);
+
         const walk = (dir: string) => {
             try {
                 for (const entry of fs.readdirSync(dir)) {
                     const fullPath = path.join(dir, entry);
                     try {
                         const stat = fs.statSync(fullPath);
-                        if (stat.isDirectory()) walk(fullPath);
-                        else snapshot[fullPath.slice(workspace.length)] = stat.mtimeMs;
+                        if (stat.isDirectory()) {
+                            snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
+                            walk(fullPath);
+                        } else {
+                            snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
+                        }
                     } catch {}
                 }
             } catch {}
         };
 
-        walk(workspace);
+        walk(root);
         return snapshot;
     }
 
