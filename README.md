@@ -12,15 +12,19 @@
 
 ![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
 
-[Quick Start](#quick-start) • [How It Works](#how-it-works) • [Contributing](#contributing)
+[Getting Started](#getting-started) • [How It Works](#how-it-works) • [Contributing](#contributing)
 
 ![Example Shell](assets/example.gif)
 </div>
 
-## Quick Start
+## Getting Started
 
 ```bash
-npm install @capsule-run/bash @capsule-run/bash-wasm
+# Install the core bash package
+npm install @capsule-run/bash
+
+# Install the default Wasm runtime
+npm install @capsule-run/bash-wasm
 ```
 
 ### TypeScript SDK
