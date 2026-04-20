@@ -1,4 +1,4 @@
-# `@capsule-run/bash-mcp`
+# `Capsule` bash mcp
 
 [![MCP Server Release](https://github.com/capsule-run/bash/actions/workflows/mcp-integration-release.yml/badge.svg)](https://github.com/capsule-run/bash/actions/workflows/mcp-integration-release.yml)
 

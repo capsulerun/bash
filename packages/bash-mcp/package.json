@@ -16,6 +16,12 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm --dts"
   },
+  "homepage": "https://github.com/capsulerun/bash/tree/main/packages/bash-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/capsulerun/bash.git",
+    "directory": "packages/bash-mcp"
+  },
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.21.0",
   "devDependencies": {
