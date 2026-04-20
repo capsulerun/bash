@@ -46,7 +46,7 @@ Add to your MCP client configuration (e.g. Claude Desktop, Cursor):
 
 ## How It Works
 
-Each session runs inside a WebAssembly sandbox powered by [`@capsule-run/bash-wasm`](https://github.com/capsule-run/bash). The sandbox provides:
+Each session runs inside a WebAssembly sandbox powered by [`@capsule-run/bash-wasm`](https://github.com/capsulerun/bash). The sandbox provides:
 
 - **Persistent state** — cwd, env vars, and filesystem changes persist across commands within a session
 - **Filesystem diff** — every `run` response includes a diff of what changed on disk

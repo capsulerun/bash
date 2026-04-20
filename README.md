@@ -60,7 +60,7 @@ console.log(result);
 }
 ```
 
-See the [MCP README](packages/bash-mcp) for configuration details.
+See the [MCP Readme](packages/bash-mcp) for configuration details.
 
 ### Interactive shell
 
