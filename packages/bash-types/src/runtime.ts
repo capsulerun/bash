@@ -10,7 +10,7 @@ export interface BaseRuntime {
     /**
      * Preload the runtime
      */
-    preload(state: State, name?: string): Promise<void>;
+    preload(state: State, name?: string): Promise<boolean>;
 
     /**
      * Execute a code

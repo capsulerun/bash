@@ -10,18 +10,22 @@
 
 **Sandboxed bash made for agents**
 
-![CI](https://github.com/capsulerun/bash/actions/workflows/ci.yml/badge.svg)
+![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
+
+[Getting Started](#getting-started) • [How It Works](#how-it-works) • [Contributing](#contributing)
 
 ![Example Shell](assets/example.gif)
 </div>
 
-## Quick Start
+## Getting Started
+
+### TypeScript SDK
 
 ```bash
 npm install @capsule-run/bash @capsule-run/bash-wasm
 ```
 
-### TypeScript SDK
+Run it:
 
 ```typescript
 import { Bash } from "@capsule-run/bash";
@@ -59,6 +63,8 @@ console.log(result);
 See the [MCP README](packages/bash-mcp) for configuration details.
 
 ### Interactive shell
+
+Clone the repository, then run from the project root:
 
 ```bash
 pnpm -s bash-wasm-shell
