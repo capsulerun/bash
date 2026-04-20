@@ -73,12 +73,17 @@ export class Executor {
     }
 
     async execute(node: ASTNode, stdin = ''): Promise<CommandResult> {
-        switch (node.type) {
-            case 'command':  return this.executeCommand(node, stdin);
-            case 'pipeline': return this.executePipeline(node);
-            case 'and':      return this.executeAnd(node);
-            case 'or':       return this.executeOr(node);
-            case 'sequence': return this.executeSequence(node);
+        try {
+            switch (node.type) {
+                case 'command':  return this.executeCommand(node, stdin);
+                case 'pipeline': return this.executePipeline(node);
+                case 'and':      return this.executeAnd(node);
+                case 'or':       return this.executeOr(node);
+                case 'sequence': return this.executeSequence(node);
+            }
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            return { stdout: '', stderr: message, exitCode: 1, durationMs: 0 };
         }
     }
 
