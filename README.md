@@ -2,7 +2,7 @@
 
 # ```Capsule``` Bash
 
-Sandboxed bash made for agents
+**Sandboxed bash made for agents**
 
 ![CI](https://github.com/capsulerun/bash/actions/workflows/ci.yml/badge.svg)
 
@@ -11,49 +11,76 @@ Sandboxed bash made for agents
 
 ## Quick Start
 
+> [!NOTE]
+> To use the shell like the example, clone the repo and run `pnpm install && pnpm bash-wasm-shell`.
+
 ```bash
-# Install
+# Core engine
 npm install @capsule-run/bash
+
+# Wasm execution environment (the sandbox)
 npm install @capsule-run/bash-wasm
 ```
 
+#### Via your backend
 ```typescript
 import { Bash } from "@capsule-run/bash";
 import { WasmRuntime } from "@capsule-run/bash-wasm";
 
 const bash = new Bash({ runtime: new WasmRuntime()});
 
-await bash.run("ls -la");
+const result = await bash.run("mkdir src && touch src/index.ts");
+
+console.log(result);
+
+/* Output:
+{
+  stdout: "Folder created ✔\nFile created ✔",
+  stderr: "",
+  diff: {created: ['src', 'src/index.ts'], modified: [], deleted: [] },
+  duration: 10,
+  exitCode: 0,
+}
+*/
 ```
 
-> [!NOTE]
-> To use the shell like the example, clone the repo and run `pnpm install && pnpm bash-wasm-shell`.
+#### Via MCP server
+
+```json
+{
+  "mcpServers": {
+    "capsule": {
+      "command": "npx",
+      "args": ["-y", "@capsule-run/bash-mcp"]
+    }
+  }
+}
+```
 
 ## How it works
 
-Capsule Bash is built around three main concepts that make it essential for agents.
+Capsule Bash is built around three main concepts that make it essential for agents :
 
-### Commands & Sandboxes
+- **Commands & Sandboxes**
 
-Bash commands are reimplemented in JavaScript. Letting an agent freely use a bash environment, even a reimplemented one, could be risky for the host system. So each command needs to run in a sandbox.
+  Bash commands are reimplemented in JavaScript. Letting an agent freely use a bash environment, even a reimplemented one, could be risky for the host system. So each command needs to run in a sandbox.
 
-The sandbox part is modular. It allows you to plug in any sandboxed runtime into the main bash class.
+  The sandbox part is modular. It allows you to plug in any sandboxed runtime into the main bash class.
+  By default, Capsule provides a `WasmRuntime` that uses [Capsule](https://github.com/capsulerun/capsule) to execute commands inside WebAssembly sandboxes.
 
-By default, Capsule provides a `WasmRuntime` that uses [Capsule](https://github.com/capsulerun/capsule) to execute commands inside WebAssembly sandboxes.
+- **Instant feedback**
 
-### Instant feedback
+  Traditional bash is designed for humans. Apart from read‑only commands, silence is usually interpreted as success. But in an agentic environment, silence has no particular value.
 
-Traditional bash is designed for humans. Apart from read‑only commands, silence is usually interpreted as success. But in an agentic environment, silence has no particular value.
+  When an agent runs a mutating command, it has no direct way to know if it succeeded. It has to run a second command to check. For example, create a file, then list the directory to confirm it exists. This means every mutating command can cost two calls.
 
-When an agent runs a mutating command, it has no direct way to know if it succeeded. It has to run a second command to check. For example, create a file, then list the directory to confirm it exists. This means every mutating command can cost two calls.
+  `Capsule` Bash solves this by giving instant feedback. It returns all the important information for each command: exit code, stdout, stderr, and which files were changed.
 
-`Capsule` Bash solves this by giving instant feedback. It returns all the important information for each command: exit code, stdout, stderr, and which files were changed.
+- **Workspace**
 
-### Workspace
+  Capsule Bash uses a mounted workspace for the filesystem. You can see what the agent does in real time, but the agent only has access to the workspace folder. Your host system physically does not exist for the agent.
 
-Capsule Bash uses a mounted workspace for the filesystem. You can see what the agent does in real time, but the agent only has access to the workspace folder. Your host system physically does not exist for the agent.
-
-By default, you can inspect the workspace folder in `.capsule/session/workspace`. This gives you more control over the agent's filesystem and keeps your host safe.
+  By default, you can inspect the workspace folder in `.capsule/session/workspace`. This gives you more control over the agent's filesystem and keeps your host safe.
 
 
 ## Contributing
