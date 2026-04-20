@@ -11,6 +11,11 @@
     "bash-wasm-shell": "pnpm --filter bash-wasm-shell bash-wasm-shell",
     "prebuild-wasm": "bash ./scripts/prebuild-wasm-sandboxes.sh"
   },
+  "homepage": "https://github.com/capsulerun/bash",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/capsulerun/bash.git"
+  },
   "dependencies": {
     "@capsule-run/cli": "^0.8.9",
     "@capsule-run/sdk": "^0.8.9"
