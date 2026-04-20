@@ -24,12 +24,8 @@ export class Executor {
         private readonly state: State,
     ) {}
 
-    private snapshotFs(): FsSnapshot {
+    private snapshotFs(root: string): FsSnapshot {
         const snapshot: FsSnapshot = {};
-        const workspace = this.runtime.hostWorkspace;
-        if (!workspace) return snapshot;
-
-        const root = path.join(workspace, this.state.cwd);
 
         const walk = (dir: string) => {
             try {
@@ -50,6 +46,13 @@ export class Executor {
 
         walk(root);
         return snapshot;
+    }
+
+    private cwdRoot(): string {
+        const workspace = this.runtime.hostWorkspace;
+        if (!workspace) return '';
+        const relativeCwd = this.state.cwd.replace(/^\//, '');
+        return relativeCwd ? path.join(workspace, relativeCwd) : workspace;
     }
 
     private diffSnapshots(before: FsSnapshot, after: FsSnapshot): { created: string[]; modified: string[]; deleted: string[] } {
@@ -162,7 +165,8 @@ export class Executor {
         const opts = parsedCommandOptions(args);
         const command = await this.searchCommandHandler(name);
 
-        const before = this.snapshotFs();
+        const root = this.cwdRoot();
+        const before = this.snapshotFs(root);
 
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127, durationMs: Date.now() - start };
@@ -253,7 +257,7 @@ export class Executor {
             }
         }
 
-        const after = this.snapshotFs();
+        const after = this.snapshotFs(root);
         const diff = this.diffSnapshots(before, after);
 
         const durationMs = Date.now() - start;

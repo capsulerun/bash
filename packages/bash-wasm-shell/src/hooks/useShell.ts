@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import type { CommandResult } from '@capsule-run/bash-types';
-import { bash } from '../bash.js';
+import { bash, preloadPromises } from '../bash.js';
 
 export type HistoryEntry = {
     command: string;
@@ -38,8 +38,8 @@ export function useShell() {
     const heredocRef = useRef<HeredocState | null>(null);
 
     useEffect(() => {
-        bash.preload("js").then(() => setJsSandboxReady(true)).catch(() => {});
-        bash.preload("python").then(() => setPythonSandboxReady(true)).catch(() => {});
+        preloadPromises.js.then(() => setJsSandboxReady(true));
+        preloadPromises.python.then(() => setPythonSandboxReady(true));
     }, []);
 
     const submit = useCallback(async (command: string) => {

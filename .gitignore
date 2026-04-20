@@ -142,6 +142,9 @@ vite.config.ts.timestamp-*
 # DS Store
 .DS_Store
 
+# python
+__pycache__/
+
 
 # Capsule
 .capsule/
