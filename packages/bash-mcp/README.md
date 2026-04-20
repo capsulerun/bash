@@ -1,6 +1,4 @@
-# `Capsule` bash mcp
-
-[![MCP Server Release](https://github.com/capsule-run/bash/actions/workflows/mcp-integration-release.yml/badge.svg)](https://github.com/capsule-run/bash/actions/workflows/mcp-integration-release.yml)
+# `Capsule` Bash MCP
 
 An MCP server that gives your AI agent the ability to run bash commands in a secure, persistent, WebAssembly-sandboxed environment.
 

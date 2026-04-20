@@ -12,6 +12,8 @@
 
 ![CI](https://github.com/capsulerun/bash/actions/workflows/ci.yml/badge.svg)
 
+[Quick Start](#quick-start) • [How It Works](#how-it-works) • [Contributing](#contributing)
+
 ![Example Shell](assets/example.gif)
 </div>
 
