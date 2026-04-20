@@ -12,11 +12,7 @@
 
 ![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
 
-
-
-
-**[Quick Start](#quick-start)** • **[How It Works](#how-it-works)** • **[Contributing](#contributing)**
-
+[Quick Start](#quick-start) • [How It Works](#how-it-works) • [Contributing](#contributing)
 
 ![Example Shell](assets/example.gif)
 </div>
