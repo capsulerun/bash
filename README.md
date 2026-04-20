@@ -19,12 +19,13 @@
 
 ## Getting Started
 
+### TypeScript SDK
+
 ```bash
-# Install the core bash package & default Wasm runtime
 npm install @capsule-run/bash @capsule-run/bash-wasm
 ```
 
-### TypeScript SDK
+Run it:
 
 ```typescript
 import { Bash } from "@capsule-run/bash";
