@@ -12,7 +12,7 @@
 
 ![CI](https://github.com/capsulerun/bash/actions/workflows/ci.yml/badge.svg)
 
-[Quick Start](#quick-start) • [How It Works](#how-it-works) • [Contributing](#contributing)
+*[Quick Start](#quick-start)* • *[Contributing](#contributing)*
 
 ![Example Shell](assets/example.gif)
 </div>
@@ -61,6 +61,8 @@ console.log(result);
 See the [MCP README](packages/bash-mcp) for configuration details.
 
 ### Interactive shell
+
+Clone the repository, then run from the project root:
 
 ```bash
 pnpm -s bash-wasm-shell

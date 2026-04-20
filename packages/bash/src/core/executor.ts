@@ -83,7 +83,7 @@ export class Executor {
             }
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
-            return { stdout: '', stderr: message, exitCode: 1, durationMs: 0 };
+            return { stdout: '', stderr: message, exitCode: 1, state: { cwd: this.state.cwd, env: this.state.env, exitCode: 1 }, diff: { created: [], modified: [], deleted: [] }, durationMs: 0 };
         }
     }
 
