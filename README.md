@@ -20,11 +20,8 @@
 ## Getting Started
 
 ```bash
-# Install the core bash package
-npm install @capsule-run/bash
-
-# Install the default Wasm runtime
-npm install @capsule-run/bash-wasm
+# Install the core bash package & default Wasm runtime
+npm install @capsule-run/bash @capsule-run/bash-wasm
 ```
 
 ### TypeScript SDK
