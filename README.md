@@ -10,9 +10,13 @@
 
 **Sandboxed bash made for agents**
 
-![CI](https://github.com/capsulerun/bash/actions/workflows/ci.yml/badge.svg)
+![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
 
-*[Quick Start](#quick-start)* • *[Contributing](#contributing)*
+
+
+
+**[Quick Start](#quick-start)** • **[How It Works](#how-it-works)** • **[Contributing](#contributing)**
+
 
 ![Example Shell](assets/example.gif)
 </div>
