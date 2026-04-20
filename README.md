@@ -11,9 +11,6 @@
 
 ## Quick Start
 
-> [!NOTE]
-> To use the shell like the example, clone the repo and run `pnpm install && pnpm bash-wasm-shell`.
-
 ```bash
 # Core engine
 npm install @capsule-run/bash
@@ -22,7 +19,7 @@ npm install @capsule-run/bash
 npm install @capsule-run/bash-wasm
 ```
 
-#### Via your backend
+### Via your backend
 ```typescript
 import { Bash } from "@capsule-run/bash";
 import { WasmRuntime } from "@capsule-run/bash-wasm";
@@ -32,8 +29,7 @@ const bash = new Bash({ runtime: new WasmRuntime()});
 const result = await bash.run("mkdir src && touch src/index.ts");
 
 console.log(result);
-
-/* Output:
+/*
 {
   stdout: "Folder created ✔\nFile created ✔",
   stderr: "",
@@ -44,7 +40,7 @@ console.log(result);
 */
 ```
 
-#### Via MCP server
+#### Or Via MCP server
 
 ```json
 {
@@ -56,6 +52,17 @@ console.log(result);
   }
 }
 ```
+
+Read MCP readme to get more information [here](https://github.com/capsulerun/bash/packages/bash-mcp).
+
+#### Or direct shell
+
+```bash
+pnpm -s bash-wasm-shell
+```
+
+> [!IMPORTANT]
+> `pip` is required to compile the python sandbox. Both sandboxes js/python are needed to run the shell.
 
 ## How it works
 
@@ -82,6 +89,11 @@ Capsule Bash is built around three main concepts that make it essential for agen
 
   By default, you can inspect the workspace folder in `.capsule/session/workspace`. This gives you more control over the agent's filesystem and keeps your host safe.
 
+
+
+## Limitations
+
+Bash-wasm(WasmRuntime) is not available for browser. It is meant to be used in a Node.js environment.
 
 ## Contributing
 
