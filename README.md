@@ -12,7 +12,7 @@
 
 ![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
 
-[Getting Started](#getting-started) • [Documentation](#documentation) • [Contributing](#contributing)
+[Getting Started](#getting-started) • [Documentation](#documentation) • [Issues](https://github.com/capsulerun/bash/issues/new) • [Contributing](#contributing)
 
 ![Example Shell](assets/example.gif)
 </div>
