@@ -48,15 +48,16 @@ const bash = new Bash({ runtime: new WasmRuntime() });
 const result = await bash.run("mkdir src && touch src/index.ts");
 
 console.log(result);
-/*
-{
+
+/**
+Result {
   stdout: "Folder created ✔\nFile created ✔",
   stderr: "",
   diff: { created: ['src/index.ts'], modified: [], deleted: [] },
   duration: 10,
   exitCode: 0,
 }
-*/
+**/
 ```
 
 ### MCP server
@@ -87,9 +88,7 @@ pnpm -s bash-wasm-shell
 
 ## Documentation
 
-### Bash
-
-#### Options
+### Bash Options
 
 | Parameter | Description | Type | Default |
 |-----------|-------------|------|---------|
@@ -98,7 +97,7 @@ pnpm -s bash-wasm-shell
 | `hostWorkspace` | Host workspace directory | `string` | `".capsule/session/workspace"` |
 | `initialCwd` | Initial working directory | `string` | `"/workspace"` |
 
-##### Runtime
+#### Runtime
 
 The runtime is the engine that runs the bash commands. `WasmRuntime` is available by default to run the commands in a WebAssembly sandbox.
 
@@ -109,7 +108,7 @@ import { WasmRuntime } from "@capsule-run/bash-wasm";
 const bash = new Bash({ runtime: new WasmRuntime() });
 ```
 
-##### Custom Commands
+#### Custom Commands
 
 ```typescript
 import { Bash, createCommand } from "@capsule-run/bash";
@@ -127,7 +126,7 @@ const bash = new Bash({
 });
 ```
 
-##### Host Workspace
+#### Host Workspace
 
 The host workspace is the directory on the host system that is mounted to the sandbox. It can be any folder in the project directory. By default, it is set to `.capsule/session/workspace`.
 
@@ -135,7 +134,7 @@ The host workspace is the directory on the host system that is mounted to the sa
 const bash = new Bash({ runtime: new WasmRuntime(), hostWorkspace: "customFolder" });
 ```
 
-##### Initial Working Directory
+#### Initial Working Directory
 
 The initial working directory is where bash commands are executed. By default it is set to `/workspace`. You can set it to any directory inside the sandbox filesystem.
 
@@ -143,7 +142,7 @@ The initial working directory is where bash commands are executed. By default it
 const bash = new Bash({ runtime: new WasmRuntime(), initialCwd: "/" });
 ```
 
-#### Run
+### Run
 
 Use the `run` method to execute a command in the sandbox.
 
@@ -159,19 +158,15 @@ console.log(result);
 
 ```typescript
 {
-  stdout: string; // Standard output of the command
-  stderr: string; // Standard error of the command
-  diff: {
-    created: string[]; // Files and directories created
-    modified: string[]; // Files and directories modified
-    deleted: string[]; // Files and directories deleted
-  };
-  duration: number; // Duration of the command in milliseconds
-  exitCode: number; // Exit code of the command
+  stdout: string,
+  stderr: string,
+  diff: { created: string[], modified: string[], deleted: string[] }, // Files and directories changes
+  duration: number, // Duration in milliseconds
+  exitCode: number
 }
 ```
 
-#### Preload
+### Preload
 
 Use the `preload` method to warm up a sandbox before running commands. By default it preloads the JS sandbox.
 
@@ -182,7 +177,7 @@ await bash.preload(); // js by default
 await bash.preload("python"); // python
 ```
 
-#### Reset
+### Reset
 
 Use the `reset` method to clear the bash instance and restore the sandbox filesystem to its initial state.
 
