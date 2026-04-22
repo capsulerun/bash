@@ -8,7 +8,7 @@
 
 # `Capsule` Bash
 
-**Sandboxed bash made for agents**
+**Sandboxed bash built for agents**
 
 ![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
 
