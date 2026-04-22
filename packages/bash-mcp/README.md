@@ -2,6 +2,15 @@
 
 An MCP server that gives your AI agent the ability to run bash commands in a secure, persistent, WebAssembly-sandboxed environment.
 
+## How It Works
+
+Each session runs inside a WebAssembly sandbox powered by [`@capsule-run/bash-wasm`](https://github.com/capsulerun/bash). The sandbox provides:
+
+- **Persistent state**: cwd, env vars, and filesystem changes persist across commands within a session
+- **Filesystem diff**: every `run` response includes a diff of what changed on disk
+- **Isolated memory**: each session gets its own address space, no cross-session leakage
+- **No host access**: the sandbox cannot reach your host filesystem or network
+
 ## Tools
 
 | Tool | Description |
@@ -43,15 +52,6 @@ Add to your MCP client configuration (e.g. Claude Desktop, Cursor):
   }
 }
 ```
-
-## How It Works
-
-Each session runs inside a WebAssembly sandbox powered by [`@capsule-run/bash-wasm`](https://github.com/capsulerun/bash). The sandbox provides:
-
-- **Persistent state** — cwd, env vars, and filesystem changes persist across commands within a session
-- **Filesystem diff** — every `run` response includes a diff of what changed on disk
-- **Isolated memory** — each session gets its own address space, no cross-session leakage
-- **No host access** — the sandbox cannot reach your host filesystem or network
 
 ## Limitations
 

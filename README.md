@@ -27,7 +27,7 @@
 
 - **Workspace isolation**: The agent operates in a mounted workspace directory (`.capsule/session/workspace` by default). Your host filesystem does not exist from the agent's perspective. You get full visibility into what the agent does without exposing your system.
   > The workspace is persistent. It stays alive until you reset it manually.
-  
+
 
 ## Getting Started
 
@@ -59,6 +59,16 @@ Result {
 }
 **/
 ```
+### Interactive shell
+
+Clone the repository, then run from the project root:
+
+```bash
+pnpm -s bash-wasm-shell
+```
+
+> [!IMPORTANT]
+> Python and pip are required to compile the Python sandbox. Both sandboxes (JS and Python) are needed to run the shell.
 
 ### MCP server
 
@@ -74,17 +84,6 @@ Result {
 ```
 
 See the [MCP Readme](packages/bash-mcp) for configuration details.
-
-### Interactive shell
-
-Clone the repository, then run from the project root:
-
-```bash
-pnpm -s bash-wasm-shell
-```
-
-> [!IMPORTANT]
-> Python and pip are required to compile the Python sandbox. Both sandboxes (JS and Python) are needed to run the shell.
 
 ## Documentation
 
