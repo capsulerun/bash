@@ -21,7 +21,7 @@
 
 `Capsule` Bash is an interactive command interpreter built for agents. It provides a bash-like interface to interact with the filesystem and run commands in a sandboxed environment.
 
-- **Commands and sandboxes**: Bash commands are reimplemented in TypeScript and each one runs inside a sandbox, isolating the host system from anything the agent executes. The sandbox layer is modular. Plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly.
+- **Commands and sandboxes**: Bash commands are reimplemented in TypeScript and run code inside isolated sandboxes, isolating the host system from anything the agent executes. The sandbox layer is modular, so we can plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly sandboxes.
 
 - **Instant feedback**: Traditional bash treats silence as success. In an agentic context, that forces a second call just to confirm the first one worked. Capsule Bash returns structured output for every command. Exit code, stdout, stderr, and a diff of filesystem changes.
 
