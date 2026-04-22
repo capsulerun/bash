@@ -26,9 +26,8 @@
 - **Instant feedback**: Traditional bash treats silence as success. In an agentic context, that forces a second call just to confirm the first one worked. Capsule Bash returns structured output for every command. Exit code, stdout, stderr, and a diff of filesystem changes.
 
 - **Workspace isolation**: The agent operates in a mounted workspace directory (`.capsule/session/workspace` by default). Your host filesystem does not exist from the agent's perspective. You get full visibility into what the agent does without exposing your system.
-
-> [!NOTE]
-> The workspace is persistent. It stays alive until you reset it manually.
+  > The workspace is persistent. It stays alive until you reset it manually.
+  
 
 ## Getting Started
 
