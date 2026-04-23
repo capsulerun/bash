@@ -17,15 +17,13 @@
 
 ## Overview
 
-`Capsule` Bash is an interactive command interpreter built for agents. It provides a bash-like interface to interact with the filesystem and run commands in a sandboxed environment.
+`Capsule` Bash is an interactive command interpreter built for executing untrusted commands. It provides a bash-like interface to interact with the filesystem and run commands in a sandboxed environment.
 
 - **Commands and sandboxes**: Bash commands are reimplemented in TypeScript and run code inside isolated sandboxes, isolating the host system from anything the agent executes. The sandbox layer is modular, so we can plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly sandboxes.
 
-- **Instant feedback**: Traditional bash treats silence as success. In an agentic context, that forces a second call just to confirm the first one worked. Capsule Bash returns structured output for every command. Exit code, stdout, stderr, and a diff of filesystem changes.
+- **Instant feedback**: Traditional bash treats silence as success. In agentic workflows for example, that forces a second call just to confirm the first one worked. Capsule Bash returns structured output for every command. Exit code, stdout, stderr, and a diff of filesystem changes.
 
-- **Workspace isolation**: The agent operates in a mounted workspace directory (`.capsule/session/workspace` by default). Your host filesystem does not exist from the agent's perspective. You get full visibility into what the agent does without exposing your system.
-  > The workspace is persistent. It stays alive until you reset it manually.
-
+- **Workspace isolation**: Commands operates in a mounted workspace directory. The host filesystem is not accessible from inside the sandbox. You get full visibility into what is executed without exposing your system. The workspace is persistent and stays alive until you reset it manually.
 
 ## Getting Started
 
