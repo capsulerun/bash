@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 
@@ -24,28 +23,36 @@ export class Executor {
         private readonly state: State,
     ) {}
 
-    private snapshotFs(root: string): FsSnapshot {
-        const snapshot: FsSnapshot = {};
+    private async snapshotFs(root: string): Promise<FsSnapshot> {
+        const code = `
+            const fs = require('fs');
+            const path = require('path');
+            const snapshot = {};
+            const walk = (dir) => {
+                try {
+                    for (const entry of fs.readdirSync(dir)) {
+                        const fullPath = path.join(dir, entry);
+                        try {
+                            const stat = fs.statSync(fullPath);
+                            if (stat.isDirectory()) {
+                                snapshot[fullPath.slice(${JSON.stringify(root)}.length + 1) + '/'] = stat.mtimeMs;
+                                walk(fullPath);
+                            } else {
+                                snapshot[fullPath.slice(${JSON.stringify(root)}.length + 1)] = stat.mtimeMs;
+                            }
+                        } catch {}
+                    }
+                } catch {}
+            };
+            walk(${JSON.stringify(root)});
+            return snapshot;
+        `;
 
-        const walk = (dir: string) => {
-            try {
-                for (const entry of fs.readdirSync(dir)) {
-                    const fullPath = path.join(dir, entry);
-                    try {
-                        const stat = fs.statSync(fullPath);
-                        if (stat.isDirectory()) {
-                            snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
-                            walk(fullPath);
-                        } else {
-                            snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
-                        }
-                    } catch {}
-                }
-            } catch {}
-        };
-
-        walk(root);
-        return snapshot;
+        try {
+            return await this.runtime.executeCode(this.state, code) as FsSnapshot;
+        } catch {
+            return {};
+        }
     }
 
     private cwdRoot(): string {
@@ -171,7 +178,7 @@ export class Executor {
         const command = await this.searchCommandHandler(name);
 
         const root = this.cwdRoot();
-        const before = this.snapshotFs(root);
+        const before = await this.snapshotFs(root);
 
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127, durationMs: Date.now() - start };
@@ -266,7 +273,7 @@ export class Executor {
             }
         }
 
-        const after = this.snapshotFs(root);
+        const after = await this.snapshotFs(root);
         const diff = this.diffSnapshots(before, after);
 
         const durationMs = Date.now() - start;
