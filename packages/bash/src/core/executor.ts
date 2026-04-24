@@ -208,7 +208,11 @@ export class Executor {
                 return { stdout: '', stderr: `bash: ${name}: invalid option -- ${invalidOption}\n\nusage: ${command.manual?.usage}`, exitCode: 1, durationMs: Date.now() - start };
             }
 
-            result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
+            try {
+                result = await command.handler({ opts, stdin, state: this.state, runtime: this.runtime });
+            } catch (error) {
+                result = { stdout: '', stderr: error as string, exitCode: 1, durationMs: Date.now() - start };
+            }
         }
 
         let currentStdout = result.stdout;
