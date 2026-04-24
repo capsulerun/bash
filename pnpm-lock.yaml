@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@capsule-run/cli':
-        specifier: ^0.8.9
-        version: 0.8.9
+        specifier: ^0.8.10
+        version: 0.8.10
       '@capsule-run/sdk':
-        specifier: ^0.8.9
-        version: 0.8.9(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.6.0)
+        specifier: ^0.8.10
+        version: 0.8.10(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.6.0)
     devDependencies:
       '@types/node':
         specifier: ^25.6.0
@@ -97,11 +97,11 @@ importers:
         specifier: workspace:*
         version: link:../bash-types
       '@capsule-run/cli':
-        specifier: ^0.8.9
-        version: 0.8.9
+        specifier: ^0.8.10
+        version: 0.8.10
       '@capsule-run/sdk':
-        specifier: ^0.8.9
-        version: 0.8.9(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.6.0)
+        specifier: ^0.8.10
+        version: 0.8.10(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.6.0)
     devDependencies:
       tsup:
         specifier: ^8.0.0
@@ -161,8 +161,8 @@ packages:
     resolution: {integrity: sha512-JPRYUTD8v1QUsZ5eqhCtQR7amOTugjV2ofSjFv1/zAGksf4AZUoCFYiKTQ61E+hKUVNJKIdYLOw+stGqAL9qAg==}
     hasBin: true
 
-  '@bytecodealliance/jco@1.18.0':
-    resolution: {integrity: sha512-IbWpq0iN6v95IwgqwctSSHkMo3EOIlsMJ+GGTPOoVhgJBKYKNqQVDfGqzJ+K57RDjoxpKVceVyN+4204wGBpxQ==}
+  '@bytecodealliance/jco@1.19.0':
+    resolution: {integrity: sha512-I57cVbL24/u/zCBwHq7D9PyIMP81hFFYF4hL/pW5biRGVLQAZuwEAUaEmghOouyt77bU2ExqscP2wkLvr3nfDw==}
     hasBin: true
 
   '@bytecodealliance/preview2-shim@0.17.9':
@@ -213,37 +213,37 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  '@capsule-run/cli-darwin-arm64@0.8.9':
-    resolution: {integrity: sha512-L5cWhCa5elZ0gejD1f3zF66h58QqCCW/6KfNk0cRt2o/EtNSHjwpD9oLkKE8k3OkkJVMLlnCrlYKP0uI+OG4ig==}
+  '@capsule-run/cli-darwin-arm64@0.8.10':
+    resolution: {integrity: sha512-wOJlLPVnvEV0mlpdZti1wn6gZI1f+zNFSlbC1i8iy7col97i2VU3yxYxK0ZnGMeTwB+1gDzC8ctILd+CFWINEQ==}
     cpu: [arm64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-darwin-x64@0.8.9':
-    resolution: {integrity: sha512-NWWVOxbpL1vFag4h/PYioqjH1deAiTThxS4JVoctO/809nJUxi+JJaWrJdu6TspzrTN8nOrlG/mIfXMfdCuk8A==}
+  '@capsule-run/cli-darwin-x64@0.8.10':
+    resolution: {integrity: sha512-muXiVJULeX4p6WyfZ8rIt7FuyDfyPkaWexP0WS3UdJV4vnAa8gpPXZH5zUZrDxLdxUpvHRj7BrHbKq6k2WLj6g==}
     cpu: [x64]
     os: [darwin]
     hasBin: true
 
-  '@capsule-run/cli-linux-x64@0.8.9':
-    resolution: {integrity: sha512-MGLxM2rS5/uVrSCkkR8CkLXmxmXwmyJ7L5GWa3rtF2W0GHZ4tjW9lHGf8ihSUG2c081w3C8xGyXSp0JUfr8zuw==}
+  '@capsule-run/cli-linux-x64@0.8.10':
+    resolution: {integrity: sha512-lhqxYqWfMP1kkXbOVQMcvYdOR6RYvdHGj4Adcrs+TJmz2Yg6aOXFSsNw9UpTwa7c/TwmpjXHSbnd2EDJx9rdag==}
     cpu: [x64]
     os: [linux]
     hasBin: true
 
-  '@capsule-run/cli-win32-x64@0.8.9':
-    resolution: {integrity: sha512-8brGYTQ7Qi9TLxO2qSgPMVL3BMc6aO5IKvL9xc16voFQgmxmIVSq9963bkYfICS24tcdadMLTcCvt9TkT3LBXw==}
+  '@capsule-run/cli-win32-x64@0.8.10':
+    resolution: {integrity: sha512-a34mBOyTbAFhDoIZgSO4r/Pn6rgoUOU4eV9D05CJcrt+pedwrXJoreap+T0IX1P4mOQOpQttwBSOIXtmFh4MMQ==}
     cpu: [x64]
     os: [win32]
     hasBin: true
 
-  '@capsule-run/cli@0.8.9':
-    resolution: {integrity: sha512-WPLBxy4aKCu7weYlQPPBbOvkcGb1eaNUlzW4F88qzThOQoLMxh3G/VTHfSSsvdJw2j9gzZYIrtS0wlb6FsV0UQ==}
+  '@capsule-run/cli@0.8.10':
+    resolution: {integrity: sha512-QeX3HwVfCOOvFhXV6L4rbndvfszTVJe0ZXiqEUVUmzwRg4Ehi8jxnh5iJ9mr80NIBH6IPV4tM77EYk9v5Z7OGQ==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@capsule-run/sdk@0.8.9':
-    resolution: {integrity: sha512-FPg9A9MgWTA35MuvulOft5BfeuaHnW6HIIZUSEnI6Mr+GDxkIBl2CUueIRx7JAdmm/CFYjzG2FMAg2F/7vQNOA==}
+  '@capsule-run/sdk@0.8.10':
+    resolution: {integrity: sha512-7G20+dhj+1jNm49ZFRmtCkbdemIzb0Dy62fXUdk/eDafqBiooF3IhEy8WaLdiO3jTQboa1qiQbwcw0oWVT+liw==}
     peerDependencies:
       '@types/node': '>=18'
     peerDependenciesMeta:
@@ -2471,7 +2471,7 @@ snapshots:
 
   '@bytecodealliance/componentize-js@0.19.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)':
     dependencies:
-      '@bytecodealliance/jco': 1.18.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      '@bytecodealliance/jco': 1.19.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
       '@bytecodealliance/wizer': 10.0.0
       es-module-lexer: 1.7.0
       oxc-parser: 0.76.0
@@ -2481,7 +2481,7 @@ snapshots:
 
   '@bytecodealliance/componentize-js@0.20.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)':
     dependencies:
-      '@bytecodealliance/jco': 1.18.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      '@bytecodealliance/jco': 1.19.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
       '@bytecodealliance/weval': 0.4.1(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
       '@bytecodealliance/wizer': 10.0.0
       es-module-lexer: 1.7.0
@@ -2490,7 +2490,7 @@ snapshots:
       - '@emnapi/core'
       - '@emnapi/runtime'
 
-  '@bytecodealliance/jco@1.18.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)':
+  '@bytecodealliance/jco@1.19.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)':
     dependencies:
       '@bytecodealliance/componentize-js': 0.20.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
       '@bytecodealliance/componentize-js-0-19-3': '@bytecodealliance/componentize-js@0.19.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)'
@@ -2543,28 +2543,28 @@ snapshots:
       '@bytecodealliance/wizer-linux-x64': 10.0.0
       '@bytecodealliance/wizer-win32-x64': 10.0.0
 
-  '@capsule-run/cli-darwin-arm64@0.8.9':
+  '@capsule-run/cli-darwin-arm64@0.8.10':
     optional: true
 
-  '@capsule-run/cli-darwin-x64@0.8.9':
+  '@capsule-run/cli-darwin-x64@0.8.10':
     optional: true
 
-  '@capsule-run/cli-linux-x64@0.8.9':
+  '@capsule-run/cli-linux-x64@0.8.10':
     optional: true
 
-  '@capsule-run/cli-win32-x64@0.8.9':
+  '@capsule-run/cli-win32-x64@0.8.10':
     optional: true
 
-  '@capsule-run/cli@0.8.9':
+  '@capsule-run/cli@0.8.10':
     optionalDependencies:
-      '@capsule-run/cli-darwin-arm64': 0.8.9
-      '@capsule-run/cli-darwin-x64': 0.8.9
-      '@capsule-run/cli-linux-x64': 0.8.9
-      '@capsule-run/cli-win32-x64': 0.8.9
+      '@capsule-run/cli-darwin-arm64': 0.8.10
+      '@capsule-run/cli-darwin-x64': 0.8.10
+      '@capsule-run/cli-linux-x64': 0.8.10
+      '@capsule-run/cli-win32-x64': 0.8.10
 
-  '@capsule-run/sdk@0.8.9(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.6.0)':
+  '@capsule-run/sdk@0.8.10(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.6.0)':
     dependencies:
-      '@bytecodealliance/jco': 1.18.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      '@bytecodealliance/jco': 1.19.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
       esbuild: 0.27.7
       typescript: 5.9.3
       unenv: 2.0.0-rc.24
