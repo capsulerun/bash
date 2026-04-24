@@ -45,6 +45,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
                 if (!a.startsWith(".") && b.startsWith(".")) return 1;
                 return a.localeCompare(b);
             });
+
         } catch (e) {
             stderr.push(`bash: ls: cannot access '${arg}': No such file or directory`);
             exitCode = 1;
@@ -86,7 +87,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
                     const time = `${months[date.getMonth()]} ${padDate} ${timeStr}`;
 
                     return `${permissions} ${hardlink} ${user} ${group} ${size} ${time} ${filename}`;
-                } catch (err) {
+                } catch {
                     return;
                 }
             }))).filter((file): file is string => file !== undefined);

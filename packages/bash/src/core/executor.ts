@@ -23,10 +23,12 @@ export class Executor {
         private readonly state: State,
     ) {}
 
-    private async snapshotFs(root: string): Promise<FsSnapshot> {
+    private async snapshotFs(): Promise<FsSnapshot> {
+        const sandboxRoot = this.state.cwd || '/';
         const code = `
             const fs = require('fs');
             const path = require('path');
+            const root = ${JSON.stringify(sandboxRoot)};
             const snapshot = {};
             const walk = (dir) => {
                 try {
@@ -35,16 +37,16 @@ export class Executor {
                         try {
                             const stat = fs.statSync(fullPath);
                             if (stat.isDirectory()) {
-                                snapshot[fullPath.slice(${JSON.stringify(root)}.length + 1) + '/'] = stat.mtimeMs;
+                                snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
                                 walk(fullPath);
                             } else {
-                                snapshot[fullPath.slice(${JSON.stringify(root)}.length + 1)] = stat.mtimeMs;
+                                snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
                             }
                         } catch {}
                     }
                 } catch {}
             };
-            walk(${JSON.stringify(root)});
+            walk(root);
             return snapshot;
         `;
 
@@ -53,13 +55,6 @@ export class Executor {
         } catch {
             return {};
         }
-    }
-
-    private cwdRoot(): string {
-        const workspace = this.runtime.hostWorkspace;
-        if (!workspace) return '';
-        const relativeCwd = this.state.cwd.replace(/^\//, '');
-        return relativeCwd ? path.join(workspace, relativeCwd) : workspace;
     }
 
     private diffSnapshots(before: FsSnapshot, after: FsSnapshot): { created: string[]; modified: string[]; deleted: string[] } {
@@ -177,8 +172,7 @@ export class Executor {
         const opts = parsedCommandOptions(args);
         const command = await this.searchCommandHandler(name);
 
-        const root = this.cwdRoot();
-        const before = await this.snapshotFs(root);
+        const before = await this.snapshotFs();
 
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127, durationMs: Date.now() - start };
@@ -273,7 +267,7 @@ export class Executor {
             }
         }
 
-        const after = await this.snapshotFs(root);
+        const after = await this.snapshotFs();
         const diff = this.diffSnapshots(before, after);
 
         const durationMs = Date.now() - start;

@@ -39,7 +39,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
             (async () => {
                 ${isSourceFolder ?
                     `await fs.cp('${sourceAbsolutePath}', '${destinationAbsolutePath}', {recursive: true });` :
-                    `await fs.copyFile('${sourceAbsolutePath}', '${path.join(destinationAbsolutePath as string, sourceFileName)}');`
+                    `await fs.cp('${sourceAbsolutePath}', '${path.join(destinationAbsolutePath as string, sourceFileName)}');`
                 }
                 fs.rmSync('${sourceAbsolutePath}', ${isSourceFolder ? '{ recursive: true }' : '{}'});
             })()

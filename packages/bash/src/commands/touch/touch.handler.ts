@@ -15,7 +15,6 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
         const segments = arg.split('/');
         const parentFolder = segments.length > 1 ? segments.slice(0, -1).join('/') : '.';
-        
         const parentFolderAbsolutePath = (await runtime.resolvePath(state, parentFolder));
 
         if (!parentFolderAbsolutePath) {
@@ -32,5 +31,9 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         }
     }))
 
-    return { stdout: 'File created ✔', stderr: stderr.join('\n'), exitCode: stderr.length > 0 ? 1 : 0 };
+    if (stderr.length === 0) {
+        return { stdout: `${opts.args.length > 1 ? opts.args.length + ' Files' : 'File'} created ✔`, stderr: stderr.join('\n'), exitCode: 0 };
+    }
+
+    return { stdout: "", stderr: stderr.join('\n'), exitCode: 1 };
 }
