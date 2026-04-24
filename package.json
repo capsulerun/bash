@@ -17,8 +17,8 @@
     "url": "https://github.com/capsulerun/bash.git"
   },
   "dependencies": {
-    "@capsule-run/cli": "^0.8.9",
-    "@capsule-run/sdk": "^0.8.9"
+    "@capsule-run/cli": "^0.8.10",
+    "@capsule-run/sdk": "^0.8.10"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

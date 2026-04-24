@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 
@@ -24,35 +23,38 @@ export class Executor {
         private readonly state: State,
     ) {}
 
-    private snapshotFs(root: string): FsSnapshot {
-        const snapshot: FsSnapshot = {};
+    private async snapshotFs(root: string): Promise<FsSnapshot> {
+        const sandboxRoot = root;
+        const code = `
+            const fs = require('fs');
+            const path = require('path');
+            const root = ${JSON.stringify(sandboxRoot)};
+            const snapshot = {};
+            const walk = (dir) => {
+                try {
+                    for (const entry of fs.readdirSync(dir)) {
+                        const fullPath = path.join(dir, entry);
+                        try {
+                            const stat = fs.statSync(fullPath);
+                            if (stat.isDirectory()) {
+                                snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
+                                walk(fullPath);
+                            } else {
+                                snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
+                            }
+                        } catch {}
+                    }
+                } catch {}
+            };
+            walk(root);
+            return snapshot;
+        `;
 
-        const walk = (dir: string) => {
-            try {
-                for (const entry of fs.readdirSync(dir)) {
-                    const fullPath = path.join(dir, entry);
-                    try {
-                        const stat = fs.statSync(fullPath);
-                        if (stat.isDirectory()) {
-                            snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
-                            walk(fullPath);
-                        } else {
-                            snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
-                        }
-                    } catch {}
-                }
-            } catch {}
-        };
-
-        walk(root);
-        return snapshot;
-    }
-
-    private cwdRoot(): string {
-        const workspace = this.runtime.hostWorkspace;
-        if (!workspace) return '';
-        const relativeCwd = this.state.cwd.replace(/^\//, '');
-        return relativeCwd ? path.join(workspace, relativeCwd) : workspace;
+        try {
+            return await this.runtime.executeCode(this.state, code) as FsSnapshot;
+        } catch {
+            return {};
+        }
     }
 
     private diffSnapshots(before: FsSnapshot, after: FsSnapshot): { created: string[]; modified: string[]; deleted: string[] } {
@@ -170,8 +172,8 @@ export class Executor {
         const opts = parsedCommandOptions(args);
         const command = await this.searchCommandHandler(name);
 
-        const root = this.cwdRoot();
-        const before = this.snapshotFs(root);
+        const snapshotRoot = this.state.cwd || '/';
+        const before = await this.snapshotFs(snapshotRoot);
 
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127, durationMs: Date.now() - start };
@@ -266,7 +268,7 @@ export class Executor {
             }
         }
 
-        const after = this.snapshotFs(root);
+        const after = await this.snapshotFs(snapshotRoot);
         const diff = this.diffSnapshots(before, after);
 
         const durationMs = Date.now() - start;
