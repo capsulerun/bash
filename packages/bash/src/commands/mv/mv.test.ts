@@ -76,7 +76,7 @@ describe('mv command', () => {
         expect(result.stdout).toContain('File moved ✔');
         expect(executeCodeMock).toHaveBeenCalledWith(
             expect.anything(),
-            expect.stringContaining("fs.copyFile('/workspace/file1.txt'")
+            expect.stringContaining("fs.cp('/workspace/file1.txt'")
         );
     });
 
