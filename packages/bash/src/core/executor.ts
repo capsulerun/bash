@@ -23,8 +23,8 @@ export class Executor {
         private readonly state: State,
     ) {}
 
-    private async snapshotFs(): Promise<FsSnapshot> {
-        const sandboxRoot = this.state.cwd || '/';
+    private async snapshotFs(root: string): Promise<FsSnapshot> {
+        const sandboxRoot = root;
         const code = `
             const fs = require('fs');
             const path = require('path');
@@ -172,7 +172,8 @@ export class Executor {
         const opts = parsedCommandOptions(args);
         const command = await this.searchCommandHandler(name);
 
-        const before = await this.snapshotFs();
+        const snapshotRoot = this.state.cwd || '/';
+        const before = await this.snapshotFs(snapshotRoot);
 
         if (!command) {
             result = { stdout: '', stderr: `bash: ${name}: command not found`, exitCode: 127, durationMs: Date.now() - start };
@@ -267,7 +268,7 @@ export class Executor {
             }
         }
 
-        const after = await this.snapshotFs();
+        const after = await this.snapshotFs(snapshotRoot);
         const diff = this.diffSnapshots(before, after);
 
         const durationMs = Date.now() - start;
