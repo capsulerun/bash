@@ -1,7 +1,7 @@
 {
   "name": "@capsule-run/bash",
-  "version": "0.1.1",
-  "description": "Sandboxed bash for agents",
+  "version": "0.1.2",
+  "description": "Sandboxed bash for untrusted command executions",
   "type": "module",
   "homepage": "https://github.com/capsulerun/bash",
   "repository": {

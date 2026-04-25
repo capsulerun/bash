@@ -3,12 +3,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark-mode.png" />
   <source media="(prefers-color-scheme: light)" srcset="assets/logo-light-mode.png" />
-  <img alt="Capsule Bash" src="assets/logo-light-mode.png" width="80" />
+  <img alt="Capsule Bash" src="assets/logo-light-mode.png" width="70" />
 </picture>
 
 # `Capsule` Bash
 
-![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
+![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main)
 
 [Getting Started](#getting-started) • [Documentation](#documentation) • [Issues](https://github.com/capsulerun/bash/issues/new) • [Contributing](#contributing)
 
@@ -17,9 +17,9 @@
 
 ## Overview
 
-`Capsule` Bash is an interactive command interpreter built for executing untrusted commands. It provides a bash-like interface to interact with the filesystem and run commands in a sandboxed environment.
+`Capsule` Bash is a command interpreter built for executing untrusted commands. It provides a bash-like interface to interact with the filesystem and run commands in a sandboxed environment.
 
-- **Commands and sandboxes**: Bash commands are reimplemented in TypeScript and run code inside isolated sandboxes, isolating the host system from anything the agent executes. The sandbox layer is modular, so we can plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly sandboxes.
+- **Commands and sandboxes**: Bash commands are reimplemented in TypeScript and run code inside isolated sandboxes. The sandbox layer is modular, so we can plug in any runtime that implements the interface. The default `WasmRuntime` uses [Capsule](https://github.com/capsulerun/capsule) to run commands inside WebAssembly sandboxes.
 
 - **Instant feedback**: Traditional bash treats silence as success. In agentic workflows for example, that forces a second call just to confirm the first one worked. Capsule Bash returns structured output for every command. Exit code, stdout, stderr, and a diff of filesystem changes.
 

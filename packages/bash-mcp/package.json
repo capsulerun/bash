@@ -1,7 +1,7 @@
 {
   "name": "@capsule-run/bash-mcp",
-  "version": "0.1.1",
-  "description": "MCP server exposing sandboxed bash made for agents",
+  "version": "0.1.2",
+  "description": "MCP server exposing sandboxed bash for untrusted command execution",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

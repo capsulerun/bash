@@ -1,7 +1,5 @@
 # `Capsule` Bash
 
-**Sandboxed bash made for agents**
-
 ## Install
 
 ```bash
