@@ -1,7 +1,7 @@
 {
   "name": "@capsule-run/bash-wasm",
   "version": "0.1.2",
-  "description": "Sandboxed bash for agents",
+  "description": "Sandboxed bash for untrusted command execution",
   "type": "module",
   "homepage": "https://github.com/capsulerun/bash",
   "repository": {
