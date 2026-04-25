@@ -3,12 +3,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark-mode.png" />
   <source media="(prefers-color-scheme: light)" srcset="assets/logo-light-mode.png" />
-  <img alt="Capsule Bash" src="assets/logo-light-mode.png" width="80" />
+  <img alt="Capsule Bash" src="assets/logo-light-mode.png" width="70" />
 </picture>
 
 # `Capsule` Bash
 
-![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main) ![Release](https://img.shields.io/github/v/release/capsulerun/bash)
+![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main)
 
 [Getting Started](#getting-started) • [Documentation](#documentation) • [Issues](https://github.com/capsulerun/bash/issues/new) • [Contributing](#contributing)
 
