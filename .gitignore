@@ -149,7 +149,7 @@ __pycache__/
 # Capsule
 .capsule/
 .capsule/*
-.capsule-dev/*
+.capsule-dev/
 
 examples/
 *.tape

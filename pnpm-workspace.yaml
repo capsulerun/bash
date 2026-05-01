@@ -2,3 +2,5 @@ packages:
     - packages/*
     - wasm-sandboxes/*
     - examples/*
+
+minimumReleaseAge: 10080

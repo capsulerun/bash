@@ -22,7 +22,7 @@ function getSession(sessionId: string): Bash {
 
 const server = new McpServer({
   name: '@capsule-run/bash-mcp',
-  version: '0.1.2',
+  version: '0.1.3',
 });
 
 server.registerTool(
