@@ -19,6 +19,7 @@ interface Counts {
 
 function count(content: string): Counts {
   const lines = content.split('\n');
+
   return {
     lines: lines.length - 1,
     words: content.trim() === '' ? 0 : content.trim().split(/\s+/).length,
@@ -32,9 +33,11 @@ function format(
   label: string,
 ): string {
   const parts: string[] = [];
+
   if (flags.lines) parts.push(String(counts.lines).padStart(8));
   if (flags.words) parts.push(String(counts.words).padStart(8));
   if (flags.bytes) parts.push(String(counts.bytes).padStart(8));
+
   return parts.join('') + (label ? ` ${label}` : '');
 }
 
@@ -55,7 +58,9 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
   if (fileArgs.length === 0) {
     const content = stdin ?? '';
+
     stdout.push(format(count(content), flags, ''));
+
     return { stdout: stdout.join('\n'), stderr: '', exitCode: 0 };
   }
 
@@ -67,6 +72,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
       if (!absolutePath) {
         stderr.push(`bash: wc: ${file}: No such file or directory`);
+
         return;
       }
 
@@ -84,10 +90,12 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
       if (info.isDirectory) {
         stderr.push(`bash: wc: ${file}: Is a directory`);
+
         return;
       }
 
       const c = count(info.content ?? '');
+
       totals.lines += c.lines;
       totals.words += c.words;
       totals.bytes += c.bytes;

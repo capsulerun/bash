@@ -7,6 +7,7 @@ describe('touch command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace');
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('existsSync')) return false;
+
       return '';
     });
 
@@ -33,6 +34,7 @@ describe('touch command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace');
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('existsSync')) return true;
+
       return '';
     });
 
@@ -75,6 +77,7 @@ describe('touch command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace');
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('existsSync')) return false;
+
       return '';
     });
 

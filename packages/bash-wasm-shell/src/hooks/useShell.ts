@@ -46,30 +46,38 @@ export function useShell() {
     if (!command.trim()) return;
 
     const current = heredocRef.current;
+
     if (current) {
       if (command.trim() === current.delimiter) {
         const fullCommand = `${current.command}\n${current.lines.join('\n')}\n${current.delimiter}`;
+
         heredocRef.current = null;
         setHeredoc(null);
         await submit(fullCommand);
       } else {
         const updated = { ...current, lines: [...current.lines, command] };
+
         heredocRef.current = updated;
         setHeredoc(updated);
       }
+
       return;
     }
 
     const heredocMatch = !command.includes('\n') && command.match(/<<\s*'?(\w+)'?/);
+
     if (heredocMatch) {
       const next = { command, delimiter: heredocMatch[1], lines: [] };
+
       heredocRef.current = next;
       setHeredoc(next);
+
       return;
     }
 
     if (command.trim() === 'clear') {
       setHistory([]);
+
       return;
     }
 
@@ -98,6 +106,7 @@ export function useShell() {
       setHistory((prev) => [...prev, entry]);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+
       setHistory((prev) => [
         ...prev,
         {

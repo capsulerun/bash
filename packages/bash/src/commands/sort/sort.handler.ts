@@ -24,6 +24,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
   if (opts.hasFlag('k')) {
     const kRawIndex = opts.raw.indexOf('-k');
+
     kRawValue = kRawIndex !== -1 ? opts.raw[kRawIndex + 1] : undefined;
 
     const parsed = kRawValue ? parseInt(kRawValue, 10) : NaN;
@@ -94,6 +95,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
   if (unique) {
     const seen = new Set<string>();
+
     lines = lines.filter((line) => {
       const key = keyField !== null ? (line.split(/\s+/)[keyField - 1] ?? '') : line;
 

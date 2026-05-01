@@ -23,6 +23,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
 
       if (!destinationAbsolutePath) {
         stderr.push(`bash: head: ${arg}: No such file or directory`);
+
         return;
       }
 
@@ -33,6 +34,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
 
       if (isDirectory) {
         stderr.push(`bash: head: ${arg}: Is a directory`);
+
         return;
       }
 

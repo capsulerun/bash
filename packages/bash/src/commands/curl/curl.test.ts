@@ -16,10 +16,12 @@ describe('curl command', () => {
       if (code.includes('fetch')) {
         return { ok: true, status: 200, body: 'mocked response' };
       }
+
       return null;
     });
 
     const ctx = createMockContext(['https://example.com'], {}, { executeCode: executeCodeMock });
+
     ctx.opts.raw = ['https://example.com'];
 
     const result = await handler(ctx);
@@ -50,6 +52,7 @@ describe('curl command', () => {
       {},
       { executeCode: executeCodeMock },
     );
+
     ctx.opts.raw = [
       '-X',
       'POST',
@@ -79,6 +82,7 @@ describe('curl command', () => {
       if (code.includes('fetch')) {
         return { ok: true };
       }
+
       return null;
     });
 
@@ -90,6 +94,7 @@ describe('curl command', () => {
         executeCode: executeCodeMock,
       },
     );
+
     ctx.opts.raw = ['-O', 'https://example.com/index.html'];
 
     const result = await handler(ctx);
@@ -108,6 +113,7 @@ describe('curl command', () => {
     });
 
     const ctx = createMockContext(['https://example.com'], {}, { executeCode: executeCodeMock });
+
     ctx.opts.raw = ['https://example.com'];
 
     const result = await handler(ctx);
@@ -126,6 +132,7 @@ describe('curl command', () => {
       {},
       { executeCode: executeCodeMock },
     );
+
     ctx.opts.raw = ['-s', 'https://example.com'];
 
     const result = await handler(ctx);

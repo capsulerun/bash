@@ -55,17 +55,18 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     await runtime.executeCode(
       state,
       `
-            const fs = require('fs');
-            (async () => {
-                ${
-                  isSourceFolder
-                    ? `await fs.cp('${sourceAbsolutePath}', '${destinationAbsolutePath}', {recursive: true });`
-                    : `await fs.cp('${sourceAbsolutePath}', '${path.join(destinationAbsolutePath as string, sourceFileName)}');`
-                }
-                fs.rmSync('${sourceAbsolutePath}', ${isSourceFolder ? '{ recursive: true }' : '{}'});
-            })()
-        `,
+        const fs = require('fs');
+        (async () => {
+            ${
+              isSourceFolder
+                ? `await fs.cp('${sourceAbsolutePath}', '${destinationAbsolutePath}', {recursive: true });`
+                : `await fs.cp('${sourceAbsolutePath}', '${path.join(destinationAbsolutePath as string, sourceFileName)}');`
+            }
+            fs.rmSync('${sourceAbsolutePath}', ${isSourceFolder ? '{ recursive: true }' : '{}'});
+        })()
+      `,
     );
+
     return { stdout: `${isSourceFolder ? 'Folder' : 'File'} moved ✔`, stderr: '', exitCode: 0 };
   }
 
@@ -80,6 +81,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
             })()
         `,
     );
+
     return { stdout: 'File moved ✔', stderr: '', exitCode: 0 };
   }
 
@@ -90,6 +92,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
             fs.renameSync('${sourceAbsolutePath}', '${destination}');
         `,
     );
+
     return { stdout: `${isSourceFolder ? 'Folder' : 'File'} moved ✔`, stderr: '', exitCode: 0 };
   }
 

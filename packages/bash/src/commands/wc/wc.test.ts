@@ -5,6 +5,7 @@ import { createMockContext } from '../../helpers/testUtils';
 describe('wc command', () => {
   it('should count from stdin if no file args provided', async () => {
     const ctx = createMockContext([]);
+
     ctx.stdin = 'hello world\nline 2\n';
 
     const result = await handler(ctx);
@@ -17,6 +18,7 @@ describe('wc command', () => {
 
   it('should respect flags (-l, -w, -c)', async () => {
     const ctx = createMockContext(['-l']);
+
     ctx.stdin = 'hello world\nline 2\n';
 
     const result = await handler(ctx);
@@ -31,6 +33,7 @@ describe('wc command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => `/workspace/${path}`);
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return { isDirectory: false, content: 'file content\n' };
+
       return {};
     });
 
@@ -57,6 +60,7 @@ describe('wc command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('file1')) return { isDirectory: false, content: 'content1\n' };
       if (code.includes('file2')) return { isDirectory: false, content: 'content2\nlonger\n' };
+
       return { isDirectory: false, content: '' };
     });
 

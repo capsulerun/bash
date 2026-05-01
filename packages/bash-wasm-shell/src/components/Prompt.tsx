@@ -27,6 +27,7 @@ export function Prompt({ cwd, lastExitCode, running, onSubmit, history, heredoc 
 
     if (key.upArrow) {
       const nextIndex = Math.min(historyIndex + 1, history.length - 1);
+
       setHistoryIndex(nextIndex);
       setInput(history[history.length - 1 - nextIndex] ?? '');
     } else if (key.downArrow) {

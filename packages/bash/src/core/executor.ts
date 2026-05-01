@@ -5,6 +5,7 @@ import { createRequire } from 'module';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
+
 import { parsedCommandOptions } from '../helpers/commandOptions';
 import { displayCommandManual } from '../helpers/commandManual';
 
@@ -98,6 +99,7 @@ export class Executor {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+
       return {
         stdout: '',
         stderr: message,
@@ -112,6 +114,7 @@ export class Executor {
   private async executeScript(filePath: string, scriptArgs: string[]): Promise<CommandResult> {
     const start = Date.now();
     const absolutePath = await this.runtime.resolvePath(this.state, filePath);
+
     if (!absolutePath) {
       return {
         stdout: '',
@@ -122,6 +125,7 @@ export class Executor {
     }
 
     let content: string;
+
     try {
       content = (await this.runtime.executeCode(
         this.state,
@@ -152,11 +156,13 @@ export class Executor {
 
     for (const line of script.split('\n')) {
       const trimmed = line.trim();
+
       if (!trimmed || trimmed.startsWith('#')) continue;
 
       try {
         const ast = parser.parse(trimmed);
         const result = await this.execute(ast);
+
         if (result.stdout) stdout.push(result.stdout);
         if (result.stderr) stderr.push(result.stderr);
         exitCode = result.exitCode;
@@ -181,6 +187,7 @@ export class Executor {
 
     if (name === 'sh' || name === 'bash') {
       const [file, ...scriptArgs] = args;
+
       if (!file)
         return {
           stdout: '',
@@ -188,6 +195,7 @@ export class Executor {
           exitCode: 1,
           durationMs: Date.now() - start,
         };
+
       return this.executeScript(file, scriptArgs);
     }
 
@@ -262,6 +270,7 @@ export class Executor {
         if (!invalidOption) {
           for (const key of opts.options.keys()) {
             const expectedName = `--${key}`;
+
             if (!command.manual.options || !command.manual.options.hasOwnProperty(expectedName)) {
               invalidOption = expectedName;
               break;
@@ -358,6 +367,7 @@ export class Executor {
     const diff = this.diffSnapshots(before, after);
 
     const durationMs = Date.now() - start;
+
     this.state.setLastExitCode(result.exitCode);
 
     result = {
@@ -368,6 +378,7 @@ export class Executor {
       state: { cwd: this.state.cwd, env: this.state.env, exitCode: result.exitCode },
       durationMs,
     };
+
     return result;
   }
 
@@ -398,6 +409,7 @@ export class Executor {
     if (left.exitCode !== 0) return left;
 
     const right = await this.execute(node.right);
+
     return {
       ...right,
       stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'),
@@ -416,6 +428,7 @@ export class Executor {
     if (left.exitCode === 0) return left;
 
     const right = await this.execute(node.right);
+
     return {
       ...right,
       stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'),
@@ -431,6 +444,7 @@ export class Executor {
   }): Promise<CommandResult> {
     const left = await this.execute(node.left);
     const right = await this.execute(node.right);
+
     return {
       ...right,
       stdout: [left.stdout, right.stdout].filter(Boolean).join('\n'),
@@ -446,12 +460,14 @@ export class Executor {
     const handlerPath = path.join(commandsDir, name, `${name}.handler`);
 
     const customCommand = this.customCommands.find((cmd) => cmd.name === name);
+
     if (customCommand) {
       return { handler: customCommand.handler, manual: customCommand.manual };
     }
 
     try {
       const mod = require(handlerPath);
+
       return { handler: mod.handler as CommandHandler, manual: mod.manual as CommandManual };
     } catch {
       return undefined;

@@ -19,10 +19,12 @@ function parseSedExpression(expr: string): SedExpression | null {
   if (!expr.startsWith('s')) return null;
 
   const delim = expr[1];
+
   if (!delim) return null;
 
   const parts: string[] = [];
   let current = '';
+
   for (let i = 2; i < expr.length; i++) {
     if (expr[i] === '\\' && expr[i + 1] === delim) {
       current += delim;
@@ -43,6 +45,7 @@ function parseSedExpression(expr: string): SedExpression | null {
   const ignoreCase = flagStr.includes('i');
 
   let pattern: RegExp;
+
   try {
     pattern = new RegExp(rawPattern, (global ? 'g' : '') + (ignoreCase ? 'i' : ''));
   } catch {
@@ -67,6 +70,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
   }
 
   const expr = parseSedExpression(rawExpr);
+
   if (!expr) {
     return { stdout: '', stderr: `bash: sed: invalid expression: ${rawExpr}`, exitCode: 1 };
   }
@@ -75,6 +79,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
     if (!stdin) {
       return { stdout: '', stderr: 'bash: sed: no input', exitCode: 1 };
     }
+
     return { stdout: applyExpression(stdin, expr), stderr: '', exitCode: 0 };
   }
 
@@ -87,6 +92,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
       if (!absolutePath) {
         stderr.push(`bash: sed: ${file}: No such file or directory`);
+
         return;
       }
 
@@ -104,6 +110,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
       if (info.isDirectory) {
         stderr.push(`bash: sed: ${file}: Is a directory`);
+
         return;
       }
 

@@ -20,6 +20,7 @@ export const handler: CommandHandler = async ({ opts, stdin, state, runtime }: C
 
       if (!destinationAbsolutePath) {
         stderr.push(`bash: cat: ${arg}: No such file or directory`);
+
         return;
       }
 
@@ -30,6 +31,7 @@ export const handler: CommandHandler = async ({ opts, stdin, state, runtime }: C
 
       if (isDirectory) {
         stderr.push(`bash: cat: ${arg}: Is a directory`);
+
         return;
       }
 
@@ -37,6 +39,7 @@ export const handler: CommandHandler = async ({ opts, stdin, state, runtime }: C
         state,
         `require('fs').readFileSync('${destinationAbsolutePath}', 'utf8');`,
       )) as string;
+
       stdout.push(fileContent);
     }),
   );

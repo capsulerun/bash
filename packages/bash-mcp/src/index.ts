@@ -16,6 +16,7 @@ function getSession(sessionId: string): Bash {
       }),
     );
   }
+
   return sessions.get(sessionId)!;
 }
 
@@ -78,6 +79,7 @@ server.registerTool(
   },
   async ({ session_id }) => {
     const bash = getSession(session_id ?? 'default');
+
     bash.reset();
 
     return {
@@ -109,4 +111,5 @@ server.registerTool(
 );
 
 const transport = new StdioServerTransport();
+
 await server.connect(transport);

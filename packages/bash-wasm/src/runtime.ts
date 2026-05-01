@@ -36,6 +36,7 @@ export class WasmRuntime implements BaseRuntime {
         args: ['PRELOAD', JSON.stringify(state)],
         mounts: [`${this.hostWorkspace}::/`],
       });
+
       return true;
     }
 
@@ -45,6 +46,7 @@ export class WasmRuntime implements BaseRuntime {
         args: ['PRELOAD', JSON.stringify(state)],
         mounts: [`${this.hostWorkspace}::/`],
       });
+
       return true;
     }
 

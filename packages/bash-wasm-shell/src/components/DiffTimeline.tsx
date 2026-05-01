@@ -29,18 +29,22 @@ function groupDiffItems(items: DiffItem[]): DiffItem[] {
 
     if (isDiff && prev?.type === item.type) {
       prev.filenames = [...(prev.filenames ?? []), ...(item.filenames ?? [])];
+
       return acc;
     }
 
     acc.push({ ...item });
+
     return acc;
   }, []);
 }
 
 function contentHeight(item: DiffItem): number {
   const isDiff = item.type === 'created' || item.type === 'modified' || item.type === 'deleted';
+
   if (isDiff) return (item.filenames?.length ?? 0) + 1;
   if (item.type === 'exit') return 1;
+
   return (item.content?.split('\n').length ?? 0) + 1;
 }
 

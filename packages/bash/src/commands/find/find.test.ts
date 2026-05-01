@@ -6,6 +6,7 @@ describe('find command', () => {
   it('should return error if search path does not exist', async () => {
     const resolvePathMock = vi.fn().mockResolvedValue(undefined);
     const ctx = createMockContext(['nonexistent'], {}, { resolvePath: resolvePathMock });
+
     ctx.opts.raw = ['nonexistent'];
 
     const result = await handler(ctx);
@@ -24,6 +25,7 @@ describe('find command', () => {
       if (code.includes("statSync('/workspace/dir/subdir')")) {
         return { isDirectory: true, entries: ['file2.js'] };
       }
+
       return { isDirectory: false };
     });
 
@@ -35,6 +37,7 @@ describe('find command', () => {
         executeCode: executeCodeMock,
       },
     );
+
     ctx.opts.raw = ['dir'];
 
     const result = await handler(ctx);
@@ -52,6 +55,7 @@ describe('find command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes("statSync('/workspace/dir')"))
         return { isDirectory: true, entries: ['f1.txt'] };
+
       return { isDirectory: false };
     });
 
@@ -63,6 +67,7 @@ describe('find command', () => {
         executeCode: executeCodeMock,
       },
     );
+
     ctx.opts.raw = ['dir', '-type', 'f'];
 
     const result = await handler(ctx);
@@ -78,6 +83,7 @@ describe('find command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes("statSync('/workspace/dir')"))
         return { isDirectory: true, entries: ['match.ts', 'ignore.js'] };
+
       return { isDirectory: false };
     });
 
@@ -89,6 +95,7 @@ describe('find command', () => {
         executeCode: executeCodeMock,
       },
     );
+
     ctx.opts.raw = ['dir', '-name', '*.ts'];
 
     const result = await handler(ctx);

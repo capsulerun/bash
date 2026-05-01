@@ -26,6 +26,7 @@ export class StateManager {
         }
 
         this.state.cwd = resolvedPath as string;
+
         return true;
       },
     };

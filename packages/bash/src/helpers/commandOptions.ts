@@ -10,9 +10,11 @@ export function parsedCommandOptions(raw: string[]): CommandOptions {
 
     if (arg.startsWith('--') && arg.includes('=')) {
       const [key, ...val] = arg.slice(2).split('=');
+
       options.set(key, val.join('='));
     } else if (arg.startsWith('--')) {
       const key = arg.slice(2);
+
       if (raw[i + 1] && !raw[i + 1].startsWith('-')) {
         options.set(key, raw[++i]);
       } else {

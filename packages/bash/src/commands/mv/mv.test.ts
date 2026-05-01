@@ -14,6 +14,7 @@ describe('mv command', () => {
   it('should return error if source does not exist', async () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => {
       if (path === 'nonexistent') return undefined;
+
       return `/workspace/${path}`;
     });
 
@@ -28,10 +29,12 @@ describe('mv command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => {
       if (path === 'file1.txt') return '/workspace/file1.txt';
       if (path === 'newname.txt') return undefined;
+
       return undefined;
     });
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return false;
+
       return '';
     });
 
@@ -58,14 +61,17 @@ describe('mv command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => {
       if (path === 'file1.txt') return '/workspace/file1.txt';
       if (path === 'dir1') return '/workspace/dir1';
+
       return undefined;
     });
 
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes("'isDirectory'") || code.includes('isDirectory()')) {
         if (code.includes('dir1')) return true;
+
         return false;
       }
+
       return '';
     });
 
@@ -92,11 +98,13 @@ describe('mv command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => {
       if (path === 'file1.txt') return '/workspace/file1.txt';
       if (path === 'file2.txt') return '/workspace/file2.txt';
+
       return undefined;
     });
 
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory()')) return false;
+
       return '';
     });
 

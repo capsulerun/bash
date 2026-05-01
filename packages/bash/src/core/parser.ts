@@ -60,6 +60,7 @@ function isOp(token: ShellToken, op?: string): token is { op: string } {
 function tokenToString(token: ShellToken): string | null {
   if (typeof token === 'string') return token;
   if (typeof token === 'object' && 'pattern' in token) return token.pattern;
+
   return null;
 }
 
@@ -71,10 +72,12 @@ export class Parser {
   parse(input: string): ASTNode {
     this.heredocs = new Map();
     const processed = this.extractHeredocs(input);
+
     this.tokens = (shellQuote.parse(processed) as ShellToken[]).filter(
       (t) => !(typeof t === 'object' && 'comment' in t),
     );
     this.pos = 0;
+
     return this.parseSequence();
   }
 
@@ -82,13 +85,16 @@ export class Parser {
     const lines = input.split('\n');
     let result = '';
     let i = 0;
+
     while (i < lines.length) {
       const line = lines[i];
       const match = line.match(/^(.*?)<<\s*'?(\w+)'?\s*(.*)$/);
+
       if (match) {
         const [, before, delimiter, after] = match;
         const key = `__HEREDOC_${this.heredocs.size}__`;
         const bodyLines: string[] = [];
+
         i++;
         while (i < lines.length && lines[i].trim() !== delimiter) {
           bodyLines.push(lines[i]);
@@ -102,6 +108,7 @@ export class Parser {
       }
       i++;
     }
+
     return result.trimEnd();
   }
 
@@ -120,6 +127,7 @@ export class Parser {
       this.consume();
       if (this.pos >= this.tokens.length) break;
       const right = this.parseAndOr();
+
       left = { type: 'sequence', left, right } satisfies SequenceNode;
     }
 
@@ -135,10 +143,12 @@ export class Parser {
       if (isOp(next, '&&')) {
         this.consume();
         const right = this.parsePipeline();
+
         left = { type: 'and', left, right } satisfies AndNode;
       } else if (isOp(next, '||')) {
         this.consume();
         const right = this.parsePipeline();
+
         left = { type: 'or', left, right } satisfies OrNode;
       } else {
         break;
@@ -157,6 +167,7 @@ export class Parser {
     }
 
     if (commands.length === 1) return commands[0];
+
     return { type: 'pipeline', commands } satisfies PipelineNode;
   }
 
@@ -185,6 +196,7 @@ export class Parser {
         break;
       } else {
         const str = tokenToString(token);
+
         if (
           str !== null &&
           /^\d+$/.test(str) &&

@@ -30,6 +30,7 @@ function parseRawArgs(raw: string[]): {
       name = raw[++i];
     } else if (raw[i] === '-type' && raw[i + 1]) {
       const val = raw[++i];
+
       if (val === 'f' || val === 'd') type = val;
     } else if (!raw[i].startsWith('-')) {
       searchPath = raw[i];
@@ -44,6 +45,7 @@ function matchesName(entryName: string, pattern: string): boolean {
     .replace(/[.+^${}()|[\]\\]/g, '\\$&')
     .replace(/\*/g, '.*')
     .replace(/\?/g, '.');
+
   return new RegExp(`^${regexStr}$`).test(entryName);
 }
 
@@ -51,6 +53,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
   const { searchPath, name, type } = parseRawArgs(opts.raw);
 
   const absolutePath = await runtime.resolvePath(state, searchPath);
+
   if (!absolutePath) {
     return {
       stdout: '',

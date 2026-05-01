@@ -8,6 +8,7 @@ describe('head command', () => {
     const ctx = createMockContext(['nonexistent.txt'], {}, { resolvePath: resolvePathMock });
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('No such file or directory');
   });
@@ -17,6 +18,7 @@ describe('head command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return false;
       if (code.includes('readFileSync')) return '1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11';
+
       return '';
     });
 
@@ -30,6 +32,7 @@ describe('head command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(executeCodeMock).toHaveBeenCalledWith(
       expect.anything(),
@@ -42,6 +45,7 @@ describe('head command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return false;
       if (code.includes('readFileSync')) return '1\n2\n3\n4\n5';
+
       return '';
     });
 
@@ -53,9 +57,11 @@ describe('head command', () => {
         executeCode: executeCodeMock,
       },
     );
+
     ctx.opts.raw = ['-n', '3', 'file.txt'];
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(executeCodeMock).toHaveBeenCalledWith(
       expect.anything(),
@@ -68,6 +74,7 @@ describe('head command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => `/workspace/${path}`);
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return false;
+
       return 'content';
     });
 
@@ -81,6 +88,7 @@ describe('head command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('==> file1.txt <==');
     expect(result.stdout).toContain('==> file2.txt <==');
@@ -103,6 +111,7 @@ describe('head command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('Is a directory');
   });

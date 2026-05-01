@@ -49,9 +49,11 @@ function parseRawArgs(raw: string[]): CurlArgs {
     } else if (arg === '-H' && raw[i + 1]) {
       const header = raw[++i];
       const colonIdx = header.indexOf(':');
+
       if (colonIdx !== -1) {
         const key = header.slice(0, colonIdx).trim();
         const value = header.slice(colonIdx + 1).trim();
+
         result.headers[key] = value;
       }
     } else if (arg === '-d' && raw[i + 1]) {
@@ -69,6 +71,7 @@ function filenameFromUrl(url: string): string {
   try {
     const pathname = new URL(url).pathname;
     const name = pathname.split('/').filter(Boolean).pop();
+
     return name || 'index';
   } catch {
     return 'index';
@@ -90,22 +93,22 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
     const saveResult = (await runtime.executeCode(
       state,
       `
-            (async function() {
-                try {
-                    const response = await fetch(${JSON.stringify(args.url)}, {
-                        method: ${JSON.stringify(args.method)},
-                        headers: ${JSON.stringify(args.headers)},
-                        ${args.body !== null ? `body: ${JSON.stringify(args.body)},` : ''}
-                        redirect: ${JSON.stringify(args.followRedirects ? 'follow' : 'manual')},
-                    });
-                    const buffer = await response.arrayBuffer();
-                    require('fs').writeFileSync('${targetPath}', new Uint8Array(buffer));
-                    return { ok: true };
-                } catch (e) {
-                    return { ok: false, error: String(e) };
-                }
-            })()
-        `,
+        (async function() {
+            try {
+                const response = await fetch(${JSON.stringify(args.url)}, {
+                    method: ${JSON.stringify(args.method)},
+                    headers: ${JSON.stringify(args.headers)},
+                    ${args.body !== null ? `body: ${JSON.stringify(args.body)},` : ''}
+                    redirect: ${JSON.stringify(args.followRedirects ? 'follow' : 'manual')},
+                });
+                const buffer = await response.arrayBuffer();
+                require('fs').writeFileSync('${targetPath}', new Uint8Array(buffer));
+                return { ok: true };
+            } catch (e) {
+                return { ok: false, error: String(e) };
+            }
+        })()
+      `,
     )) as { ok: boolean; error?: string };
 
     if (!saveResult.ok) {
@@ -122,25 +125,26 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
   const result = (await runtime.executeCode(
     state,
     `
-        (async function() {
-            try {
-                const response = await fetch(${JSON.stringify(args.url)}, {
-                    method: ${JSON.stringify(args.method)},
-                    headers: ${JSON.stringify(args.headers)},
-                    ${args.body !== null ? `body: ${JSON.stringify(args.body)},` : ''}
-                    redirect: ${JSON.stringify(args.followRedirects ? 'follow' : 'manual')},
-                });
-                const text = await response.text();
-                return { ok: true, status: response.status, body: text };
-            } catch (e) {
-                return { ok: false, error: String(e) };
-            }
-        })()
+      (async function() {
+          try {
+              const response = await fetch(${JSON.stringify(args.url)}, {
+                  method: ${JSON.stringify(args.method)},
+                  headers: ${JSON.stringify(args.headers)},
+                  ${args.body !== null ? `body: ${JSON.stringify(args.body)},` : ''}
+                  redirect: ${JSON.stringify(args.followRedirects ? 'follow' : 'manual')},
+              });
+              const text = await response.text();
+              return { ok: true, status: response.status, body: text };
+          } catch (e) {
+              return { ok: false, error: String(e) };
+          }
+      })()
     `,
   )) as { ok: boolean; status?: number; body?: string; error?: string };
 
   if (!result.ok) {
     const msg = `bash: curl: ${args.url}: ${result.error}`;
+
     return { stdout: '', stderr: args.silent ? '' : msg, exitCode: 1 };
   }
 

@@ -26,6 +26,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
 
   for (const target of targets) {
     const resolvedPath = await runtime.resolvePath(state, target);
+
     if (!resolvedPath && !target.includes('..')) {
       return {
         stdout: '',
@@ -46,16 +47,19 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
           state,
           `return require('fs').readdirSync('${sandboxAbsolutePath}');`,
         )) as string[];
+
         files = files.concat(dirFiles);
 
         files.sort((a, b) => {
           if (a.startsWith('.') && !b.startsWith('.')) return -1;
           if (!a.startsWith('.') && b.startsWith('.')) return 1;
+
           return a.localeCompare(b);
         });
       } catch {
         stderr.push(`bash: ls: cannot access '${arg}': No such file or directory`);
         exitCode = 1;
+
         return null;
       }
 

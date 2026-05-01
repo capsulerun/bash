@@ -25,11 +25,13 @@ describe('cp command', () => {
       if (path === 'file1.txt') return '/workspace/file1.txt';
       if (path === 'newname.txt') return undefined;
       if (path === '.') return '/workspace';
+
       return undefined;
     });
 
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return false;
+
       return '';
     });
 
@@ -43,6 +45,7 @@ describe('cp command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('File copied ✔');
     expect(executeCodeMock).toHaveBeenCalledWith(
@@ -55,14 +58,17 @@ describe('cp command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => {
       if (path === 'file1.txt') return '/workspace/file1.txt';
       if (path === 'dir1') return '/workspace/dir1';
+
       return undefined;
     });
 
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) {
         if (code.includes('dir1')) return true;
+
         return false;
       }
+
       return '';
     });
 
@@ -76,6 +82,7 @@ describe('cp command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('File copied ✔');
     expect(executeCodeMock).toHaveBeenCalledWith(
@@ -89,14 +96,17 @@ describe('cp command', () => {
       if (path === 'dir1') return '/workspace/dir1';
       if (path === 'dir2') return undefined;
       if (path === '.') return '/workspace';
+
       return undefined;
     });
 
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) {
         if (code.includes('dir1')) return true;
+
         return false;
       }
+
       return '';
     });
 
@@ -110,6 +120,7 @@ describe('cp command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('Folder copied ✔');
     expect(executeCodeMock).toHaveBeenCalledWith(

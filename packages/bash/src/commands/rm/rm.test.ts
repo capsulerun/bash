@@ -15,6 +15,7 @@ describe('rm command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/file.txt');
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return false;
+
       return '';
     });
 
@@ -52,6 +53,7 @@ describe('rm command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return true;
       if (code.includes('readdirSync')) return [];
+
       return '';
     });
 
@@ -75,6 +77,7 @@ describe('rm command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('statSync') && code.includes('isDirectory')) return true;
       if (code.includes('readdirSync')) return ['file.txt'];
+
       return '';
     });
 

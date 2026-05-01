@@ -21,11 +21,13 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
       if (!parentFolderAbsolutePath && arg.includes('..')) {
         stderr.push(`bash: mkdir: '${arg}': Permission denied`);
+
         return;
       }
 
       if (!parentFolderAbsolutePath && !opts.hasFlag('p')) {
         stderr.push(`bash: mkdir: '${arg}': No such file or directory`);
+
         return;
       }
 

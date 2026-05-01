@@ -7,6 +7,7 @@ describe('ls command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => `/workspace/${path}`);
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('readdirSync')) return ['file1.txt', '.hidden', 'dir1'];
+
       return {};
     });
 
@@ -27,6 +28,7 @@ describe('ls command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async (state, path) => `/workspace/${path}`);
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('readdirSync')) return ['file1.txt', '.hidden'];
+
       return {};
     });
 
@@ -50,6 +52,7 @@ describe('ls command', () => {
       if (code.includes('readdirSync')) return ['file1.txt'];
       if (code.includes('statSync'))
         return { mode: 0o100644, size: 1024, nlink: 1, mtime: '2023-01-01T00:00:00.000Z' };
+
       return {};
     });
 
@@ -72,6 +75,7 @@ describe('ls command', () => {
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('dir1')) return ['file_a'];
       if (code.includes('dir2')) return ['file_b'];
+
       return [];
     });
 

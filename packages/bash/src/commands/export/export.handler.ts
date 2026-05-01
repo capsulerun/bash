@@ -9,9 +9,11 @@ export const manual: CommandManual = {
 export const handler: CommandHandler = async ({ opts, state }: CommandContext) => {
   for (const arg of opts.args) {
     const equalIdx = arg.indexOf('=');
+
     if (equalIdx > 0) {
       const key = arg.slice(0, equalIdx);
       const value = arg.slice(equalIdx + 1);
+
       state.setEnv(key, value);
     } else if (arg.length > 0) {
       if (state.env[arg] === undefined) {

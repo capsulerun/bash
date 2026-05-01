@@ -18,6 +18,7 @@ describe('node command', () => {
       {},
       { executeCode: executeCodeMock },
     );
+
     ctx.opts.raw = ['-e', 'console.log("inline output")'];
 
     const result = await handler(ctx);
@@ -29,6 +30,7 @@ describe('node command', () => {
 
   it('should return error if -e is used without code', async () => {
     const ctx = createMockContext(['-e']);
+
     ctx.opts.raw = ['-e'];
 
     const result = await handler(ctx);

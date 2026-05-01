@@ -23,6 +23,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
     opts.args.map(async (target) => {
       if (!target) {
         stderr.push(`bash: rm: missing file operand`);
+
         return;
       }
 
@@ -30,6 +31,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
       if (!targetAbsolutePath) {
         stderr.push(`bash: rm: ${target}: No such file or directory`);
+
         return;
       }
 
@@ -49,11 +51,13 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
       if (isDirectory && !opts.hasFlag('r') && !opts.hasFlag('f')) {
         stderr.push(`bash: rm: ${target}: Is a directory`);
+
         return;
       }
 
       if (isDirectory && !isEmpty && opts.hasFlag('r') && !opts.hasFlag('f')) {
         stderr.push(`bash: rm: ${target}: Directory not empty`);
+
         return;
       }
 
@@ -63,6 +67,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
           `require('fs').rmdirSync('${targetAbsolutePath}', { recursive: true });`,
         );
         stdout.push(`Folder ${target} removed ✔`);
+
         return;
       }
 
@@ -72,12 +77,14 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
           `(async () => { await require('fs').rm('${targetAbsolutePath}', { recursive: true }); })();`,
         );
         stdout.push(`Folder ${target} removed ✔`);
+
         return;
       }
 
       if (isFile) {
         await runtime.executeCode(state, `require('fs').unlinkSync('${targetAbsolutePath}');`);
         stdout.push(`File ${target} removed ✔`);
+
         return;
       }
     }),

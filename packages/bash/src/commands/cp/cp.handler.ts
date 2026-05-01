@@ -66,6 +66,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
       state,
       `require('fs').copyFileSync('${sourceAbsolutePath}', '${destinationPath}');`,
     );
+
     return { stdout: 'File copied ✔', stderr: '', exitCode: 0 };
   }
 
@@ -74,6 +75,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
       state,
       `(async () => await require('fs').cp('${sourceAbsolutePath}', '${destinationAbsolutePath || destination}', { recursive: true }))()`,
     );
+
     return { stdout: 'Folder copied ✔', stderr: '', exitCode: 0 };
   }
 

@@ -61,6 +61,7 @@ export class Bash {
     }
 
     const ast = this.parser.parse(command);
+
     return this.executor.execute(ast);
   }
 

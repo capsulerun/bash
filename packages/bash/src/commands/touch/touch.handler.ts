@@ -19,6 +19,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
 
       if (!parentFolderAbsolutePath) {
         stderr.push(`bash: touch: '${arg}': No such file or directory`);
+
         return;
       }
 
@@ -29,6 +30,7 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         state,
         `return require('fs').existsSync('${absolutePath}');`,
       )) as boolean;
+
       if (!exists) {
         await runtime.executeCode(state, `require('fs').writeFileSync('${absolutePath}', '');`);
       }

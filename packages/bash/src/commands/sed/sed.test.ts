@@ -13,6 +13,7 @@ describe('sed command', () => {
 
   it('should process from stdin if no files are provided', async () => {
     const ctx = createMockContext(['s/foo/bar/']);
+
     ctx.stdin = 'foo baz\nhello foo';
 
     const result = await handler(ctx);
@@ -23,6 +24,7 @@ describe('sed command', () => {
 
   it('should support global flag (g) and custom delimiters', async () => {
     const ctx = createMockContext(['s#foo#bar#g']);
+
     ctx.stdin = 'foo foo foo';
 
     const result = await handler(ctx);
@@ -35,6 +37,7 @@ describe('sed command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/file.txt');
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return { isDirectory: false, content: 'edit me' };
+
       return '';
     });
 
@@ -61,6 +64,7 @@ describe('sed command', () => {
     const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/file.txt');
     const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
       if (code.includes('isDirectory')) return { isDirectory: false, content: 'edit me' };
+
       return '';
     });
 
@@ -85,6 +89,7 @@ describe('sed command', () => {
 
   it('should return error for invalid regex expression', async () => {
     const ctx = createMockContext(['s/some(']); // open parenthesis without closure
+
     ctx.stdin = 'content';
     const result = await handler(ctx);
 

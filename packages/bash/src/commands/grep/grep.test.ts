@@ -6,15 +6,18 @@ describe('grep command', () => {
   it('should return error if missing pattern', async () => {
     const ctx = createMockContext([]);
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('missing pattern');
   });
 
   it('should search from stdin if no file args provided', async () => {
     const ctx = createMockContext(['hello']);
+
     ctx.stdin = 'hello world\nignore this\nsay hello';
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toBe('hello world\nsay hello');
   });
@@ -37,6 +40,7 @@ describe('grep command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toBe('hello world\nsay hello');
   });
@@ -59,6 +63,7 @@ describe('grep command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('file1.txt:hello world');
     expect(result.stdout).toContain('file2.txt:say hello');
@@ -66,9 +71,11 @@ describe('grep command', () => {
 
   it('should apply -i ignore case and -n line number flags', async () => {
     const ctx = createMockContext(['-i', '-n', 'HELLO']);
+
     ctx.stdin = 'Hello world\nignore this\nsay hello';
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toBe('1:Hello world\n3:say hello');
   });
@@ -91,6 +98,7 @@ describe('grep command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('bash: grep: dir: Is a directory');
   });
@@ -101,6 +109,7 @@ describe('grep command', () => {
       .mockImplementation(async (_state, path) => `/workspace/${path}`);
     const executeCodeMock = vi.fn().mockImplementation(async (_state, code) => {
       if (code.includes("/workspace/dir'")) return { isDirectory: true, entries: ['file'] };
+
       return { isDirectory: false, content: 'hello inside!' };
     });
 
@@ -114,6 +123,7 @@ describe('grep command', () => {
     );
 
     const result = await handler(ctx);
+
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('dir/file:hello inside!');
   });

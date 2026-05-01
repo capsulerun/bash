@@ -21,6 +21,7 @@ async function grepLines(
   const results: string[] = [];
   const regexFlags = flags.ignoreCase ? 'i' : '';
   let regex: RegExp;
+
   try {
     regex = new RegExp(pattern, regexFlags);
   } catch {
@@ -28,14 +29,18 @@ async function grepLines(
   }
 
   const lines = content.split('\n');
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const matched = regex.test(line);
+
     if (matched !== flags.invert) {
       const linePrefix = flags.lineNumber ? `${i + 1}:` : '';
+
       results.push(`${prefix}${linePrefix}${line}`);
     }
   }
+
   return results;
 }
 
@@ -60,7 +65,9 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
       return { stdout: '', stderr: 'bash: grep: no input', exitCode: 1 };
     }
     const lines = await grepLines(stdin, pattern, grepFlags, '');
+
     stdout.push(...lines);
+
     return { stdout: stdout.join('\n'), stderr: '', exitCode: stdout.length > 0 ? 0 : 1 };
   }
 
@@ -72,35 +79,39 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
 
     if (!absolutePath) {
       stderr.push(`bash: grep: ${target}: No such file or directory`);
+
       return;
     }
 
     const info = (await runtime.executeCode(
       state,
       `
-            (function() {
-                const fs = require('fs');
-                const stat = fs.statSync('${absolutePath}');
-                if (stat.isDirectory()) {
-                    return { isDirectory: true, entries: fs.readdirSync('${absolutePath}') };
-                }
-                return { isDirectory: false, content: fs.readFileSync('${absolutePath}', 'utf8') };
-            })()
-        `,
+        (function() {
+            const fs = require('fs');
+            const stat = fs.statSync('${absolutePath}');
+            if (stat.isDirectory()) {
+                return { isDirectory: true, entries: fs.readdirSync('${absolutePath}') };
+            }
+            return { isDirectory: false, content: fs.readFileSync('${absolutePath}', 'utf8') };
+        })()
+      `,
     )) as { isDirectory: boolean; entries?: string[]; content?: string };
 
     if (info.isDirectory && !recursive) {
       stderr.push(`bash: grep: ${target}: Is a directory`);
+
       return;
     }
 
     if (info.isDirectory && recursive) {
       await Promise.all((info.entries ?? []).map((entry) => processPath(`${target}/${entry}`)));
+
       return;
     }
 
     const prefix = multipleFiles ? `${target}:` : '';
     const lines = await grepLines(info.content ?? '', pattern, grepFlags, prefix);
+
     stdout.push(...lines);
   };
 

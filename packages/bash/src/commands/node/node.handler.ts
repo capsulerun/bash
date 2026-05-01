@@ -25,6 +25,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
 
     try {
       const result = (await runtime.executeCode(state, code)) as string;
+
       return { stdout: result ? String(result) : '', stderr: '', exitCode: 0 };
     } catch (e) {
       return { stdout: '', stderr: `bash: node: ${e}`, exitCode: 1 };
@@ -38,6 +39,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
   }
 
   const absolutePath = await runtime.resolvePath(state, file);
+
   if (!absolutePath) {
     return {
       stdout: '',
@@ -48,6 +50,7 @@ export const handler: CommandHandler = async ({ opts, state, runtime }: CommandC
 
   try {
     const result = (await runtime.executeFile(state, absolutePath, scriptArgs)) as string;
+
     return { stdout: result ? String(result) : '', stderr: '', exitCode: 0 };
   } catch (e) {
     return { stdout: '', stderr: `bash: node: ${e}`, exitCode: 1 };
