@@ -71,16 +71,29 @@ export class Executor {
     const modified: string[] = [];
     const deleted: string[] = [];
 
-    for (const [path, size] of Object.entries(after)) {
+    for (const [path, mtime] of Object.entries(after)) {
       if (!(path in before)) created.push(path);
-      else if (before[path] !== size) modified.push(path);
+      else if (before[path] !== mtime) modified.push(path);
     }
 
     for (const path of Object.keys(before)) {
       if (!(path in after)) deleted.push(path);
     }
 
-    return { created, modified, deleted };
+    const childChanged = new Set([...created, ...deleted]);
+    const finalModified = modified.filter((dir) => {
+      if (!dir.endsWith('/')) return true;
+
+      return ![...childChanged].some((child) => {
+        if (!child.startsWith(dir)) return false;
+
+        const rest = child.slice(dir.length);
+
+        return rest.length > 0 && !rest.includes('/');
+      });
+    });
+
+    return { created, modified: finalModified, deleted };
   }
 
   async execute(node: ASTNode, stdin = ''): Promise<CommandResult> {

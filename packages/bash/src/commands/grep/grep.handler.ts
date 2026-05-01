@@ -8,6 +8,7 @@ export const manual: CommandManual = {
     '-i': 'Ignore case',
     '-v': 'Invert match',
     '-n': 'Display line number',
+    '-o': 'Print only the matched parts of a matching line',
     '-r': 'Recursive',
   },
 };
@@ -15,11 +16,11 @@ export const manual: CommandManual = {
 async function grepLines(
   content: string,
   pattern: string,
-  flags: { ignoreCase: boolean; invert: boolean; lineNumber: boolean },
+  flags: { ignoreCase: boolean; invert: boolean; lineNumber: boolean; onlyMatching: boolean },
   prefix: string,
 ): Promise<string[]> {
   const results: string[] = [];
-  const regexFlags = flags.ignoreCase ? 'i' : '';
+  const regexFlags = flags.ignoreCase ? 'gi' : 'g';
   let regex: RegExp;
 
   try {
@@ -32,12 +33,23 @@ async function grepLines(
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const matched = regex.test(line);
+    const linePrefix = flags.lineNumber ? `${i + 1}:` : '';
 
-    if (matched !== flags.invert) {
-      const linePrefix = flags.lineNumber ? `${i + 1}:` : '';
+    if (flags.onlyMatching) {
+      const matches = [...line.matchAll(regex)];
 
-      results.push(`${prefix}${linePrefix}${line}`);
+      if (matches.length > 0 && !flags.invert) {
+        for (const match of matches) {
+          results.push(`${prefix}${linePrefix}${match[0]}`);
+        }
+      }
+    } else {
+      regex.lastIndex = 0;
+      const matched = regex.test(line);
+
+      if (matched !== flags.invert) {
+        results.push(`${prefix}${linePrefix}${line}`);
+      }
     }
   }
 
@@ -48,8 +60,9 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
   const ignoreCase = opts.hasFlag('i');
   const invert = opts.hasFlag('v');
   const lineNumber = opts.hasFlag('n');
+  const onlyMatching = opts.hasFlag('o');
   const recursive = opts.hasFlag('r');
-  const grepFlags = { ignoreCase, invert, lineNumber };
+  const grepFlags = { ignoreCase, invert, lineNumber, onlyMatching };
 
   const [pattern, ...fileArgs] = opts.args;
 
@@ -116,6 +129,10 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
   };
 
   await Promise.all(targets.map((target) => processPath(target)));
+
+  if (stdout.length == 0) {
+    stderr.push(`bash: grep: ${pattern}: No matches found`);
+  }
 
   return {
     stdout: stdout.join('\n'),

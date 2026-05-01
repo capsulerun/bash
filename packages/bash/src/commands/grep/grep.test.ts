@@ -127,4 +127,15 @@ describe('grep command', () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('dir/file:hello inside!');
   });
+
+  it('should return only matched parts with -o flag', async () => {
+    const ctx = createMockContext(['-o', 'hello']);
+
+    ctx.stdin = 'say hello world\nignore this\nhello again hello';
+
+    const result = await handler(ctx);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe('hello\nhello\nhello');
+  });
 });
