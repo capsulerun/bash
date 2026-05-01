@@ -23,8 +23,8 @@ describe('cp command', () => {
     it('should copy file to another file successfully', async () => {
         const resolvePathMock = vi.fn().mockImplementation(async (state, path) => {
             if (path === 'file1.txt') return '/workspace/file1.txt';
-            if (path === 'newname.txt') return undefined; // Destination file doesn't exist
-            if (path === '.') return '/workspace'; // Parent folder
+            if (path === 'newname.txt') return undefined;
+            if (path === '.') return '/workspace';
             return undefined;
         });
 
@@ -33,9 +33,9 @@ describe('cp command', () => {
             return '';
         });
 
-        const ctx = createMockContext(['file1.txt', 'newname.txt'], {}, { 
+        const ctx = createMockContext(['file1.txt', 'newname.txt'], {}, {
             resolvePath: resolvePathMock,
-            executeCode: executeCodeMock 
+            executeCode: executeCodeMock
         });
 
         const result = await handler(ctx);
@@ -62,9 +62,9 @@ describe('cp command', () => {
             return '';
         });
 
-        const ctx = createMockContext(['file1.txt', 'dir1'], {}, { 
+        const ctx = createMockContext(['file1.txt', 'dir1'], {}, {
             resolvePath: resolvePathMock,
-            executeCode: executeCodeMock 
+            executeCode: executeCodeMock
         });
 
         const result = await handler(ctx);
@@ -92,9 +92,9 @@ describe('cp command', () => {
             return '';
         });
 
-        const ctx = createMockContext(['-r', 'dir1', 'dir2'], {}, { 
+        const ctx = createMockContext(['-r', 'dir1', 'dir2'], {}, {
             resolvePath: resolvePathMock,
-            executeCode: executeCodeMock 
+            executeCode: executeCodeMock
         });
 
         const result = await handler(ctx);

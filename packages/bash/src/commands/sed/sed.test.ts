@@ -69,7 +69,6 @@ describe('sed command', () => {
 
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toBe('fixed me');
-        // Didn't call writeFileSync
         expect(executeCodeMock).not.toHaveBeenCalledWith(
             expect.anything(),
             expect.stringContaining('writeFileSync')

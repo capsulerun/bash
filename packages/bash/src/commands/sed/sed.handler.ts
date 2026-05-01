@@ -71,7 +71,6 @@ export const handler: CommandHandler = async ({ opts, state, runtime, stdin }: C
         return { stdout: '', stderr: `bash: sed: invalid expression: ${rawExpr}`, exitCode: 1 };
     }
 
-    // No files: apply to stdin
     if (fileArgs.length === 0) {
         if (!stdin) {
             return { stdout: '', stderr: 'bash: sed: no input', exitCode: 1 };
