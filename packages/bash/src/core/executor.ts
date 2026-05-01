@@ -32,29 +32,29 @@ export class Executor {
   private async snapshotFs(root: string): Promise<FsSnapshot> {
     const sandboxRoot = root;
     const code = `
-            const fs = require('fs');
-            const path = require('path');
-            const root = ${JSON.stringify(sandboxRoot)};
-            const snapshot = {};
-            const walk = (dir) => {
-                try {
-                    for (const entry of fs.readdirSync(dir)) {
-                        const fullPath = path.join(dir, entry);
-                        try {
-                            const stat = fs.statSync(fullPath);
-                            if (stat.isDirectory()) {
-                                snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
-                                walk(fullPath);
-                            } else {
-                                snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
-                            }
-                        } catch {}
-                    }
-                } catch {}
-            };
-            walk(root);
-            return snapshot;
-        `;
+      const fs = require('fs');
+      const path = require('path');
+      const root = ${JSON.stringify(sandboxRoot)};
+      const snapshot = {};
+      const walk = (dir) => {
+          try {
+              for (const entry of fs.readdirSync(dir)) {
+                  const fullPath = path.join(dir, entry);
+                  try {
+                      const stat = fs.statSync(fullPath);
+                      if (stat.isDirectory()) {
+                          snapshot[fullPath.slice(root.length + 1) + '/'] = stat.mtimeMs;
+                          walk(fullPath);
+                      } else {
+                          snapshot[fullPath.slice(root.length + 1)] = stat.mtimeMs;
+                      }
+                  } catch {}
+              }
+          } catch {}
+      };
+      walk(root);
+      return snapshot;
+  `;
 
     try {
       return (await this.runtime.executeCode(this.state, code)) as FsSnapshot;
@@ -215,10 +215,10 @@ export class Executor {
           stdin = (await this.runtime.executeCode(
             this.state,
             `
-                        const fs = require('fs');
-                        const path = require('path');
-                        return fs.readFileSync(path.resolve(${JSON.stringify(r.file)}), 'utf8');
-                    `,
+              const fs = require('fs');
+              const path = require('path');
+              return fs.readFileSync(path.resolve(${JSON.stringify(r.file)}), 'utf8');
+            `,
           )) as string;
         } catch {
           return {
@@ -478,10 +478,44 @@ export class Executor {
     a?: { created: string[]; modified: string[]; deleted: string[] },
     b?: { created: string[]; modified: string[]; deleted: string[] },
   ) {
+    const aCreated = new Set(a?.created ?? []);
+    const aModified = new Set(a?.modified ?? []);
+    const aDeleted = new Set(a?.deleted ?? []);
+    const bCreated = new Set(b?.created ?? []);
+
+    const created = new Set([...aCreated, ...bCreated]);
+    const modified = new Set([...(a?.modified ?? []), ...(b?.modified ?? [])]);
+    const deleted = new Set([...(a?.deleted ?? []), ...(b?.deleted ?? [])]);
+
+    for (const p of aCreated) {
+      if (deleted.has(p)) {
+        created.delete(p);
+        deleted.delete(p);
+      }
+    }
+
+    for (const p of aModified) {
+      if (deleted.has(p)) {
+        modified.delete(p);
+      }
+    }
+
+    for (const p of aDeleted) {
+      if (bCreated.has(p)) {
+        deleted.delete(p);
+        created.delete(p);
+        modified.add(p);
+      }
+    }
+
+    for (const p of created) {
+      modified.delete(p);
+    }
+
     return {
-      created: [...(a?.created ?? []), ...(b?.created ?? [])],
-      modified: [...(a?.modified ?? []), ...(b?.modified ?? [])],
-      deleted: [...(a?.deleted ?? []), ...(b?.deleted ?? [])],
+      created: [...created],
+      modified: [...modified],
+      deleted: [...deleted],
     };
   }
 }
