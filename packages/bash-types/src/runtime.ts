@@ -1,46 +1,45 @@
-import { State } from "./state";
+import { State } from './state';
 
 export interface BaseRuntime {
+  /**
+   * The host workspace directory
+   */
+  hostWorkspace: string;
 
-    /**
-     * The host workspace directory
-     */
-    hostWorkspace: string;
+  /**
+   * Preload the runtime
+   */
+  preload(state: State, name?: string): Promise<boolean>;
 
-    /**
-     * Preload the runtime
-     */
-    preload(state: State, name?: string): Promise<boolean>;
+  /**
+   * Execute a code
+   */
+  executeCode(state: State, code: string, language?: string): Promise<unknown>;
 
-    /**
-     * Execute a code
-     */
-    executeCode(state: State, code: string, language?: string): Promise<unknown>;
+  /**
+   * Execute a file
+   */
+  executeFile(state: State, filePath: string, args: string[], language?: string): Promise<unknown>;
 
-    /**
-     * Execute a file
-     */
-    executeFile(state: State, filePath: string, args: string[], language?: string): Promise<unknown>;
-
-    /**
-     * Resolve a path in the sandbox
-     */
-    resolvePath(state: State, path: string): Promise<string | undefined>;
+  /**
+   * Resolve a path in the sandbox
+   */
+  resolvePath(state: State, path: string): Promise<string | undefined>;
 }
 
 export interface RuntimeResult {
-    /**
-     * Standard output
-     */
-    stdout: string;
+  /**
+   * Standard output
+   */
+  stdout: string;
 
-    /**
-     * Standard error
-     */
-    stderr: string;
+  /**
+   * Standard error
+   */
+  stderr: string;
 
-    /**
-     * Exit code
-     */
-    exitCode: number;
+  /**
+   * Exit code
+   */
+  exitCode: number;
 }

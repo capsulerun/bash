@@ -11,8 +11,8 @@ npm install @capsule-run/bash @capsule-run/bash-wasm
 ## Usage
 
 ```typescript
-import { Bash } from "@capsule-run/bash";
-import { WasmRuntime } from "@capsule-run/bash-wasm";
+import { Bash } from '@capsule-run/bash';
+import { WasmRuntime } from '@capsule-run/bash-wasm';
 
 const bash = new Bash({ runtime: new WasmRuntime() });
 ```

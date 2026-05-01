@@ -3,12 +3,15 @@ import type { BaseRuntime, State } from '@capsule-run/bash-types';
 export class StateManager {
   public readonly state: State;
 
-  constructor(private readonly runtime: BaseRuntime, initialCwd: string = '/workspace') {
+  constructor(
+    private readonly runtime: BaseRuntime,
+    initialCwd: string = '/workspace',
+  ) {
     this.state = {
       cwd: initialCwd,
       env: {},
       lastExitCode: 0,
-      absoluteCwd: () => this.state.cwd.startsWith('/') ? this.state.cwd : `/${this.state.cwd}`,
+      absoluteCwd: () => (this.state.cwd.startsWith('/') ? this.state.cwd : `/${this.state.cwd}`),
       setLastExitCode: (code: number) => {
         this.state.lastExitCode = code;
       },
@@ -16,7 +19,7 @@ export class StateManager {
         this.state.env[key] = value;
       },
       changeDirectory: async (targetPath: string) => {
-        const resolvedPath = await this.runtime.resolvePath(this.state, targetPath)
+        const resolvedPath = await this.runtime.resolvePath(this.state, targetPath);
 
         if (!resolvedPath) {
           return false;
@@ -24,7 +27,7 @@ export class StateManager {
 
         this.state.cwd = resolvedPath as string;
         return true;
-      }
+      },
     };
   }
 

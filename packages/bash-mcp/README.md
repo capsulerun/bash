@@ -13,11 +13,11 @@ Each session runs inside a WebAssembly sandbox powered by [`@capsule-run/bash-wa
 
 ## Tools
 
-| Tool | Description |
-|------|-------------|
-| `run` | Run a bash command in a sandboxed session. Returns stdout, stderr, exit code, filesystem diff, and current shell state (cwd + env). |
-| `reset` | Reset the filesystem and shell state (cwd, env vars) for a session back to their initial values. |
-| `sessions` | List all active shell sessions. |
+| Tool       | Description                                                                                                                         |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `run`      | Run a bash command in a sandboxed session. Returns stdout, stderr, exit code, filesystem diff, and current shell state (cwd + env). |
+| `reset`    | Reset the filesystem and shell state (cwd, env vars) for a session back to their initial values.                                    |
+| `sessions` | List all active shell sessions.                                                                                                     |
 
 ### Sessions
 
@@ -27,7 +27,7 @@ Commands within the same `session_id` share cwd, environment variables, and file
 
 Ask your AI agent:
 
-> *"I have a log file — count how many errors occurred per hour."*
+> _"I have a log file — count how many errors occurred per hour."_
 
 The agent calls `run` sequentially:
 

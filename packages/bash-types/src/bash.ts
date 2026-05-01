@@ -1,24 +1,24 @@
-import { CommandHandler, CustomCommand } from "./command";
-import type { BaseRuntime } from "./runtime";
+import { CustomCommand } from './command';
+import type { BaseRuntime } from './runtime';
 
 export interface BashOptions {
-    /**
-     * The runtime to use for executing commands
-     */
-    runtime: BaseRuntime;
+  /**
+   * The runtime to use for executing commands
+   */
+  runtime: BaseRuntime;
 
-    /**
-     * Array with custom commands added at runtime
-     */
-    customCommands?: CustomCommand[];
+  /**
+   * Array with custom commands added at runtime
+   */
+  customCommands?: CustomCommand[];
 
-    /**
-     * The host workspace directory
-     */
-    hostWorkspace?: string;
+  /**
+   * The host workspace directory
+   */
+  hostWorkspace?: string;
 
-    /**
-     * The initial working directory
-     */
-    initialCwd?: string;
+  /**
+   * The initial working directory
+   */
+  initialCwd?: string;
 }

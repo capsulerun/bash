@@ -82,7 +82,6 @@ describe('sandbox.py – EXECUTE_CODE', () => {
     const error = assertFailure(result);
     expect(error.message).toContain('boom');
   });
-
 });
 
 describe('sandbox.py – EXECUTE_FILE', () => {
