@@ -42,9 +42,9 @@ describe('wc command', () => {
         const result = await handler(ctx);
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('       1'); // 1 line
-        expect(result.stdout).toContain('       2'); // 2 words
-        expect(result.stdout).toContain('      13'); // 13 bytes
+        expect(result.stdout).toContain('       1');
+        expect(result.stdout).toContain('       2');
+        expect(result.stdout).toContain('      13');
         expect(result.stdout).toContain('file.txt');
     });
 

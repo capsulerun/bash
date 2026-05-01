@@ -37,11 +37,6 @@ describe('cat command', () => {
       });
 
       const result = await handler(ctx);
-      // Because Promise.all might execute out of order in handler,
-      // the output order could theoretically be non-deterministic,
-      // but assuming it respects map array order in pushing if evaluated sequentially
-      // Wait, Promise.all runs concurrently. They push to stdout concurrently.
-      // We can just verify it contains both parts.
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('hello');
       expect(result.stdout).toContain('world');

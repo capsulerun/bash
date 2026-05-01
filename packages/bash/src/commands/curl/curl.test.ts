@@ -4,7 +4,7 @@ import { createMockContext } from "../../helpers/testUtils";
 
 describe('curl command', () => {
     it('should return error if no URL specified', async () => {
-        const ctx = createMockContext(['-s']); // missing URL
+        const ctx = createMockContext(['-s']);
         const result = await handler(ctx);
 
         expect(result.exitCode).toBe(1);
@@ -20,7 +20,6 @@ describe('curl command', () => {
         });
 
         const ctx = createMockContext(['https://example.com'], {}, { executeCode: executeCodeMock });
-        // NOTE: we need to pass opts.raw for curl parser
         ctx.opts.raw = ['https://example.com'];
 
         const result = await handler(ctx);
@@ -63,9 +62,9 @@ describe('curl command', () => {
             return null;
         });
 
-        const ctx = createMockContext(['-O', 'https://example.com/index.html'], {}, { 
+        const ctx = createMockContext(['-O', 'https://example.com/index.html'], {}, {
             resolvePath: resolvePathMock,
-            executeCode: executeCodeMock 
+            executeCode: executeCodeMock
         });
         ctx.opts.raw = ['-O', 'https://example.com/index.html'];
 
