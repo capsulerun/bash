@@ -149,7 +149,6 @@ __pycache__/
 # Capsule
 .capsule/
 .capsule/*
-SKILL*
 
 examples/
 *.tape
