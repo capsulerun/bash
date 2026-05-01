@@ -7,9 +7,22 @@
   "packageManager": "pnpm@10.21.0",
   "type": "commonjs",
   "scripts": {
+    "prepare": "husky",
     "test": "echo \"Error: no test specified\" && exit 1",
     "bash-wasm-shell": "pnpm --filter bash-wasm-shell bash-wasm-shell",
-    "prebuild-wasm": "bash ./scripts/prebuild-wasm-sandboxes.sh"
+    "prebuild-wasm": "bash ./scripts/prebuild-wasm-sandboxes.sh",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "homepage": "https://github.com/capsulerun/bash",
   "repository": {
@@ -21,9 +34,17 @@
     "@capsule-run/sdk": "^0.8.10"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^25.6.0",
     "esbuild": "^0.28.0",
+    "eslint": "^10.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
     "typescript": "^6.0.2",
+    "typescript-eslint": "^8.59.1",
     "vitest": "^4.1.4"
   }
 }
