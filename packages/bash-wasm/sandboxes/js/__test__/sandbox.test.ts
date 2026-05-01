@@ -4,7 +4,8 @@ import type { RunnerResult } from '@capsule-run/sdk/runner';
 import path from 'path';
 
 const SANDBOX = path.resolve(__dirname, '../sandbox.ts');
-const WORKSPACE = './sandboxes/js/__test__/workspace';
+const relativeWorkspace = path.relative(process.cwd(), path.resolve(__dirname, 'workspace'));
+const WORKSPACE = relativeWorkspace.startsWith('.') ? relativeWorkspace : `./${relativeWorkspace}`;
 
 const baseState = JSON.stringify({
   cwd: '/',

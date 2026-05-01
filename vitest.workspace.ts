@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig, configDefaults } from 'vitest/config';
 
 export default defineConfig({
   test: {
     projects: ['packages/*'],
-    exclude: ['**/.capsule'],
+    exclude: [...configDefaults.exclude, '**/.capsule/**'],
   },
 });
