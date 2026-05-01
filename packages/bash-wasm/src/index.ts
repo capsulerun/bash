@@ -1,1 +1,1 @@
-export { WasmRuntime } from "./runtime";
+export { WasmRuntime } from './runtime';

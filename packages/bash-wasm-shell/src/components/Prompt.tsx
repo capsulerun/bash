@@ -4,68 +4,79 @@ import TextInput from 'ink-text-input';
 import type { HeredocState } from '../hooks/useShell.js';
 
 type Props = {
-    cwd: string;
-    lastExitCode: number;
-    running: boolean;
-    runningCommand: string;
-    onSubmit: (command: string) => void;
-    history: string[];
-    heredoc: HeredocState | null;
+  cwd: string;
+  lastExitCode: number;
+  running: boolean;
+  onSubmit: (command: string) => void;
+  history: string[];
+  heredoc: HeredocState | null;
 };
 
-export function Prompt({ cwd, lastExitCode, running, runningCommand, onSubmit, history, heredoc }: Props) {
-    const [input, setInput] = useState('');
-    const [historyIndex, setHistoryIndex] = useState(-1);
+export function Prompt({ cwd, lastExitCode, running, onSubmit, history, heredoc }: Props) {
+  const [input, setInput] = useState('');
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
-    const handleSubmit = (value: string) => {
-        onSubmit(value);
-        setInput('');
+  const handleSubmit = (value: string) => {
+    onSubmit(value);
+    setInput('');
+    setHistoryIndex(-1);
+  };
+
+  useInput((_input, key) => {
+    if (running) return;
+
+    if (key.upArrow) {
+      const nextIndex = Math.min(historyIndex + 1, history.length - 1);
+
+      setHistoryIndex(nextIndex);
+      setInput(history[history.length - 1 - nextIndex] ?? '');
+    } else if (key.downArrow) {
+      const nextIndex = historyIndex - 1;
+
+      if (nextIndex < 0) {
         setHistoryIndex(-1);
-    };
-
-    useInput((_input, key) => {
-        if (running) return;
-        if (key.upArrow) {
-            const nextIndex = Math.min(historyIndex + 1, history.length - 1);
-            setHistoryIndex(nextIndex);
-            setInput(history[history.length - 1 - nextIndex] ?? '');
-        } else if (key.downArrow) {
-            const nextIndex = historyIndex - 1;
-            if (nextIndex < 0) {
-                setHistoryIndex(-1);
-                setInput('');
-            } else {
-                setHistoryIndex(nextIndex);
-                setInput(history[history.length - 1 - nextIndex] ?? '');
-            }
-        }
-    });
-
-    const promptColor = lastExitCode === 0 ? 'green' : 'red';
-
-    if (heredoc) {
-        return (
-            <Box gap={1} marginLeft={1}>
-                <Text bold color="yellow">{'>'}</Text>
-                <TextInput
-                    value={input}
-                    onChange={(val) => { setInput(val); }}
-                    onSubmit={handleSubmit}
-                />
-            </Box>
-        );
+        setInput('');
+      } else {
+        setHistoryIndex(nextIndex);
+        setInput(history[history.length - 1 - nextIndex] ?? '');
+      }
     }
+  });
 
+  const promptColor = lastExitCode === 0 ? 'green' : 'red';
+
+  if (heredoc) {
     return (
-        <Box gap={1} marginLeft={1}>
-            <Text bold>{cwd != '/' ? cwd.slice(1) : cwd}</Text>
-            <Text bold color={promptColor}>❯</Text>
-
-            <TextInput
-                value={input}
-                onChange={(val) => { setInput(val); setHistoryIndex(-1); }}
-                onSubmit={handleSubmit}
-            />
-        </Box>
+      <Box gap={1} marginLeft={1}>
+        <Text bold color="yellow">
+          {'>'}
+        </Text>
+        <TextInput
+          value={input}
+          onChange={(val) => {
+            setInput(val);
+          }}
+          onSubmit={handleSubmit}
+        />
+      </Box>
     );
+  }
+
+  return (
+    <Box gap={1} marginLeft={1}>
+      <Text bold>{cwd != '/' ? cwd.slice(1) : cwd}</Text>
+      <Text bold color={promptColor}>
+        ❯
+      </Text>
+
+      <TextInput
+        value={input}
+        onChange={(val) => {
+          setInput(val);
+          setHistoryIndex(-1);
+        }}
+        onSubmit={handleSubmit}
+      />
+    </Box>
+  );
 }

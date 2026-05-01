@@ -1,9 +1,9 @@
-import { task } from "@capsule-run/sdk";
-import path from "path";
-import fs from "fs";
-import fsPromises from "fs/promises";
+import { task } from '@capsule-run/sdk';
+import path from 'path';
+import fs from 'fs';
+import fsPromises from 'fs/promises';
 
-import type { State } from "@capsule-run/bash-types";
+import type { State } from '@capsule-run/bash-types';
 
 function wasmRelative(cwd: string, filePath: string): string {
   return path.resolve(cwd, filePath).replace(/^\//, '');
@@ -53,9 +53,11 @@ const makeRequire = (fromPath: string) => (id: string) => {
   } else {
     const base = wasmRelative('/', path.resolve('/' + path.dirname(fromPath), id));
 
-    depPath = fs.existsSync(base) ? base
-      : fs.existsSync(base + '.js') ? base + '.js'
-      : base + '/index.js';
+    depPath = fs.existsSync(base)
+      ? base
+      : fs.existsSync(base + '.js')
+        ? base + '.js'
+        : base + '/index.js';
   }
 
   const src = fs.readFileSync(depPath, 'utf-8') as string;
@@ -68,7 +70,7 @@ const makeRequire = (fromPath: string) => (id: string) => {
 };
 
 const executeFile = task(
-  { name: "executeFile", compute: "MEDIUM", ram: "512MB", allowedHosts: ["*"] },
+  { name: 'executeFile', compute: 'MEDIUM', ram: '512MB', allowedHosts: ['*'] },
   async (state: State, filePath: string, args: string[]) => {
     const capturedOutput: string[] = [];
     const relPath = wasmRelative(state.cwd, filePath);
@@ -81,7 +83,7 @@ const executeFile = task(
 
     const originalLog = console.log;
     console.log = (...logArgs: any[]) => {
-      capturedOutput.push(logArgs.map(a => String(a)).join(' '));
+      capturedOutput.push(logArgs.map((a) => String(a)).join(' '));
     };
 
     try {
@@ -102,19 +104,18 @@ const executeFile = task(
     } finally {
       console.log = originalLog;
     }
-  }
+  },
 );
 
-
 const executeCode = task(
-  { name: "executeCode", compute: "LOW", ram: "256MB", allowedHosts: ["*"] },
+  { name: 'executeCode', compute: 'LOW', ram: '256MB', allowedHosts: ['*'] },
   async (state: State, code: string): Promise<unknown> => {
     process.chdir(state.cwd);
     const capturedOutput: string[] = [];
     const originalLog = console.log;
 
     console.log = (...args: any[]) => {
-      capturedOutput.push(args.map(arg => String(arg)).join(' '));
+      capturedOutput.push(args.map((arg) => String(arg)).join(' '));
     };
 
     const require = makeRequire(wasmRelative(state.cwd, '.'));
@@ -124,7 +125,7 @@ const executeCode = task(
       try {
         result = eval(code);
       } catch (e) {
-        if (e instanceof SyntaxError && e.message.includes("return")) {
+        if (e instanceof SyntaxError && e.message.includes('return')) {
           const fn = new Function('require', code);
           result = fn(require);
         } else {
@@ -135,18 +136,18 @@ const executeCode = task(
       const output = capturedOutput.join('\n');
 
       if (output) {
-        return output + (result ? "\n" + result : "");
+        return output + (result ? '\n' + result : '');
       }
 
       return result;
     } finally {
       console.log = originalLog;
     }
-  }
+  },
 );
 
 export const resolvePath = task(
-  { name: "resolvePath", compute: "LOW", ram: "32MB" },
+  { name: 'resolvePath', compute: 'LOW', ram: '32MB' },
   async (state: State, targetPath: string) => {
     process.chdir(state.cwd);
 
@@ -155,24 +156,28 @@ export const resolvePath = task(
     }
 
     return path.resolve(targetPath);
-  }
-)
+  },
+);
 
 export const main = task(
-  { name: "main", compute: "HIGH" },
+  { name: 'main', compute: 'HIGH' },
   async (action: string, state: string, ...args: string[]): Promise<unknown> => {
-    let parsedArgs = args.filter(arg => typeof arg !== "object"); // remove the unused kwargs
-    let response: { success: boolean; result: unknown; error: { error_type: string; message: string } | null };
+    let parsedArgs = args.filter((arg) => typeof arg !== 'object'); // remove the unused kwargs
+    let response: {
+      success: boolean;
+      result: unknown;
+      error: { error_type: string; message: string } | null;
+    };
 
     let parsedState: State = JSON.parse(state);
 
-    if (action === "PRELOAD") {
-      response = { success: true, result: "Sandbox preloaded successfully", error: null };
-    } else if (action === "EXECUTE_CODE") {
+    if (action === 'PRELOAD') {
+      response = { success: true, result: 'Sandbox preloaded successfully', error: null };
+    } else if (action === 'EXECUTE_CODE') {
       response = await executeCode(parsedState, parsedArgs[0]);
-    } else if (action === "EXECUTE_FILE") {
+    } else if (action === 'EXECUTE_FILE') {
       response = await executeFile(parsedState, parsedArgs[0], parsedArgs.slice(1));
-    } else if (action === "RESOLVE_PATH") {
+    } else if (action === 'RESOLVE_PATH') {
       response = await resolvePath(parsedState, parsedArgs[0]);
     } else {
       throw new Error(`Invalid action: ${action}`);
@@ -183,5 +188,5 @@ export const main = task(
     }
 
     return response.result;
-  }
+  },
 );

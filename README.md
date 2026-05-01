@@ -13,6 +13,7 @@
 [Getting Started](#getting-started) • [Documentation](#documentation) • [Issues](https://github.com/capsulerun/bash/issues/new) • [Contributing](#contributing)
 
 ![Example Shell](assets/example.gif)
+
 </div>
 
 ## Overview
@@ -36,12 +37,12 @@ npm install @capsule-run/bash @capsule-run/bash-wasm
 Run it:
 
 ```typescript
-import { Bash } from "@capsule-run/bash";
-import { WasmRuntime } from "@capsule-run/bash-wasm";
+import { Bash } from '@capsule-run/bash';
+import { WasmRuntime } from '@capsule-run/bash-wasm';
 
 const bash = new Bash({ runtime: new WasmRuntime() });
 
-const result = await bash.run("mkdir src && touch src/index.ts");
+const result = await bash.run('mkdir src && touch src/index.ts');
 
 console.log(result);
 
@@ -55,6 +56,7 @@ Result {
 }
 **/
 ```
+
 ### Interactive shell
 
 Clone the repository, then run from the project root:
@@ -85,20 +87,20 @@ See the [MCP Readme](packages/bash-mcp) for configuration details.
 
 ### Bash Options
 
-| Parameter | Description | Type | Default |
-|-----------|-------------|------|---------|
-| `runtime` | Runtime to use for the sandbox | `Runtime class` | None |
-| `customCommands` | Custom commands to add to the bash instance | `CustomCommand[]` | `[]` |
-| `hostWorkspace` | Host workspace directory | `string` | `".capsule/session/workspace"` |
-| `initialCwd` | Initial working directory | `string` | `"/workspace"` |
+| Parameter        | Description                                 | Type              | Default                        |
+| ---------------- | ------------------------------------------- | ----------------- | ------------------------------ |
+| `runtime`        | Runtime to use for the sandbox              | `Runtime class`   | None                           |
+| `customCommands` | Custom commands to add to the bash instance | `CustomCommand[]` | `[]`                           |
+| `hostWorkspace`  | Host workspace directory                    | `string`          | `".capsule/session/workspace"` |
+| `initialCwd`     | Initial working directory                   | `string`          | `"/workspace"`                 |
 
 #### Runtime
 
 The runtime is the engine that runs the bash commands. `WasmRuntime` is available by default to run the commands in a WebAssembly sandbox.
 
 ```typescript
-import { Bash } from "@capsule-run/bash";
-import { WasmRuntime } from "@capsule-run/bash-wasm";
+import { Bash } from '@capsule-run/bash';
+import { WasmRuntime } from '@capsule-run/bash-wasm';
 
 const bash = new Bash({ runtime: new WasmRuntime() });
 ```
@@ -106,18 +108,16 @@ const bash = new Bash({ runtime: new WasmRuntime() });
 #### Custom Commands
 
 ```typescript
-import { Bash, createCommand } from "@capsule-run/bash";
-import { WasmRuntime } from "@capsule-run/bash-wasm";
+import { Bash, createCommand } from '@capsule-run/bash';
+import { WasmRuntime } from '@capsule-run/bash-wasm';
 
-const firstCustomCommand = createCommand("hello", async (opts, state) => {
-  return { stdout: "Hello", stderr: "", exitCode: 0 };
+const firstCustomCommand = createCommand('hello', async (opts, state) => {
+  return { stdout: 'Hello', stderr: '', exitCode: 0 };
 });
 
 const bash = new Bash({
   runtime: new WasmRuntime(),
-  customCommands: [
-    firstCustomCommand,
-  ],
+  customCommands: [firstCustomCommand],
 });
 ```
 
@@ -126,7 +126,7 @@ const bash = new Bash({
 The host workspace is the directory on the host system that is mounted to the sandbox. It can be any folder in the project directory. By default, it is set to `.capsule/session/workspace`.
 
 ```typescript
-const bash = new Bash({ runtime: new WasmRuntime(), hostWorkspace: "customFolder" });
+const bash = new Bash({ runtime: new WasmRuntime(), hostWorkspace: 'customFolder' });
 ```
 
 #### Initial Working Directory
@@ -134,7 +134,7 @@ const bash = new Bash({ runtime: new WasmRuntime(), hostWorkspace: "customFolder
 The initial working directory is where bash commands are executed. By default it is set to `/workspace`. You can set it to any directory inside the sandbox filesystem.
 
 ```typescript
-const bash = new Bash({ runtime: new WasmRuntime(), initialCwd: "/" });
+const bash = new Bash({ runtime: new WasmRuntime(), initialCwd: '/' });
 ```
 
 ### Run
@@ -144,7 +144,7 @@ Use the `run` method to execute a command in the sandbox.
 ```typescript
 const bash = new Bash({ runtime: new WasmRuntime() });
 
-const result = await bash.run("mkdir src && touch src/index.ts");
+const result = await bash.run('mkdir src && touch src/index.ts');
 
 console.log(result);
 ```
@@ -169,7 +169,7 @@ Use the `preload` method to warm up a sandbox before running commands. By defaul
 const bash = new Bash({ runtime: new WasmRuntime() });
 
 await bash.preload(); // js by default
-await bash.preload("python"); // python
+await bash.preload('python'); // python
 ```
 
 ### Reset
@@ -181,8 +181,6 @@ const bash = new Bash({ runtime: new WasmRuntime() });
 
 await bash.reset();
 ```
-
-
 
 ## Limitations
 
@@ -206,4 +204,3 @@ Commands live in `packages/bash/src/commands/`. To contribute:
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE) for details.
-

@@ -1,93 +1,118 @@
-import { describe, it, expect, vi } from "vitest";
-import { handler } from "./head.handler";
-import { createMockContext } from "../../helpers/testUtils";
+import { describe, it, expect, vi } from 'vitest';
+import { handler } from './head.handler';
+import { createMockContext } from '../../helpers/testUtils';
 
 describe('head command', () => {
-    it('should return error if file does not exist', async () => {
-        const resolvePathMock = vi.fn().mockResolvedValue(undefined);
-        const ctx = createMockContext(['nonexistent.txt'], {}, { resolvePath: resolvePathMock });
+  it('should return error if file does not exist', async () => {
+    const resolvePathMock = vi.fn().mockResolvedValue(undefined);
+    const ctx = createMockContext(['nonexistent.txt'], {}, { resolvePath: resolvePathMock });
 
-        const result = await handler(ctx);
-        expect(result.exitCode).toBe(1);
-        expect(result.stderr).toContain('No such file or directory');
+    const result = await handler(ctx);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('No such file or directory');
+  });
+
+  it('should output default 10 lines for single file', async () => {
+    const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/file.txt');
+    const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
+      if (code.includes('isDirectory')) return false;
+      if (code.includes('readFileSync')) return '1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11';
+
+      return '';
     });
 
-    it('should output default 10 lines for single file', async () => {
-        const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/file.txt');
-        const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
-            if (code.includes('isDirectory')) return false;
-            if (code.includes('readFileSync')) return '1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11';
-            return '';
-        });
+    const ctx = createMockContext(
+      ['file.txt'],
+      {},
+      {
+        resolvePath: resolvePathMock,
+        executeCode: executeCodeMock,
+      },
+    );
 
-        const ctx = createMockContext(['file.txt'], {}, {
-            resolvePath: resolvePathMock,
-            executeCode: executeCodeMock
-        });
+    const result = await handler(ctx);
 
-        const result = await handler(ctx);
-        expect(result.exitCode).toBe(0);
-        expect(executeCodeMock).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.stringContaining('slice(0, 10)')
-        );
+    expect(result.exitCode).toBe(0);
+    expect(executeCodeMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('slice(0, 10)'),
+    );
+  });
+
+  it('should slice custom number of lines with -n', async () => {
+    const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/file.txt');
+    const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
+      if (code.includes('isDirectory')) return false;
+      if (code.includes('readFileSync')) return '1\n2\n3\n4\n5';
+
+      return '';
     });
 
-    it('should slice custom number of lines with -n', async () => {
-        const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/file.txt');
-        const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
-            if (code.includes('isDirectory')) return false;
-            if (code.includes('readFileSync')) return '1\n2\n3\n4\n5';
-            return '';
-        });
+    const ctx = createMockContext(
+      ['-n', '3', 'file.txt'],
+      {},
+      {
+        resolvePath: resolvePathMock,
+        executeCode: executeCodeMock,
+      },
+    );
 
-        const ctx = createMockContext(['-n', '3', 'file.txt'], {}, {
-            resolvePath: resolvePathMock,
-            executeCode: executeCodeMock
-        });
-        ctx.opts.raw = ['-n', '3', 'file.txt'];
+    ctx.opts.raw = ['-n', '3', 'file.txt'];
 
-        const result = await handler(ctx);
-        expect(result.exitCode).toBe(0);
-        expect(executeCodeMock).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.stringContaining('slice(0, 3)')
-        );
-        expect(result.stdout).toBe('1\n2\n3\n4\n5');
+    const result = await handler(ctx);
+
+    expect(result.exitCode).toBe(0);
+    expect(executeCodeMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('slice(0, 3)'),
+    );
+    expect(result.stdout).toBe('1\n2\n3\n4\n5');
+  });
+
+  it('should print headers for multiple files', async () => {
+    const resolvePathMock = vi.fn().mockImplementation(async (state, path) => `/workspace/${path}`);
+    const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
+      if (code.includes('isDirectory')) return false;
+
+      return 'content';
     });
 
-    it('should print headers for multiple files', async () => {
-        const resolvePathMock = vi.fn().mockImplementation(async (state, path) => `/workspace/${path}`);
-        const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
-            if (code.includes('isDirectory')) return false;
-            return 'content';
-        });
+    const ctx = createMockContext(
+      ['file1.txt', 'file2.txt'],
+      {},
+      {
+        resolvePath: resolvePathMock,
+        executeCode: executeCodeMock,
+      },
+    );
 
-        const ctx = createMockContext(['file1.txt', 'file2.txt'], {}, {
-            resolvePath: resolvePathMock,
-            executeCode: executeCodeMock
-        });
+    const result = await handler(ctx);
 
-        const result = await handler(ctx);
-        expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('==> file1.txt <==');
-        expect(result.stdout).toContain('==> file2.txt <==');
-        expect(result.stdout).toContain('content');
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('==> file1.txt <==');
+    expect(result.stdout).toContain('==> file2.txt <==');
+    expect(result.stdout).toContain('content');
+  });
+
+  it('should return error if target is a directory', async () => {
+    const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/dir');
+    const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
+      if (code.includes('isDirectory')) return true;
     });
 
-    it('should return error if target is a directory', async () => {
-        const resolvePathMock = vi.fn().mockImplementation(async () => '/workspace/dir');
-        const executeCodeMock = vi.fn().mockImplementation(async (state, code) => {
-            if (code.includes('isDirectory')) return true;
-        });
+    const ctx = createMockContext(
+      ['dir'],
+      {},
+      {
+        resolvePath: resolvePathMock,
+        executeCode: executeCodeMock,
+      },
+    );
 
-        const ctx = createMockContext(['dir'], {}, {
-            resolvePath: resolvePathMock,
-            executeCode: executeCodeMock
-        });
+    const result = await handler(ctx);
 
-        const result = await handler(ctx);
-        expect(result.exitCode).toBe(1);
-        expect(result.stderr).toContain('Is a directory');
-    });
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('Is a directory');
+  });
 });

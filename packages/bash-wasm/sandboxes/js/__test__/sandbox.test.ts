@@ -116,7 +116,6 @@ describe('sandbox.ts – invalid action', () => {
   });
 });
 
-
 describe('sandbox.ts – RESOLVE_PATH', () => {
   it('resolves a directory path', async () => {
     const result = await run({
@@ -137,7 +136,7 @@ describe('sandbox.ts – RESOLVE_PATH', () => {
     });
 
     const value = assertFailure(result);
-    expect(value.message).toContain("Path ../non-existent-directory does not exist");
+    expect(value.message).toContain('Path ../non-existent-directory does not exist');
   });
 
   it('resolves a directory path', async () => {
@@ -154,7 +153,11 @@ describe('sandbox.ts – RESOLVE_PATH', () => {
   it('Should works with a different initial cwd', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['RESOLVE_PATH', JSON.stringify({ cwd: '/imports', env: {}, lastExitCode: 0 }), 'complex-path-testing'],
+      args: [
+        'RESOLVE_PATH',
+        JSON.stringify({ cwd: '/imports', env: {}, lastExitCode: 0 }),
+        'complex-path-testing',
+      ],
       mounts: [`${WORKSPACE}::/`],
     });
 
@@ -162,7 +165,7 @@ describe('sandbox.ts – RESOLVE_PATH', () => {
     expect(value).toBe('/imports/complex-path-testing');
   });
 
-   it('Should works with a file path', async () => {
+  it('Should works with a file path', async () => {
     const result = await run({
       file: SANDBOX,
       args: ['RESOLVE_PATH', baseState, 'test-file.js'],
@@ -173,17 +176,18 @@ describe('sandbox.ts – RESOLVE_PATH', () => {
     expect(value).toBe('/test-file.js');
   });
 
-
   it('Should works resolve path for absolute path', async () => {
     const result = await run({
       file: SANDBOX,
-      args: ['RESOLVE_PATH', JSON.stringify({ cwd: '/imports/complex-path-testing/', env: {}, lastExitCode: 0 }), '/imports'],
+      args: [
+        'RESOLVE_PATH',
+        JSON.stringify({ cwd: '/imports/complex-path-testing/', env: {}, lastExitCode: 0 }),
+        '/imports',
+      ],
       mounts: [`${WORKSPACE}::/`],
     });
 
     const value = assertSuccess(result);
     expect(value).toBe('/imports');
   });
-
-
 });

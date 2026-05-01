@@ -1,39 +1,49 @@
-import { CommandContext, CommandHandler, CommandManual } from "@capsule-run/bash-types";
-
+import { CommandContext, CommandHandler, CommandManual } from '@capsule-run/bash-types';
 
 export const manual: CommandManual = {
-    name: 'touch',
-    description: 'Create a file',
-    usage: 'touch file...'
+  name: 'touch',
+  description: 'Create a file',
+  usage: 'touch file...',
 };
 
 export const handler: CommandHandler = async ({ state, opts, runtime }: CommandContext) => {
-    const stderr: string[] = [];
+  const stderr: string[] = [];
 
-    await Promise.all(opts.args.map(async (arg) => {
-        if (!arg) return;
+  await Promise.all(
+    opts.args.map(async (arg) => {
+      if (!arg) return;
 
-        const segments = arg.split('/');
-        const parentFolder = segments.length > 1 ? segments.slice(0, -1).join('/') : '.';
-        const parentFolderAbsolutePath = (await runtime.resolvePath(state, parentFolder));
+      const segments = arg.split('/');
+      const parentFolder = segments.length > 1 ? segments.slice(0, -1).join('/') : '.';
+      const parentFolderAbsolutePath = await runtime.resolvePath(state, parentFolder);
 
-        if (!parentFolderAbsolutePath) {
-            stderr.push(`bash: touch: '${arg}': No such file or directory`);
-            return;
-        }
+      if (!parentFolderAbsolutePath) {
+        stderr.push(`bash: touch: '${arg}': No such file or directory`);
 
-        const filename = segments[segments.length - 1];
-        const absolutePath = `${parentFolderAbsolutePath}/${filename}`.replace('//', '/');
+        return;
+      }
 
-        const exists = await runtime.executeCode(state, `return require('fs').existsSync('${absolutePath}');`) as boolean;
-        if (!exists) {
-            await runtime.executeCode(state, `require('fs').writeFileSync('${absolutePath}', '');`);
-        }
-    }))
+      const filename = segments[segments.length - 1];
+      const absolutePath = `${parentFolderAbsolutePath}/${filename}`.replace('//', '/');
 
-    if (stderr.length === 0) {
-        return { stdout: `${opts.args.length > 1 ? opts.args.length + ' Files' : 'File'} created ✔`, stderr: stderr.join('\n'), exitCode: 0 };
-    }
+      const exists = (await runtime.executeCode(
+        state,
+        `return require('fs').existsSync('${absolutePath}');`,
+      )) as boolean;
 
-    return { stdout: "", stderr: stderr.join('\n'), exitCode: 1 };
-}
+      if (!exists) {
+        await runtime.executeCode(state, `require('fs').writeFileSync('${absolutePath}', '');`);
+      }
+    }),
+  );
+
+  if (stderr.length === 0) {
+    return {
+      stdout: `${opts.args.length > 1 ? opts.args.length + ' Files' : 'File'} created ✔`,
+      stderr: stderr.join('\n'),
+      exitCode: 0,
+    };
+  }
+
+  return { stdout: '', stderr: stderr.join('\n'), exitCode: 1 };
+};

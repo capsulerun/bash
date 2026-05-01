@@ -1,107 +1,128 @@
-import type { CommandContext, CommandHandler, CommandManual } from "@capsule-run/bash-types";
-import path from "path";
+import type { CommandContext, CommandHandler, CommandManual } from '@capsule-run/bash-types';
+import path from 'path';
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export const manual: CommandManual = {
-    name: "ls",
-    description: "List directory contents.",
-    usage: "ls [dir]",
-    options: {
-        "-l": "Use a long listing format.",
-        "-a": "Do not ignore entries starting with .",
-        "-la": "Use a long listing format and do not ignore entries starting with ."
-    }
+  name: 'ls',
+  description: 'List directory contents.',
+  usage: 'ls [dir]',
+  options: {
+    '-l': 'Use a long listing format.',
+    '-a': 'Do not ignore entries starting with .',
+    '-la': 'Use a long listing format and do not ignore entries starting with .',
+  },
 };
 
 export const handler: CommandHandler = async ({ opts, state, runtime }: CommandContext) => {
-    const targets = opts.args.length > 0 ? opts.args : [state.cwd];
-    const multipleDirectories = targets.length > 1;
+  const targets = opts.args.length > 0 ? opts.args : [state.cwd];
+  const multipleDirectories = targets.length > 1;
 
-    const showLong = opts.hasFlag('l');
-    const showAll = opts.hasFlag('a');
+  const showLong = opts.hasFlag('l');
+  const showAll = opts.hasFlag('a');
 
-    let exitCode = 0;
-    const stderr: string[] = [];
+  let exitCode = 0;
+  const stderr: string[] = [];
 
-    for (const target of targets) {
-        const resolvedPath = await runtime.resolvePath(state, target);
-        if (!resolvedPath && !target.includes('..')) {
-            return { stdout: "", stderr: `bash: ls: cannot access '${target}': No such file or directory`, exitCode: 1 };
-        }
+  for (const target of targets) {
+    const resolvedPath = await runtime.resolvePath(state, target);
+
+    if (!resolvedPath && !target.includes('..')) {
+      return {
+        stdout: '',
+        stderr: `bash: ls: cannot access '${target}': No such file or directory`,
+        exitCode: 1,
+      };
     }
+  }
 
-    const rawResult = await Promise.all(targets.map(async (arg) => {
-        const sandboxAbsolutePath = (await runtime.resolvePath(state, arg)) || "/";
-        let result = multipleDirectories ? `${arg}:\n` : "";
-        let files: string[] = ['.', '..'];
+  const rawResult = await Promise.all(
+    targets.map(async (arg) => {
+      const sandboxAbsolutePath = (await runtime.resolvePath(state, arg)) || '/';
+      let result = multipleDirectories ? `${arg}:\n` : '';
+      let files: string[] = ['.', '..'];
 
-        try {
-            const dirFiles = await runtime.executeCode(state, `return require('fs').readdirSync('${sandboxAbsolutePath}');`) as string[];
-            files = files.concat(dirFiles);
+      try {
+        const dirFiles = (await runtime.executeCode(
+          state,
+          `return require('fs').readdirSync('${sandboxAbsolutePath}');`,
+        )) as string[];
 
-            files.sort((a, b) => {
-                if (a.startsWith(".") && !b.startsWith(".")) return -1;
-                if (!a.startsWith(".") && b.startsWith(".")) return 1;
-                return a.localeCompare(b);
-            });
+        files = files.concat(dirFiles);
 
-        } catch (e) {
-            stderr.push(`bash: ls: cannot access '${arg}': No such file or directory`);
-            exitCode = 1;
-            return null;
+        files.sort((a, b) => {
+          if (a.startsWith('.') && !b.startsWith('.')) return -1;
+          if (!a.startsWith('.') && b.startsWith('.')) return 1;
+
+          return a.localeCompare(b);
+        });
+      } catch {
+        stderr.push(`bash: ls: cannot access '${arg}': No such file or directory`);
+        exitCode = 1;
+
+        return null;
+      }
+
+      if (!showAll) {
+        files = files.filter((f) => !f.startsWith('.'));
+      }
+
+      if (showLong) {
+        if (files.length > 0) {
+          result += `total ${files.length}\n`;
         }
 
-        if (!showAll) {
-            files = files.filter(f => !f.startsWith('.'));
-        }
+        const lines = (
+          await Promise.all(
+            files.map(async (filename) => {
+              const filepath = path.join(sandboxAbsolutePath, filename);
 
-        if (showLong) {
-            if (files.length > 0) {
-                result += `total ${files.length}\n`;
-            }
+              try {
+                const wasmSafeStats = (await runtime.executeCode(
+                  state,
+                  `return require('fs').statSync('${filepath}');`,
+                )) as { mode: number; nlink: number; size: number; mtime: number };
 
-            const lines = (await Promise.all(files.map(async (filename) => {
-                const filepath = path.join(sandboxAbsolutePath, filename);
+                const isDirectory = wasmSafeStats.mode === 0o40755 || wasmSafeStats.mode & 0o40000;
+                const permissions = (isDirectory ? 'd' : '-') + 'rwxr-xr-x';
 
-                try {
-                    const wasmSafeStats = await runtime.executeCode(state, `return require('fs').statSync('${filepath}');`) as any;
+                const hardlink = wasmSafeStats.nlink || 1;
+                const user = 'Agent';
+                const group = 'staff';
+                const size = wasmSafeStats.size || 0;
+                const date = new Date(wasmSafeStats.mtime || Date.now());
 
-                    const isDirectory = wasmSafeStats.mode === 0o40755 || (wasmSafeStats.mode & 0o40000);
-                    const permissions = (isDirectory ? "d" : "-") + "rwxr-xr-x";
+                const padDate = date.getDate().toString().padStart(2, ' ');
+                const padHours = date.getHours().toString().padStart(2, '0');
+                const padMins = date.getMinutes().toString().padStart(2, '0');
 
-                    const hardlink = wasmSafeStats.nlink || 1;
-                    const user = "Agent";
-                    const group = "staff";
-                    const size = wasmSafeStats.size || 0;
-                    const date = new Date(wasmSafeStats.mtime || Date.now());
+                const timeStr =
+                  date.getFullYear() !== new Date().getFullYear()
+                    ? ` ${date.getFullYear()}`
+                    : `${padHours}:${padMins}`;
 
-                    const padDate = date.getDate().toString().padStart(2, ' ');
-                    const padHours = date.getHours().toString().padStart(2, '0');
-                    const padMins = date.getMinutes().toString().padStart(2, '0');
+                const time = `${months[date.getMonth()]} ${padDate} ${timeStr}`;
 
-                    const timeStr = date.getFullYear() !== new Date().getFullYear()
-                        ? ` ${date.getFullYear()}`
-                        : `${padHours}:${padMins}`;
+                return `${permissions} ${hardlink} ${user} ${group} ${size} ${time} ${filename}`;
+              } catch {
+                return;
+              }
+            }),
+          )
+        ).filter((file): file is string => file !== undefined);
 
-                    const time = `${months[date.getMonth()]} ${padDate} ${timeStr}`;
+        result += lines.join('\n');
+      } else {
+        result += files.join('  ');
+      }
 
-                    return `${permissions} ${hardlink} ${user} ${group} ${size} ${time} ${filename}`;
-                } catch {
-                    return;
-                }
-            }))).filter((file): file is string => file !== undefined);
+      return result;
+    }),
+  );
 
-            result += lines.join("\n");
-        } else {
-            result += files.join("  ");
-        }
+  const validResults = rawResult.filter((r) => r !== null);
+  const stdout =
+    validResults.join(multipleDirectories ? '\n\n' : '\n') + (validResults.length > 0 ? '\n' : '');
 
-        return result;
-    }));
-
-    const validResults = rawResult.filter(r => r !== null);
-    const stdout = validResults.join(multipleDirectories ? "\n\n" : "\n") + (validResults.length > 0 ? "\n" : "");
-
-    return { stdout, stderr: stderr.join('\n'), exitCode };
+  return { stdout, stderr: stderr.join('\n'), exitCode };
 };
