@@ -56,4 +56,3 @@ Add to your MCP client configuration (e.g. Claude Desktop, Cursor):
 ## Limitations
 
 - **Wasm bash** — runs a WASI-compiled bash; some advanced shell features or native binaries may not be available
-- **Session cleanup** — sessions live in memory and are lost when the server restarts; use `reset` to explicitly clear state
