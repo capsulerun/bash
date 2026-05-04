@@ -111,16 +111,33 @@ def execute_code(state: str, code: str):
             )
         else:
             exec(compile(tree, filename="<ast>", mode="exec"), local_env)
-            result = local_env.get("result")
+            result = None
     finally:
         sys.stdout = old_stdout
 
     output = captured_output.getvalue()
 
-    if output:
-        return output.rstrip("\n") + ("\n" + str(result) if result is not None else "")
+    public_vars = {}
+    for k, v in local_env.items():
+        if k.startswith("__"):
+            continue
+        try:
+            json.dumps(v)
+            public_vars[k] = v
+        except (TypeError, ValueError):
+            pass
 
-    return result
+    if output:
+        if public_vars:
+            return output.rstrip("\n") + "\n" + json.dumps(public_vars)
+        if result is not None:
+            return output.rstrip("\n") + "\n" + str(result)
+        return output.rstrip("\n")
+
+    if result is not None:
+        return result
+
+    return public_vars if public_vars else None
 
 
 @task(name="main", compute="HIGH")

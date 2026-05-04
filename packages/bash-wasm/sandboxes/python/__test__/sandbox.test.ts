@@ -83,6 +83,30 @@ describe('sandbox.py – EXECUTE_CODE', () => {
     const error = assertFailure(result);
     expect(error.message).toContain('boom');
   });
+
+  it('reads a file with `with open(...)` and prints its content', async () => {
+    const code = `with open('/data.txt') as f:\n    print(f.read())`;
+    const result = await run({
+      file: SANDBOX,
+      args: ['EXECUTE_CODE', baseState, code],
+      mounts: [`${WORKSPACE}::/`],
+    });
+
+    const value = assertSuccess(result);
+    expect(String(value)).toContain('hello from capsule');
+  });
+
+  it('reads a file with `with open(...)` and exposes the variable', async () => {
+    const code = `with open('/data.txt') as f:\n    data = f.read()`;
+    const result = await run({
+      file: SANDBOX,
+      args: ['EXECUTE_CODE', baseState, code],
+      mounts: [`${WORKSPACE}::/`],
+    });
+
+    const value = assertSuccess(result);
+    expect(value).toMatchObject({ data: expect.stringContaining('hello from capsule') });
+  });
 });
 
 describe('sandbox.py – EXECUTE_FILE', () => {
