@@ -75,16 +75,23 @@ const executeFile = task(
     const capturedOutput: string[] = [];
     const relPath = wasmRelative(state.cwd, filePath);
 
+    process.chdir(state.cwd);
+
     Object.defineProperty(process, 'argv', {
       value: ['node', relPath, ...args],
       writable: true,
       configurable: true,
     });
 
-    const originalLog = console.log;
-    console.log = (...logArgs: any[]) => {
+    const capture = (...logArgs: any[]) =>
       capturedOutput.push(logArgs.map((a) => String(a)).join(' '));
-    };
+
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    console.log = capture;
+    console.error = capture;
+    console.warn = capture;
 
     try {
       const code = fs.readFileSync(relPath, 'utf-8') as string;
@@ -103,6 +110,8 @@ const executeFile = task(
       return mod.exports;
     } finally {
       console.log = originalLog;
+      console.error = originalError;
+      console.warn = originalWarn;
     }
   },
 );
@@ -112,22 +121,28 @@ const executeCode = task(
   async (state: State, code: string): Promise<unknown> => {
     process.chdir(state.cwd);
     const capturedOutput: string[] = [];
-    const originalLog = console.log;
 
-    console.log = (...args: any[]) => {
+    const capture = (...args: any[]) =>
       capturedOutput.push(args.map((arg) => String(arg)).join(' '));
-    };
+
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    console.log = capture;
+    console.error = capture;
+    console.warn = capture;
 
     const require = makeRequire(wasmRelative(state.cwd, '.'));
 
     try {
       let result;
       try {
-        result = eval(code);
+        const wrapper = new Function('require', 'console', `return eval(${JSON.stringify(code)})`);
+        result = await wrapper(require, console);
       } catch (e) {
-        if (e instanceof SyntaxError && e.message.includes('return')) {
-          const fn = new Function('require', code);
-          result = fn(require);
+        if (e instanceof SyntaxError) {
+          const fn = new Function('require', 'console', code);
+          result = await fn(require, console);
         } else {
           throw e;
         }
@@ -136,12 +151,14 @@ const executeCode = task(
       const output = capturedOutput.join('\n');
 
       if (output) {
-        return output + (result ? '\n' + result : '');
+        return result != null ? output + '\n' + String(result) : output;
       }
 
-      return result;
+      return result ?? null;
     } finally {
       console.log = originalLog;
+      console.error = originalError;
+      console.warn = originalWarn;
     }
   },
 );
