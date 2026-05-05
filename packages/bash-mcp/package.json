@@ -17,8 +17,8 @@
     "bash-mcp": "./src/index.js"
   },
   "scripts": {
-    "start": "node --import tsx/esm src/index.ts",
-    "dev": "tsx watch src/index.ts",
+    "start": "node --conditions source --import tsx/esm src/index.ts",
+    "dev": "tsx --conditions source watch src/index.ts",
     "build": "tsup src/index.ts --format esm --dts"
   },
   "homepage": "https://github.com/capsulerun/bash/tree/main/packages/bash-mcp",
