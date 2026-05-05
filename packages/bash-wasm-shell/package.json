@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "bash-wasm-shell": "tsx src/index.tsx"
+    "bash-wasm-shell": "tsx --conditions source src/index.tsx"
   },
   "packageManager": "pnpm@10.21.0",
   "dependencies": {

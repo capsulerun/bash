@@ -9,16 +9,33 @@
     "url": "https://github.com/capsulerun/bash.git",
     "directory": "packages/bash-wasm"
   },
-  "main": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "source": "./src/index.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./src/index.ts"
+    }
+  },
+  "publishConfig": {
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.ts"
+      }
+    }
   },
   "files": [
     "src",
     "dist/sandboxes"
   ],
   "scripts": {
+    "build": "tsup",
     "pretest": "pip install -r sandboxes/python/requirements.txt -q",
     "test": "vitest run"
   },
