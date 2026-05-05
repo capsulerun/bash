@@ -8,7 +8,7 @@
 
 # `Capsule` Bash
 
-![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main)
+![CI](https://img.shields.io/github/actions/workflow/status/capsulerun/bash/ci.yml?branch=main&label=CI)
 
 [Getting Started](#getting-started) • [Documentation](#documentation) • [Issues](https://github.com/capsulerun/bash/issues/new) • [Contributing](#contributing)
 
