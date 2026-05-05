@@ -3,23 +3,13 @@
   "version": "0.1.3",
   "description": "MCP server exposing sandboxed bash for untrusted command execution",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "bin": {
-    "bash-mcp": "./src/index.js"
+    "bash-mcp": "./dist/index.js"
   },
   "scripts": {
     "start": "node --conditions source --import tsx/esm src/index.ts",
     "dev": "tsx --conditions source watch src/index.ts",
-    "build": "tsup src/index.ts --format esm --dts"
+    "build": "tsup src/index.ts --format esm"
   },
   "homepage": "https://github.com/capsulerun/bash/tree/main/packages/bash-mcp",
   "repository": {
