@@ -5,7 +5,8 @@
     "rootDir": "./src",
     "types": ["node"],
     "declaration": true,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": true,
+    "declarationDir": "./dist"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "tsup.config.ts"]
