@@ -31,7 +31,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc --project tsconfig.json",
     "test": "vitest run"
   },
   "license": "Apache-2.0",
