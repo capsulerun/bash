@@ -35,7 +35,7 @@
     "dist/sandboxes"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc --project tsconfig.json",
     "pretest": "pip install -r sandboxes/python/requirements.txt -q",
     "test": "vitest run"
   },
