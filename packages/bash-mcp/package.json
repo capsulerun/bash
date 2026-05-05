@@ -3,13 +3,18 @@
   "version": "0.1.3",
   "description": "MCP server exposing sandboxed bash for untrusted command execution",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
   },
   "bin": {
-    "bash-mcp": "./src/index.ts"
+    "bash-mcp": "./src/index.js"
   },
   "scripts": {
     "start": "node --import tsx/esm src/index.ts",
