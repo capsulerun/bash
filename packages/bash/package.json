@@ -11,20 +11,22 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "types": "./src/index.ts"
     }
   },
   "scripts": {
+    "build": "tsup",
     "test": "vitest run"
   },
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.21.0",
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "@types/shell-quote": "^1.7.5",
     "tsup": "^8.0.0"
   },

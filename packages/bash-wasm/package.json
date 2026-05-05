@@ -11,12 +11,12 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "types": "./src/index.ts"
     }
   },
   "files": [
@@ -24,6 +24,7 @@
     "dist/sandboxes"
   ],
   "scripts": {
+    "build": "tsup",
     "pretest": "pip install -r sandboxes/python/requirements.txt -q",
     "test": "vitest run"
   },
