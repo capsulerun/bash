@@ -20,16 +20,25 @@ function getSession(sessionId: string): Bash {
   return sessions.get(sessionId)!;
 }
 
-const server = new McpServer({
-  name: '@capsule-run/bash-mcp',
-  version: '0.1.3',
-});
+const server = new McpServer(
+  {
+    name: '@capsule-run/bash-mcp',
+    version: '0.1.4',
+  },
+  {
+    instructions: `
+    You are operating inside a sandboxed Bash environment (WebAssembly).
+    To discover available commands, run: cat /workspace/manual.md
+    Sessions are isolated: each session_id has its own cwd, env vars, and filesystem state.
+    Use the same session_id across calls to maintain state within a workflow, or use an existing session_id to resume.
+  `,
+  },
+);
 
 server.registerTool(
   'run',
   {
-    description:
-      'Run a bash command inside the sandboxed Capsule environment. Returns stdout, stderr, exit code, filesystem diff, and current shell state (cwd + env).',
+    description: 'Execute a Bash command in the sandboxed environment',
     inputSchema: {
       command: z.string().describe('The bash command to execute.'),
       session_id: z
@@ -68,7 +77,7 @@ server.registerTool(
   'reset',
   {
     description:
-      'Reset the sandboxed filesystem and shell state (cwd, env vars) for a session back to their initial values.',
+      "Reset a session's filesystem and shell state (cwd, env vars) to their initial values. Useful to start fresh without creating a new session.",
     inputSchema: {
       session_id: z
         .string()
@@ -96,7 +105,7 @@ server.registerTool(
 server.registerTool(
   'sessions',
   {
-    description: 'List all active shell sessions.',
+    description: 'List all active session IDs and their current state.',
   },
   async () => {
     return {
