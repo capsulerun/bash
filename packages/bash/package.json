@@ -1,6 +1,6 @@
 {
   "name": "@capsule-run/bash",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Sandboxed bash for untrusted command executions",
   "type": "module",
   "homepage": "https://github.com/capsulerun/bash",
@@ -30,6 +30,10 @@
       }
     }
   },
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "build": "tsup && tsc --project tsconfig.json",
     "test": "vitest run"

@@ -23,7 +23,7 @@ function getSession(sessionId: string): Bash {
 const server = new McpServer(
   {
     name: '@capsule-run/bash-mcp',
-    version: '0.1.4',
+    version: '0.1.5',
   },
   {
     instructions: `

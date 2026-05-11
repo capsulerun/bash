@@ -1,11 +1,14 @@
 {
   "name": "@capsule-run/bash-mcp",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "MCP server exposing sandboxed bash for untrusted command execution",
   "type": "module",
   "bin": {
     "bash-mcp": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "node --conditions source --import tsx/esm src/index.ts",
     "dev": "tsx --conditions source watch src/index.ts",
