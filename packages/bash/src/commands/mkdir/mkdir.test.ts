@@ -22,7 +22,7 @@ describe('mkdir command', () => {
     expect(result.stdout).toContain('Folder created ✔');
     expect(executeCodeMock).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringContaining("require('fs').mkdirSync('test_dir');"),
+      expect.stringContaining('require(\'fs\').mkdirSync("test_dir");'),
     );
   });
 
@@ -63,7 +63,7 @@ describe('mkdir command', () => {
     expect(result.exitCode).toBe(0);
     expect(executeCodeMock).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringContaining("mkdirSync('nonexistent/test_dir', { recursive: true })"),
+      expect.stringContaining('mkdirSync("nonexistent/test_dir", { recursive: true })'),
     );
   });
 
