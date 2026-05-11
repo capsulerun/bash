@@ -1,6 +1,6 @@
 {
   "name": "@capsule-run/bash-mcp",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "MCP server exposing sandboxed bash for untrusted command execution",
   "type": "module",
   "bin": {

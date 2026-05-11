@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
@@ -23,7 +24,7 @@ function getSession(sessionId: string): Bash {
 const server = new McpServer(
   {
     name: '@capsule-run/bash-mcp',
-    version: '0.1.9',
+    version: '0.1.10',
   },
   {
     instructions: `
