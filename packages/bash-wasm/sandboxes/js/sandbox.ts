@@ -83,8 +83,9 @@ const executeFile = task(
       configurable: true,
     });
 
-    const capture = (...logArgs: any[]) =>
+    const capture = (...logArgs: any[]): void => {
       capturedOutput.push(logArgs.map((a) => String(a)).join(' '));
+    };
 
     const originalLog = console.log;
     const originalError = console.error;
@@ -102,12 +103,10 @@ const executeFile = task(
       fn(mod, mod.exports, customRequire, relPath, path.dirname(relPath));
 
       const output = capturedOutput.join('\n');
-      if (output) {
-        return Object.keys(mod.exports).length > 0
-          ? output + '\n' + JSON.stringify(mod.exports)
-          : output;
-      }
-      return mod.exports;
+
+      if (output) return output;
+
+      return Object.keys(mod.exports).length > 0 ? mod.exports : null;
     } finally {
       console.log = originalLog;
       console.error = originalError;
@@ -122,8 +121,9 @@ const executeCode = task(
     process.chdir(state.cwd);
     const capturedOutput: string[] = [];
 
-    const capture = (...args: any[]) =>
+    const capture = (...args: any[]): void => {
       capturedOutput.push(args.map((arg) => String(arg)).join(' '));
+    };
 
     const originalLog = console.log;
     const originalError = console.error;

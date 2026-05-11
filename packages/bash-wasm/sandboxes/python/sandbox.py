@@ -74,7 +74,7 @@ def execute_file(state: str, file_path: str, args: list[str]):
             pass
 
     if output:
-        return output.rstrip("\n") + "\n" + json.dumps(public_result) if public_result else output.rstrip("\n")
+        return output.rstrip("\n")
 
     return public_result if public_result else None
 
@@ -100,8 +100,10 @@ def execute_code(state: str, code: str):
     old_stdout = sys.stdout
     sys.stdout = captured_output
 
+    last_was_expr = isinstance(last_node, ast.Expr)
+
     try:
-        if isinstance(last_node, ast.Expr):
+        if last_was_expr:
             tree.body.pop()
             if tree.body:
                 exec(compile(tree, filename="<ast>", mode="exec"), local_env)
@@ -128,7 +130,7 @@ def execute_code(state: str, code: str):
             pass
 
     if output:
-        if public_vars:
+        if not last_was_expr and public_vars:
             return output.rstrip("\n") + "\n" + json.dumps(public_vars)
         if result is not None:
             return output.rstrip("\n") + "\n" + str(result)
