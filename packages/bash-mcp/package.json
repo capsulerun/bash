@@ -6,6 +6,9 @@
   "bin": {
     "bash-mcp": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "node --conditions source --import tsx/esm src/index.ts",
     "dev": "tsx --conditions source watch src/index.ts",
