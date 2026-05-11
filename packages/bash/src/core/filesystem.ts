@@ -19,7 +19,9 @@ export class Filesystem {
     }
 
     let commandManuals = '';
-    const commandsDir = path.resolve(__dirname, '../commands');
+    const commandsDir = fs.existsSync(path.resolve(__dirname, 'commands'))
+      ? path.resolve(__dirname, 'commands')
+      : path.resolve(__dirname, '../commands');
 
     for (const command of fs.readdirSync(commandsDir)) {
       const commandDir = path.join(commandsDir, command);

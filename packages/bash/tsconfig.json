@@ -3,11 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["node"],
-    "composite": false,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "declarationDir": "./dist"
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "tsup.config.ts"]

@@ -35,7 +35,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup && tsc --project tsconfig.json",
+    "build": "tsup && tsc --project tsconfig.build.json",
     "test": "vitest run"
   },
   "license": "Apache-2.0",

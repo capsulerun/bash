@@ -7,5 +7,5 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   skipNodeModulesBundle: true,
-  tsconfig: 'tsconfig.json',
+  tsconfig: 'tsconfig.build.json',
 });
