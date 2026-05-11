@@ -30,6 +30,10 @@
       }
     }
   },
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "build": "tsup && tsc --project tsconfig.json",
     "test": "vitest run"

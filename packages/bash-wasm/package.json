@@ -32,7 +32,7 @@
   },
   "files": [
     "src",
-    "dist/sandboxes"
+    "dist"
   ],
   "scripts": {
     "build": "tsup && tsc --project tsconfig.json",
