@@ -1,6 +1,6 @@
 {
   "name": "@capsule-run/bash-wasm",
-  "version": "0.1.5",
+  "version": "0.1.11",
   "description": "Sandboxed bash for untrusted command execution",
   "type": "module",
   "homepage": "https://github.com/capsulerun/bash",
@@ -35,7 +35,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup && tsc --project tsconfig.json",
+    "build": "tsup && tsc --project tsconfig.build.json",
     "pretest": "pip install -r sandboxes/python/requirements.txt -q",
     "test": "vitest run"
   },

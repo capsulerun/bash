@@ -41,8 +41,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build WASM sandboxes
-        run: pnpm prebuild-wasm
+      - name: Build packages
+        run: |
+          pnpm --filter @capsule-run/bash-types build
+          pnpm --filter @capsule-run/bash build
+          pnpm --filter @capsule-run/bash-wasm build
+          pnpm prebuild-wasm
+          pnpm --filter @capsule-run/bash-mcp build
 
       - name: Publish packages in dependency order
         env:

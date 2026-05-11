@@ -1,6 +1,6 @@
 {
   "name": "@capsule-run/bash-mcp",
-  "version": "0.1.5",
+  "version": "0.1.11",
   "description": "MCP server exposing sandboxed bash for untrusted command execution",
   "type": "module",
   "bin": {
@@ -12,7 +12,7 @@
   "scripts": {
     "start": "node --conditions source --import tsx/esm src/index.ts",
     "dev": "tsx --conditions source watch src/index.ts",
-    "build": "tsup src/index.ts --format esm"
+    "build": "tsup"
   },
   "homepage": "https://github.com/capsulerun/bash/tree/main/packages/bash-mcp",
   "repository": {
@@ -24,13 +24,13 @@
   "packageManager": "pnpm@10.21.0",
   "devDependencies": {
     "tsup": "^8.0.0",
-    "tsx": "^4.0.0"
+    "tsx": "^4.0.0",
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "zod": "^3.25.0",
+    "@capsule-run/bash-types": "workspace:*"
   },
   "dependencies": {
     "@capsule-run/bash": "workspace:*",
-    "@capsule-run/bash-types": "workspace:*",
-    "@capsule-run/bash-wasm": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.10.2",
-    "zod": "^3.25.0"
+    "@capsule-run/bash-wasm": "workspace:*"
   }
 }

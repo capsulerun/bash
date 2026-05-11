@@ -11,15 +11,21 @@ export const manual: CommandManual = {
 
 export const handler: CommandHandler = async ({ state, opts, runtime }: CommandContext) => {
   const stderr: string[] = [];
+  let created = 0;
 
   await Promise.all(
     opts.args.map(async (arg) => {
-      const segments = arg.split('/');
-      const parentFolder = segments.length > 1 ? segments.slice(0, -1).join('/') : '.';
+      const segments = arg.split('/').filter((s) => s !== '');
+      const isAbsolute = arg.startsWith('/');
+      const parentSegments = segments.slice(0, -1);
+      const parentFolder =
+        parentSegments.length > 0 ? (isAbsolute ? '/' : '') + parentSegments.join('/') : '.';
 
       const parentFolderAbsolutePath = await runtime.resolvePath(state, parentFolder);
 
-      if (!parentFolderAbsolutePath && arg.includes('..')) {
+      const hasTraversal = segments.some((s) => s === '..');
+
+      if (!parentFolderAbsolutePath && hasTraversal) {
         stderr.push(`bash: mkdir: '${arg}': Permission denied`);
 
         return;
@@ -31,16 +37,22 @@ export const handler: CommandHandler = async ({ state, opts, runtime }: CommandC
         return;
       }
 
+      const escaped = JSON.stringify(arg);
+
       if (opts.hasFlag('p')) {
-        await runtime.executeCode(state, `require('fs').mkdirSync('${arg}', { recursive: true });`);
+        await runtime.executeCode(
+          state,
+          `require('fs').mkdirSync(${escaped}, { recursive: true });`,
+        );
       } else {
-        await runtime.executeCode(state, `require('fs').mkdirSync('${arg}');`);
+        await runtime.executeCode(state, `require('fs').mkdirSync(${escaped});`);
       }
+      created++;
     }),
   );
 
   return {
-    stdout: 'Folder created ✔',
+    stdout: created > 0 ? `Folder${created > 1 ? 's' : ''} created ✔` : '',
     stderr: stderr.join('\n'),
     exitCode: stderr.length > 0 ? 1 : 0,
   };

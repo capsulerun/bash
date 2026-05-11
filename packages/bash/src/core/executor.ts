@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
@@ -469,7 +470,9 @@ export class Executor {
   private async searchCommandHandler(
     name: string,
   ): Promise<{ handler: CommandHandler; manual?: CommandManual } | undefined> {
-    const commandsDir = path.resolve(__dirname, '../commands');
+    const commandsDir = fs.existsSync(path.resolve(__dirname, 'commands'))
+      ? path.resolve(__dirname, 'commands')
+      : path.resolve(__dirname, '../commands');
     const handlerPath = path.join(commandsDir, name, `${name}.handler`);
 
     const customCommand = this.customCommands.find((cmd) => cmd.name === name);
