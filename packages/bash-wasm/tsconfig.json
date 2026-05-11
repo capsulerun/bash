@@ -4,6 +4,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "types": ["node"],
+    "composite": false,
     "declaration": true,
     "emitDeclarationOnly": true
   },
