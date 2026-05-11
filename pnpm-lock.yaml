@@ -92,13 +92,13 @@ importers:
       '@capsule-run/bash':
         specifier: workspace:*
         version: link:../bash
-      '@capsule-run/bash-types':
-        specifier: workspace:*
-        version: link:../bash-types
       '@capsule-run/bash-wasm':
         specifier: workspace:*
         version: link:../bash-wasm
     devDependencies:
+      '@capsule-run/bash-types':
+        specifier: workspace:*
+        version: link:../bash-types
       '@modelcontextprotocol/sdk':
         specifier: ^1.10.2
         version: 1.29.0(zod@3.25.76)
