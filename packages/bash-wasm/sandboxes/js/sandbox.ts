@@ -5,15 +5,11 @@ import fsPromises from 'fs/promises';
 
 import type { State } from '@capsule-run/bash-types';
 
-function wasmRelative(cwd: string, filePath: string): string {
-  return path.resolve(cwd, filePath).replace(/^\//, '');
-}
-
 function resolveNodeModule(fromPath: string, id: string): string | null {
   let dir = path.dirname('/' + fromPath);
 
   while (true) {
-    const base = wasmRelative('/', path.join(dir, 'node_modules', id));
+    const base = path.resolve(dir, 'node_modules', id);
     const candidates = [base, base + '.js', base + '/index.js'];
 
     const pkgJson = base + '/package.json';
@@ -22,7 +18,7 @@ function resolveNodeModule(fromPath: string, id: string): string | null {
       try {
         const pkg = JSON.parse(fs.readFileSync(pkgJson, 'utf-8') as string);
         const main = pkg.main || 'index.js';
-        candidates.unshift(wasmRelative('/', path.join(dir, 'node_modules', id, main)));
+        candidates.unshift(path.resolve(dir, 'node_modules', id, main));
       } catch {}
     }
 
@@ -51,7 +47,7 @@ const makeRequire = (fromPath: string) => (id: string) => {
 
     depPath = resolved;
   } else {
-    const base = wasmRelative('/', path.resolve('/' + path.dirname(fromPath), id));
+    const base = path.resolve(path.dirname(fromPath), id);
 
     depPath = fs.existsSync(base)
       ? base
@@ -73,12 +69,12 @@ const executeFile = task(
   { name: 'executeFile', compute: 'MEDIUM', ram: '512MB', allowedHosts: ['*'] },
   async (state: State, filePath: string, args: string[]) => {
     const capturedOutput: string[] = [];
-    const relPath = wasmRelative(state.cwd, filePath);
+    const absolutePath = path.resolve(state.cwd, filePath);
 
     process.chdir(state.cwd);
 
     Object.defineProperty(process, 'argv', {
-      value: ['node', relPath, ...args],
+      value: ['node', absolutePath, ...args],
       writable: true,
       configurable: true,
     });
@@ -95,12 +91,12 @@ const executeFile = task(
     console.warn = capture;
 
     try {
-      const code = fs.readFileSync(relPath, 'utf-8') as string;
+      const code = fs.readFileSync(absolutePath, 'utf-8') as string;
       const mod = { exports: {} as any };
-      const customRequire = makeRequire(relPath);
+      const customRequire = makeRequire(absolutePath);
 
       const fn = new Function('module', 'exports', 'require', '__filename', '__dirname', code);
-      fn(mod, mod.exports, customRequire, relPath, path.dirname(relPath));
+      fn(mod, mod.exports, customRequire, absolutePath, path.dirname(absolutePath));
 
       const output = capturedOutput.join('\n');
 
@@ -132,7 +128,7 @@ const executeCode = task(
     console.error = capture;
     console.warn = capture;
 
-    const require = makeRequire(wasmRelative(state.cwd, '.'));
+    const require = makeRequire(state.cwd);
 
     try {
       let result;
