@@ -44,6 +44,13 @@ jobs:
       - name: Build WASM sandboxes
         run: pnpm prebuild-wasm
 
+      - name: Build packages
+        run: |
+          pnpm --filter @capsule-run/bash-types build
+          pnpm --filter @capsule-run/bash-wasm build
+          pnpm --filter @capsule-run/bash build
+          pnpm --filter @capsule-run/bash-mcp build
+
       - name: Publish packages in dependency order
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
