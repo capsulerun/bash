@@ -51,6 +51,7 @@ Result {
   stdout: "Folder created ✔\nFile created ✔",
   stderr: "",
   diff: { created: ['src/index.ts'], modified: [], deleted: [] },
+  state: { cwd: '/', env: {} },
   duration: 10,
   exitCode: 0,
 }
@@ -156,6 +157,7 @@ console.log(result);
   stdout: string,
   stderr: string,
   diff: { created: string[], modified: string[], deleted: string[] }, // Files and directories changes
+  state: { cwd: string, env: Record<string, string> }, // last state of the sandbox
   duration: number, // Duration in milliseconds
   exitCode: number
 }

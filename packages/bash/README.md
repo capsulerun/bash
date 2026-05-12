@@ -22,6 +22,7 @@ console.log(result);
   stdout: "Folder created ✔\nFile created ✔",
   stderr: "",
   diff: { created: ['src', 'src/index.ts'], modified: [], deleted: [] },
+  state: { cwd: '/', env: {} },
   duration: 10,
   exitCode: 0,
 }
