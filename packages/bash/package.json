@@ -40,13 +40,14 @@
   },
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.21.0",
-  "devDependencies": {
-    "@types/node": "^25.6.0",
-    "@types/shell-quote": "^1.7.5",
-    "tsup": "^8.0.0"
-  },
   "dependencies": {
     "@capsule-run/bash-types": "workspace:*",
     "shell-quote": "^1.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/shell-quote": "^1.7.5",
+    "@capsule-run/bash-wasm": "workspace:*",
+    "tsup": "^8.0.0"
   }
 }
